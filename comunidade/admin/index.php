@@ -177,6 +177,7 @@ unset($_SESSION['flash']);
     <input type="text" readonly value="https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php" onclick="this.select()">
     <p class="hint">No painel Perfect Pay: marque o produto/checkout <strong>PPU38CQC76U</strong>, evento <strong>Aprovado (status 2)</strong>, cole a URL do webhook e o mesmo token de <code>config.php</code>. Sem isso a venda não cadastra sozinha.</p>
     <p class="hint">Log de entregas: <code>comunidade/data/perfectpay-webhook.log</code> · E-mails: <code>mail.log</code></p>
+    <p class="hint" style="margin-top:.75rem"><strong>E-mail caindo no spam?</strong> No cPanel → <em>E-mail → Entregabilidade de e-mail</em>: ative <strong>DKIM</strong> e <strong>SPF</strong> para <code>agenciajob.com</code> e corrija o <strong>DMARC</strong>. Remetente deve ser <code>noreply@agenciajob.com</code> (mesmo domínio do DKIM).</p>
     <p class="hint" style="color:#c9a227;margin-top:.75rem"><strong>Teste na Perfect Pay:</strong> o botão de teste deles só funciona se existir uma <em>venda real</em> com status Aprovado na conta — por isso aparece “nenhuma venda com o evento desejado”. Use o simulador abaixo ou faça uma compra teste.</p>
     <form method="post" action="api.php" style="margin-top:1rem;padding-top:1rem;border-top:1px solid #2a2a2a">
       <input type="hidden" name="action" value="simulate_webhook">

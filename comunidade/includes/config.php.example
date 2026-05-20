@@ -26,6 +26,8 @@ return [
     'smtp_encryption' => 'none',
     'smtp_username' => 'noreply@agenciajob.com',
     'smtp_password' => '',
+    // Hostname EHLO do servidor de e-mail (deve ser do domínio agenciajob.com, não perfectpay.agenciajob.com)
+    'smtp_ehlo' => 'mail.agenciajob.com',
 
     // Perfect Pay — webhook (Ferramentas > Webhook - Vendas)
     // Cole o token exibido ao criar o webhook no painel Perfect Pay

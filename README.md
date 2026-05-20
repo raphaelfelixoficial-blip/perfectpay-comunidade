@@ -20,6 +20,18 @@ Cópia adaptada do [swatec-site](https://github.com/raphaelfelixoficial-blip/swa
 
 Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/data/config.php`.
 
+### Entregabilidade (evitar spam)
+
+No cPanel do domínio **agenciajob.com** (não só o subdomínio perfectpay):
+
+1. **E-mail → Entregabilidade de e-mail** (Email Deliverability)
+2. Clique em **Gerenciar** no domínio `agenciajob.com`
+3. Ative/registre **DKIM** e **SPF** (botões “Ativar” ou registros DNS sugeridos)
+4. Corrija **DMARC** — adicione o registro TXT `_dmarc.agenciajob.com` que o cPanel sugerir (comece com `p=none` para monitorar)
+5. Envie sempre como `noreply@agenciajob.com` com SMTP autenticado dessa caixa
+
+Teste em [mail-tester.com](https://www.mail-tester.com) após configurar DNS (aguarde até 24h de propagação).
+
 ## Checkout (oferta atual)
 
 - **Link de compra:** https://checkout.perfectpay.com.br/pay/PPU38CQC76U  

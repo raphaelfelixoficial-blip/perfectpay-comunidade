@@ -2,6 +2,30 @@
 
 declare(strict_types=1);
 
+function smtp_ehlo_hostname(array $cfg, string $fromEmail): string
+{
+    $custom = trim((string) ($cfg['smtp_ehlo'] ?? ''));
+    if ($custom !== '') {
+        return $custom;
+    }
+    $domain = mail_domain_from_address($fromEmail);
+    if ($domain !== '') {
+        return 'mail.' . $domain;
+    }
+
+    return 'localhost';
+}
+
+function mail_domain_from_address(string $email): string
+{
+    $email = trim($email);
+    if (!str_contains($email, '@')) {
+        return '';
+    }
+
+    return strtolower((string) substr($email, (int) strrpos($email, '@') + 1));
+}
+
 function smtp_send(
     array $cfg,
     string $toEmail,
@@ -34,14 +58,15 @@ function smtp_send(
     try {
         smtp_expect($socket, [220]);
 
-        smtp_cmd($socket, 'EHLO ' . ($cfg['smtp_ehlo'] ?? 'perfectpay.agenciajob.com'), [250]);
+        $ehlo = smtp_ehlo_hostname($cfg, $fromEmail);
+        smtp_cmd($socket, 'EHLO ' . $ehlo, [250]);
 
         if ($encryption === 'tls') {
             smtp_cmd($socket, 'STARTTLS', [220]);
             if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 throw new RuntimeException('Não foi possível iniciar TLS.');
             }
-            smtp_cmd($socket, 'EHLO ' . ($cfg['smtp_ehlo'] ?? 'perfectpay.agenciajob.com'), [250]);
+            smtp_cmd($socket, 'EHLO ' . $ehlo, [250]);
         }
 
         if ($pass !== '') {
@@ -54,14 +79,17 @@ function smtp_send(
         smtp_cmd($socket, 'RCPT TO:<' . $toEmail . '>', [250, 251]);
         smtp_cmd($socket, 'DATA', [354]);
 
+        $domain = mail_domain_from_address($fromEmail) ?: 'localhost';
         $message = 'Date: ' . date('r') . "\r\n";
         $message .= 'To: <' . $toEmail . '>' . "\r\n";
         $message .= 'From: ' . mail_format_address($fromName, $fromEmail) . "\r\n";
         if ($replyTo !== '') {
             $message .= 'Reply-To: <' . $replyTo . '>' . "\r\n";
         }
+        $message .= 'Message-ID: <' . bin2hex(random_bytes(8)) . '.' . time() . '@' . $domain . '>' . "\r\n";
         $message .= 'Subject: ' . mail_encode_subject($subject) . "\r\n";
         $message .= 'MIME-Version: 1.0' . "\r\n";
+        $message .= 'X-Mailer: PerfectPay-Comunidade' . "\r\n";
         $message .= $mimeBody . "\r\n";
 
         fwrite($socket, $message . "\r\n.\r\n");

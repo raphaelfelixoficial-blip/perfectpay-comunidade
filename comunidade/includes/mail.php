@@ -33,12 +33,11 @@ function send_password_reset_email(string $email, string $name, string $password
     }
 
     $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
-    $headers = [
+    $headers = array_merge([
         'MIME-Version: 1.0',
         'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
         'From: ' . mail_format_address($fromName, $fromEmail),
-        'Reply-To: ' . $replyTo,
-    ];
+    ], mail_extra_headers($fromEmail, $replyTo));
 
     $body = "--{$boundary}\r\n";
     $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
@@ -147,12 +146,11 @@ function send_member_credentials_email(string $email, string $name, string $pass
     }
 
     $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
-    $headers = [
+    $headers = array_merge([
         'MIME-Version: 1.0',
         'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
         'From: ' . mail_format_address($fromName, $fromEmail),
-        'Reply-To: ' . $replyTo,
-    ];
+    ], mail_extra_headers($fromEmail, $replyTo));
 
     $body = "--{$boundary}\r\n";
     $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
@@ -301,6 +299,24 @@ function mail_format_address(string $name, string $email): string
 {
     $name = str_replace(['"', "\r", "\n"], '', $name);
     return sprintf('"%s" <%s>', $name, $email);
+}
+
+/** Cabeçalhos extras para entregabilidade (alinhar com domínio do remetente). */
+function mail_extra_headers(string $fromEmail, string $replyTo): array
+{
+    $domain = mail_domain_from_address($fromEmail);
+    if ($domain === '') {
+        $domain = 'localhost';
+    }
+    $lines = [
+        'Message-ID: <' . bin2hex(random_bytes(8)) . '.' . time() . '@' . $domain . '>',
+        'X-Mailer: PerfectPay-Comunidade',
+    ];
+    if ($replyTo !== '') {
+        $lines[] = 'Reply-To: <' . $replyTo . '>';
+    }
+
+    return $lines;
 }
 
 function mail_encode_subject(string $subject): string
