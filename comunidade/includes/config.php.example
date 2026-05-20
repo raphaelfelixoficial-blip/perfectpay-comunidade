@@ -22,8 +22,8 @@ return [
 
     // SMTP local (Exim/cPanel) — senha da caixa noreply@agenciajob.com no cPanel
     'smtp_host' => 'localhost',
-    'smtp_port' => 587,
-    'smtp_encryption' => 'tls',
+    'smtp_port' => 25,
+    'smtp_encryption' => 'none',
     'smtp_username' => 'noreply@agenciajob.com',
     'smtp_password' => '',
 

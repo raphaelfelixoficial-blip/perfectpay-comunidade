@@ -27,10 +27,9 @@ function send_password_reset_email(string $email, string $name, string $password
         $result = smtp_send($cfg, $email, $subject, $mimeBody, $fromEmail, $fromName, $replyTo);
         if ($result['ok']) {
             mail_log("Reset de senha SMTP enviado para {$email}");
-        } else {
-            mail_log("Reset de senha SMTP falha para {$email}: " . $result['error']);
+            return $result;
         }
-        return $result;
+        mail_log("Reset de senha SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
     }
 
     $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
@@ -142,10 +141,9 @@ function send_member_credentials_email(string $email, string $name, string $pass
         $result = smtp_send($cfg, $email, $subject, $mimeBody, $fromEmail, $fromName, $replyTo);
         if ($result['ok']) {
             mail_log("SMTP enviado para {$email}");
-        } else {
-            mail_log("SMTP falha para {$email}: " . $result['error']);
+            return $result;
         }
-        return $result;
+        mail_log("SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
     }
 
     $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
@@ -177,7 +175,15 @@ function send_member_credentials_email(string $email, string $name, string $pass
 
 function mail_use_smtp(array $cfg): bool
 {
-    return !empty($cfg['smtp_host']) && !empty($cfg['smtp_password']);
+    if (empty($cfg['smtp_host'])) {
+        return false;
+    }
+    $enc = strtolower((string) ($cfg['smtp_encryption'] ?? 'tls'));
+    $noTls = in_array($enc, ['', 'none', 'off', 'false', '0'], true);
+    $host = (string) $cfg['smtp_host'];
+    $local = $host === 'localhost' || $host === '127.0.0.1';
+
+    return $noTls || $local || !empty($cfg['smtp_password']);
 }
 
 function mail_build_mime_body(string $textBody, string $htmlBody): string

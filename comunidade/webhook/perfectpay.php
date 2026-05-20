@@ -19,8 +19,24 @@ if (!is_array($payload)) {
     $payload = $_POST;
 }
 
+// Alguns envios trazem JSON dentro de um campo (ex.: data, payload).
+if (is_array($payload)) {
+    foreach (['data', 'payload', 'postback', 'sale'] as $key) {
+        if (!empty($payload[$key]) && is_string($payload[$key])) {
+            $nested = json_decode($payload[$key], true);
+            if (is_array($nested)) {
+                $payload = $nested;
+                break;
+            }
+        }
+    }
+}
+
 if (!is_array($payload) || $payload === []) {
-    perfectpay_log('Payload vazio ou inválido.');
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    $ct = (string) ($_SERVER['CONTENT_TYPE'] ?? '');
+    $preview = substr(preg_replace('/\s+/', ' ', $raw), 0, 200);
+    perfectpay_log("Payload vazio ou inválido IP={$ip} CT={$ct} raw={$preview}");
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'Invalid payload']);
     exit;

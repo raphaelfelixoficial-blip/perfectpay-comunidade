@@ -16,8 +16,9 @@ function smtp_send(
     $encryption = strtolower((string) ($cfg['smtp_encryption'] ?? 'tls'));
     $user = (string) ($cfg['smtp_username'] ?? $fromEmail);
     $pass = (string) ($cfg['smtp_password'] ?? '');
+    $noTls = in_array($encryption, ['', 'none', 'off', 'false', '0'], true);
 
-    if ($pass === '') {
+    if ($pass === '' && !$noTls && $host !== 'localhost' && $host !== '127.0.0.1') {
         return ['ok' => false, 'error' => 'Senha SMTP não configurada em data/config.php (smtp_password).'];
     }
 
@@ -43,9 +44,11 @@ function smtp_send(
             smtp_cmd($socket, 'EHLO ' . ($cfg['smtp_ehlo'] ?? 'perfectpay.agenciajob.com'), [250]);
         }
 
-        smtp_cmd($socket, 'AUTH LOGIN', [334]);
-        smtp_cmd($socket, base64_encode($user), [334]);
-        smtp_cmd($socket, base64_encode($pass), [235]);
+        if ($pass !== '') {
+            smtp_cmd($socket, 'AUTH LOGIN', [334]);
+            smtp_cmd($socket, base64_encode($user), [334]);
+            smtp_cmd($socket, base64_encode($pass), [235]);
+        }
 
         smtp_cmd($socket, 'MAIL FROM:<' . $fromEmail . '>', [250]);
         smtp_cmd($socket, 'RCPT TO:<' . $toEmail . '>', [250, 251]);
