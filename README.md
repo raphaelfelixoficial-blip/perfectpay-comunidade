@@ -20,6 +20,23 @@ Cópia adaptada do [swatec-site](https://github.com/raphaelfelixoficial-blip/swa
 
 Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/data/config.php`.
 
+## Integração Perfect Pay (compra → acesso automático)
+
+1. **Página de obrigado** (redirecionamento após compra no checkout):
+   `https://perfectpay.agenciajob.com/obrigado.php`
+
+2. **Webhook** (cadastro automático + e-mail com login/senha):
+   `https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php`
+
+   No painel Perfect Pay: **Ferramentas → Webhook - Vendas → Adicionar**
+   - URL: endpoint acima
+   - Eventos: marque **Aprovado** (e opcionalmente **Completo**)
+   - Copie o **token** do webhook para `perfectpay_webhook_token` em `comunidade/data/config.php`
+
+3. Quando a venda for aprovada (`sale_status_enum` = 2), o sistema:
+   - cadastra o e-mail do comprador na comunidade
+   - envia e-mail com link de login, e-mail e senha
+
 ## Deploy
 
 - **Manual:** `bash scripts/deploy-local.sh`

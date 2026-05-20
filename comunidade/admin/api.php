@@ -4,6 +4,7 @@ require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/albuns.php';
 require_once dirname(__DIR__) . '/includes/site-status.php';
 require_once dirname(__DIR__) . '/includes/mail.php';
+require_once dirname(__DIR__) . '/includes/members.php';
 require_admin();
 start_session();
 
@@ -64,35 +65,53 @@ if ($action === 'add' || $action === 'import') {
     $useSharedName = $action === 'add' && count($emailList) === 1;
 
     foreach ($emailList as $email) {
-        if (find_member($email)) {
+        if ($action === 'import' && find_member($email)) {
             $skipped++;
             continue;
         }
 
-        $password = $sharedPassword !== '' ? $sharedPassword : generate_member_password();
         $memberName = $useSharedName && $name !== '' ? $name : $email;
 
-        $members[] = [
-            'email' => $email,
-            'name' => $memberName,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-            'added_at' => member_added_at_now(),
-        ];
-        $passwords[] = "{$email} => {$password}";
-        $added++;
-
-        if ($sendEmail) {
-            $mail = send_member_credentials_email($email, $memberName, $password);
-            if ($mail['ok']) {
-                $emailed++;
+        if ($sharedPassword !== '') {
+            if (!find_member($email)) {
+                $members = load_members();
+                $members[] = [
+                    'email' => $email,
+                    'name' => $memberName,
+                    'password_hash' => password_hash($sharedPassword, PASSWORD_DEFAULT),
+                    'added_at' => member_added_at_now(),
+                ];
+                save_members($members);
             } else {
-                $mailFailed++;
+                update_member_password($email, $sharedPassword);
             }
+            $added++;
+            if ($sendEmail) {
+                $mail = send_member_credentials_email($email, $memberName, $sharedPassword);
+                if ($mail['ok']) {
+                    $emailed++;
+                } else {
+                    $mailFailed++;
+                }
+            } else {
+                $passwords[] = "{$email} => {$sharedPassword}";
+            }
+            continue;
         }
-    }
 
-    if ($added > 0) {
-        save_members($members);
+        $provision = provision_member_access($email, $memberName, $sendEmail);
+        if (!$provision['ok']) {
+            $mailFailed++;
+            continue;
+        }
+        $added++;
+        if ($provision['email_sent']) {
+            $emailed++;
+        } elseif ($sendEmail) {
+            $mailFailed++;
+        } elseif (isset($provision['password'])) {
+            $passwords[] = "{$email} => {$provision['password']}";
+        }
     }
 
     $msg = $action === 'import'

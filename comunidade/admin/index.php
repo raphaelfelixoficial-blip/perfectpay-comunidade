@@ -187,6 +187,16 @@ unset($_SESSION['flash']);
   </div>
 
   <div class="card">
+    <h2><i class="ti ti-plug-connected"></i> Integração Perfect Pay</h2>
+    <p class="hint" style="margin-top:0">Após compra aprovada, o webhook libera acesso e envia e-mail com login e senha.</p>
+    <label>Página de obrigado (URL no checkout Perfect Pay)</label>
+    <input type="text" readonly value="https://perfectpay.agenciajob.com/obrigado.php" onclick="this.select()">
+    <label>Webhook (URL em Ferramentas → Webhook - Vendas)</label>
+    <input type="text" readonly value="https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php" onclick="this.select()">
+    <p class="hint">Eventos: <strong>Aprovado</strong> (obrigatório). Cole o token do webhook em <code>comunidade/data/config.php</code> → <code>perfectpay_webhook_token</code>. SMTP (noreply@) precisa estar configurado acima.</p>
+  </div>
+
+  <div class="card">
     <h2>Alterar senha do admin</h2>
     <form method="post" action="api.php">
       <input type="hidden" name="action" value="change_admin_password">

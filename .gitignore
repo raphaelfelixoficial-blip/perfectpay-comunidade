@@ -10,6 +10,8 @@ comunidade/data/allowed_emails.json
 comunidade/data/downloads.json
 comunidade/data/albuns-catalog.json
 comunidade/data/site-status.json
+comunidade/data/perfectpay-sales.json
+comunidade/data/perfectpay-webhook.log
 public_html/data/site-status.json
 
 # Backup local ao sincronizar do servidor

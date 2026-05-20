@@ -26,4 +26,11 @@ return [
     'smtp_encryption' => 'tls',
     'smtp_username' => 'noreply@agenciajob.com',
     'smtp_password' => '',
+
+    // Perfect Pay — webhook (Ferramentas > Webhook - Vendas)
+    // Cole o token exibido ao criar o webhook no painel Perfect Pay
+    'perfectpay_webhook_token' => '',
+    // Opcional: códigos de produto/plano separados por vírgula (vazio = todos)
+    'perfectpay_product_codes' => '',
+    'perfectpay_thankyou_url' => 'https://perfectpay.agenciajob.com/obrigado.php',
 ];
