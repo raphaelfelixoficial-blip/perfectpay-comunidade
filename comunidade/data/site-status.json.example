@@ -1,7 +1,8 @@
 {
-    "home_layout": "simple",
+    "home_layout": "full",
     "home_title": "Perfect Pay",
-    "home_message": "Encerramos as inscrições.\n\nParabéns a todos que garantiram o acesso à comunidade!",
-    "members_enabled": false,
+    "home_message": "Bem-vindo ao Perfect Pay.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
+    "home_video_url": "https://www.youtube.com/watch?v=yskrod-EXeQ",
+    "members_enabled": true,
     "updated_at": 0
 }

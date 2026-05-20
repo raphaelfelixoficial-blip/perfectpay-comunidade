@@ -1,3 +1,7 @@
+<?php
+$heroVideoEmbed = $S['home_video_embed'] ?? 'https://www.youtube.com/embed/yskrod-EXeQ';
+$heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -243,7 +247,7 @@
     <div class="badge-hero"><i class="ti ti-users"></i> Comunidade Exclusiva FIFA World Cup 2026</div>
     <h1>COMUNIDADE <span class="gold">PERFECT PAY</span><br><span class="green">VIP</span> <span class="blue">2026</span></h1>
     <div class="hero-subtitle">SAIBA TUDO SOBRE AS FIGURINHAS</div><div class="hero-video">
-      <iframe src="https://www.youtube.com/embed/yskrod-EXeQ?si=0YfGEEez-4B18HJu" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+      <iframe src="<?= $heroVideoEmbedSafe ?>" title="Vídeo Comunidade Perfect Pay" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
     </div>
     <p class="hero-desc">Entre na comunidade e obtenha acesso exclusivo à plataforma VIP. Mais de 1.000 figurinhas em PDF, Legend, holográficas, bastidores e atualizações que você não encontra em lugar nenhum.</p>
     <a href="https://pay.kirvano.com/6930dfdc-ce8b-4c12-894e-78c3cff9c3d5" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>

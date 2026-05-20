@@ -33,9 +33,34 @@ function site_status_defaults(): array
         'home_layout' => 'simple',
         'home_title' => 'Perfect Pay',
         'home_message' => "Bem-vindo ao Perfect Pay.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
+        'home_video_url' => 'https://www.youtube.com/watch?v=yskrod-EXeQ',
         'members_enabled' => true,
         'updated_at' => 0,
     ];
+}
+
+/** Converte link YouTube/Vimeo para URL de embed do iframe. */
+function site_status_video_to_embed(string $url): string
+{
+    $url = trim($url);
+    if ($url === '') {
+        return '';
+    }
+
+    if (preg_match('#youtube\.com/embed/([a-zA-Z0-9_-]{11})#', $url, $m)) {
+        return 'https://www.youtube.com/embed/' . $m[1];
+    }
+    if (preg_match('#(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/)([a-zA-Z0-9_-]{11})#', $url, $m)) {
+        return 'https://www.youtube.com/embed/' . $m[1];
+    }
+    if (preg_match('#player\.vimeo\.com/video/(\d+)#', $url, $m)) {
+        return 'https://player.vimeo.com/video/' . $m[1];
+    }
+    if (preg_match('#vimeo\.com/(\d+)#', $url, $m)) {
+        return 'https://player.vimeo.com/video/' . $m[1];
+    }
+
+    return '';
 }
 
 function site_status_valid_layout(string $layout): string
@@ -49,10 +74,13 @@ function site_status_normalize(array $raw): array
     $defaults = site_status_defaults();
 
     if (isset($raw['home_message']) || isset($raw['home_title']) || isset($raw['home_layout'])) {
+        $videoUrl = trim((string) ($raw['home_video_url'] ?? $defaults['home_video_url']));
+
         return [
             'home_layout' => site_status_valid_layout((string) ($raw['home_layout'] ?? $defaults['home_layout'])),
             'home_title' => trim((string) ($raw['home_title'] ?? $defaults['home_title'])) ?: $defaults['home_title'],
             'home_message' => trim((string) ($raw['home_message'] ?? $defaults['home_message'])),
+            'home_video_url' => $videoUrl !== '' ? $videoUrl : $defaults['home_video_url'],
             'members_enabled' => !isset($raw['members_enabled']) || (bool) $raw['members_enabled'],
             'updated_at' => (int) ($raw['updated_at'] ?? 0),
         ];
@@ -73,6 +101,7 @@ function site_status_normalize(array $raw): array
         'home_layout' => $mode === 'open' ? 'full' : 'simple',
         'home_title' => 'Perfect Pay',
         'home_message' => $message,
+        'home_video_url' => $defaults['home_video_url'],
         'members_enabled' => $mode === 'open',
         'updated_at' => (int) ($raw['updated_at'] ?? 0),
     ];
@@ -102,11 +131,19 @@ function site_status_view(): array
         static fn (string $p) => $p !== ''
     ));
 
+    $videoUrl = (string) ($raw['home_video_url'] ?? site_status_defaults()['home_video_url']);
+    $videoEmbed = site_status_video_to_embed($videoUrl);
+    if ($videoEmbed === '') {
+        $videoEmbed = site_status_video_to_embed(site_status_defaults()['home_video_url']);
+    }
+
     return [
         'home_layout' => site_status_valid_layout((string) $raw['home_layout']),
         'home_title' => $raw['home_title'],
         'home_message' => $raw['home_message'],
         'home_paragraphs' => $paragraphs !== [] ? $paragraphs : [site_status_defaults()['home_message']],
+        'home_video_url' => $videoUrl,
+        'home_video_embed' => $videoEmbed,
         'members_enabled' => (bool) $raw['members_enabled'],
         'updated_at' => (int) ($raw['updated_at'] ?? 0),
     ];
@@ -123,22 +160,35 @@ function members_area_enabled(): bool
 }
 
 /** @return array{ok:bool,error?:string} */
-function site_status_save(string $homeLayout, string $homeTitle, string $homeMessage, bool $membersEnabled): array
-{
+function site_status_save(
+    string $homeLayout,
+    string $homeTitle,
+    string $homeMessage,
+    bool $membersEnabled,
+    string $homeVideoUrl = ''
+): array {
     $homeLayout = site_status_valid_layout($homeLayout);
     $homeTitle = trim($homeTitle);
     $homeMessage = trim($homeMessage);
+    $homeVideoUrl = trim($homeVideoUrl);
     if ($homeTitle === '') {
         return ['ok' => false, 'error' => 'Informe um título para a página.'];
     }
     if ($homeLayout === 'simple' && $homeMessage === '') {
         return ['ok' => false, 'error' => 'Informe a mensagem da home simples.'];
     }
+    if ($homeLayout === 'full' && $homeVideoUrl !== '' && site_status_video_to_embed($homeVideoUrl) === '') {
+        return ['ok' => false, 'error' => 'Link de vídeo inválido. Use YouTube ou Vimeo (ex.: https://www.youtube.com/watch?v=...)'];
+    }
+    if ($homeVideoUrl === '') {
+        $homeVideoUrl = site_status_defaults()['home_video_url'];
+    }
 
     $payload = json_encode([
         'home_layout' => $homeLayout,
         'home_title' => $homeTitle,
         'home_message' => $homeMessage,
+        'home_video_url' => $homeVideoUrl,
         'members_enabled' => $membersEnabled,
         'updated_at' => time(),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

@@ -30,7 +30,8 @@ if ($action === 'save_site_status') {
     $homeTitle = (string) ($_POST['home_title'] ?? '');
     $homeMessage = (string) ($_POST['home_message'] ?? '');
     $membersEnabled = isset($_POST['members_enabled']);
-    $result = site_status_save($homeLayout, $homeTitle, $homeMessage, $membersEnabled);
+    $homeVideoUrl = (string) ($_POST['home_video_url'] ?? '');
+    $result = site_status_save($homeLayout, $homeTitle, $homeMessage, $membersEnabled, $homeVideoUrl);
     if ($result['ok']) {
         $layoutLabel = $homeLayout === 'full' ? 'Landing completa' : 'Home simples';
         redirect_flash($layoutLabel . ' ativa.' . ($membersEnabled ? '' : ' Área de membros desativada.'));

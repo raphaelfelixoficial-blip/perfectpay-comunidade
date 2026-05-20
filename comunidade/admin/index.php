@@ -87,6 +87,9 @@ unset($_SESSION['flash']);
       <input type="text" id="home_title" name="home_title" value="<?= htmlspecialchars($siteStatusRaw['home_title'], ENT_QUOTES, 'UTF-8') ?>" required>
       <label for="home_message">Mensagem</label>
       <textarea id="home_message" name="home_message" rows="8" placeholder="Ex.: Encerramos as inscrições.&#10;&#10;Parabéns a quem garantiu o acesso!"><?= htmlspecialchars($siteStatusRaw['home_message'], ENT_QUOTES, 'UTF-8') ?></textarea>
+      <label for="home_video_url">Vídeo da home (landing completa)</label>
+      <input type="url" id="home_video_url" name="home_video_url" value="<?= htmlspecialchars((string)($siteStatusRaw['home_video_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="https://www.youtube.com/watch?v=... ou link do Vimeo">
+      <p class="hint">Cole o link do YouTube ou Vimeo. Só aparece quando o tipo de página for <strong>Landing completa</strong>.</p>
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="checkbox" name="members_enabled" value="1" <?= $siteStatusRaw['members_enabled'] ? 'checked' : '' ?> style="width:auto;margin:0">
         Manter área de membros ativa (comunidade)
