@@ -131,10 +131,10 @@ if ($action === 'remove') {
 if ($action === 'save_smtp') {
     $smtpPass = (string) ($_POST['smtp_password'] ?? '');
     if ($smtpPass === '') {
-        redirect_flash('Informe a senha SMTP da conta noreply@agenciajob.com (Hostinger).');
+        redirect_flash('Informe a senha SMTP da caixa noreply@agenciajob.com (cPanel do servidor).');
     }
     if (update_smtp_password($smtpPass)) {
-        redirect_flash('SMTP Hostinger configurado. Use "Enviar e-mail de teste" para confirmar.');
+        redirect_flash('SMTP do servidor configurado. Use "Enviar e-mail de teste" para confirmar.');
     }
     redirect_flash('Não foi possível salvar a senha SMTP.');
 }
@@ -145,7 +145,7 @@ if ($action === 'test_email') {
         redirect_flash('E-mail de teste inválido.');
     }
     if (!smtp_is_configured()) {
-        redirect_flash('Configure a senha SMTP da Hostinger antes de testar.');
+        redirect_flash('Configure a senha SMTP da caixa noreply@ antes de testar.');
     }
     $result = send_member_credentials_email($testTo, 'Teste Perfect Pay', 'senha-teste-123');
     if ($result['ok']) {

@@ -116,7 +116,7 @@ unset($_SESSION['flash']);
         <input type="checkbox" name="send_email" value="1" checked style="width:auto;margin:0">
         Enviar e-mail automático com link de login, e-mail e senha
       </label>
-      <p class="hint">E-mails enviados de noreply@agenciajob.com (alias da conta parceria)</p>
+      <p class="hint">E-mails enviados de noreply@agenciajob.com · respostas para suporte@agenciajob.com</p>
       <button type="submit" class="btn">ADICIONAR E-MAIL</button>
     </form>
   </div>
@@ -163,17 +163,17 @@ unset($_SESSION['flash']);
   </div>
 
   <div class="card">
-    <h2>E-mail Hostinger (SMTP)</h2>
+    <h2>E-mail do servidor (SMTP)</h2>
     <?php if (smtp_is_configured()): ?>
-      <p class="hint" style="color:#009739;margin-bottom:1rem">SMTP configurado — envio como noreply@agenciajob.com</p>
+      <p class="hint" style="color:#009739;margin-bottom:1rem">SMTP configurado — envio como noreply@agenciajob.com (servidor)</p>
     <?php else: ?>
-      <p class="hint" style="color:#dc3545;margin-bottom:1rem">SMTP não configurado — salve a senha da Hostinger para os e-mails chegarem.</p>
+      <p class="hint" style="color:#dc3545;margin-bottom:1rem">SMTP não configurado — salve a senha da caixa noreply@agenciajob.com (cPanel).</p>
     <?php endif; ?>
     <form method="post" action="api.php">
       <input type="hidden" name="action" value="save_smtp">
-      <label for="smtp_password">Senha SMTP (conta noreply@agenciajob.com na Hostinger)</label>
-      <input type="password" id="smtp_password" name="smtp_password" required placeholder="Senha da conta principal">
-      <p class="hint">Alias noreply@agenciajob.com — login SMTP com parceria@ + senha da caixa principal</p>
+      <label for="smtp_password">Senha SMTP (caixa noreply@agenciajob.com no cPanel)</label>
+      <input type="password" id="smtp_password" name="smtp_password" required placeholder="Senha do e-mail no servidor">
+      <p class="hint">Login: noreply@agenciajob.com · host localhost:587 (TLS) · admin do painel: suporte@agenciajob.com</p>
       <button type="submit" class="btn">SALVAR SENHA SMTP</button>
     </form>
     <form method="post" action="api.php" style="margin-top:1rem">

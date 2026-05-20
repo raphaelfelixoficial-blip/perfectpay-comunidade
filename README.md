@@ -14,7 +14,11 @@ Cópia adaptada do [swatec-site](https://github.com/raphaelfelixoficial-blip/swa
 
 ## E-mail
 
-Envio configurado para `noreply@agenciajob.com` (ajuste SMTP em `comunidade/data/config.php` no servidor).
+- **Admin (login painel):** `suporte@agenciajob.com`
+- **Envio automático:** `noreply@agenciajob.com` (caixa no servidor cPanel — não Hostinger)
+- **Respostas:** `suporte@agenciajob.com`
+
+Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/data/config.php`.
 
 ## Deploy
 

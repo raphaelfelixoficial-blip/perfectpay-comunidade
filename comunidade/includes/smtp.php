@@ -11,9 +11,9 @@ function smtp_send(
     string $fromName,
     string $replyTo = ''
 ): array {
-    $host = (string) ($cfg['smtp_host'] ?? 'smtp.hostinger.com');
-    $port = (int) ($cfg['smtp_port'] ?? 465);
-    $encryption = strtolower((string) ($cfg['smtp_encryption'] ?? 'ssl'));
+    $host = (string) ($cfg['smtp_host'] ?? 'localhost');
+    $port = (int) ($cfg['smtp_port'] ?? 587);
+    $encryption = strtolower((string) ($cfg['smtp_encryption'] ?? 'tls'));
     $user = (string) ($cfg['smtp_username'] ?? $fromEmail);
     $pass = (string) ($cfg['smtp_password'] ?? '');
 

@@ -13,7 +13,7 @@ function send_password_reset_email(string $email, string $name, string $password
     }
 
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'noreply@agenciajob.com');
-    $replyTo = (string) ($cfg['mail_reply_to'] ?? 'noreply@agenciajob.com');
+    $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
     $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Perfect Pay');
     $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
@@ -128,7 +128,7 @@ function send_member_credentials_email(string $email, string $name, string $pass
     }
 
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'noreply@agenciajob.com');
-    $replyTo = (string) ($cfg['mail_reply_to'] ?? 'noreply@agenciajob.com');
+    $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
     $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Perfect Pay');
     $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
@@ -168,10 +168,10 @@ function send_member_credentials_email(string $email, string $name, string $pass
 
     if (!$sent) {
         mail_log("mail() falhou para {$email}");
-        return ['ok' => false, 'error' => 'Configure a senha SMTP da Hostinger no painel admin (E-mail → Configurar SMTP).'];
+        return ['ok' => false, 'error' => 'Configure a senha SMTP da caixa noreply@agenciajob.com no painel admin.'];
     }
 
-    mail_log("mail() aceito para {$email} (pode não chegar sem SMTP Hostinger)");
+    mail_log("mail() aceito para {$email} (sem autenticação SMTP — prefira salvar senha no admin)");
     return ['ok' => true, 'error' => ''];
 }
 
@@ -321,11 +321,11 @@ function update_smtp_password(string $password): bool
     }
     $cfg = require $path;
     $cfg['smtp_password'] = $password;
-    $cfg['smtp_host'] = $cfg['smtp_host'] ?? 'smtp.hostinger.com';
-    $cfg['smtp_port'] = $cfg['smtp_port'] ?? 465;
-    $cfg['smtp_encryption'] = $cfg['smtp_encryption'] ?? 'ssl';
+    $cfg['smtp_host'] = $cfg['smtp_host'] ?? 'localhost';
+    $cfg['smtp_port'] = $cfg['smtp_port'] ?? 587;
+    $cfg['smtp_encryption'] = $cfg['smtp_encryption'] ?? 'tls';
     $cfg['mail_from_email'] = $cfg['mail_from_email'] ?? 'noreply@agenciajob.com';
-    $cfg['mail_reply_to'] = $cfg['mail_reply_to'] ?? 'noreply@agenciajob.com';
+    $cfg['mail_reply_to'] = $cfg['mail_reply_to'] ?? 'suporte@agenciajob.com';
     $cfg['smtp_username'] = $cfg['smtp_username'] ?? 'noreply@agenciajob.com';
     $export = "<?php\nreturn " . var_export($cfg, true) . ";\n";
     return file_put_contents($path, $export, LOCK_EX) !== false;
