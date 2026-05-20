@@ -31,10 +31,12 @@ if ($action === 'save_site_status') {
     $homeMessage = (string) ($_POST['home_message'] ?? '');
     $membersEnabled = isset($_POST['members_enabled']);
     $homeVideoUrl = (string) ($_POST['home_video_url'] ?? '');
-    $result = site_status_save($homeLayout, $homeTitle, $homeMessage, $membersEnabled, $homeVideoUrl);
+    $offer = site_status_offer_from_post($_POST);
+    $result = site_status_save($homeLayout, $homeTitle, $homeMessage, $membersEnabled, $homeVideoUrl, $offer);
     if ($result['ok']) {
         $layoutLabel = $homeLayout === 'full' ? 'Landing completa' : 'Home simples';
-        redirect_flash($layoutLabel . ' ativa.' . ($membersEnabled ? '' : ' Área de membros desativada.'));
+        $priceLabel = site_format_price_brl((float) $offer['checkout_price']);
+        redirect_flash($layoutLabel . ' ativa. Preço do checkout: R$ ' . $priceLabel . ($membersEnabled ? '' : ' Área de membros desativada.'));
     }
     redirect_flash((string) ($result['error'] ?? 'Não foi possível salvar.'));
 }
@@ -166,19 +168,23 @@ if ($action === 'test_email') {
         redirect_flash('E-mail de teste inválido.');
     }
     if (!smtp_is_configured()) {
-        redirect_flash('Configure a senha SMTP da caixa suporte@ antes de testar.');
+        redirect_flash('Configure a senha SMTP da caixa suporte@ no cPanel e salve no admin antes de testar.');
+    }
+    $auth = smtp_test_auth();
+    if (!$auth['ok']) {
+        redirect_flash('SMTP não autenticou: ' . ($auth['error'] ?? 'erro') . ' Corrija a senha e tente de novo.');
     }
     $result = send_member_credentials_email($testTo, 'Teste Figurinhas da Copa', 'senha-teste-123');
     if ($result['ok']) {
-        redirect_flash("E-mail de teste enviado para {$testTo}. Verifique a caixa de entrada e o spam.");
+        redirect_flash("E-mail de teste enviado por SMTP para {$testTo}. Verifique entrada e spam.");
     }
-    redirect_flash('Falha no teste: ' . $result['error']);
+    redirect_flash('Falha no envio: ' . ($result['error'] ?? 'erro desconhecido'));
 }
 
 if ($action === 'save_asaas') {
     $apiKey = (string) ($_POST['asaas_api_key'] ?? '');
     $webhookToken = (string) ($_POST['asaas_webhook_token'] ?? '');
-    $value = (float) str_replace(',', '.', (string) ($_POST['asaas_checkout_value'] ?? '97'));
+    $value = site_checkout_price();
     $environment = (string) ($_POST['asaas_environment'] ?? 'production');
     if ($apiKey === '' && !asaas_is_configured()) {
         redirect_flash('Informe a chave API do Asaas (Integrações → API).');
@@ -189,19 +195,59 @@ if ($action === 'save_asaas') {
     redirect_flash('Não foi possível salvar configuração Asaas.');
 }
 
+if ($action === 'reconcile_asaas') {
+    if (!asaas_is_configured()) {
+        redirect_flash('Configure a API Asaas antes de sincronizar pagamentos.');
+    }
+    $sendEmail = isset($_POST['send_email']) && $_POST['send_email'] === '1';
+    $result = asaas_reconcile_recent_payments(30, $sendEmail);
+    $msg = "Sincronização: {$result['processed']} membro(s) cadastrado(s), {$result['skipped']} já processado(s).";
+    if (!$sendEmail) {
+        $msg .= ' Nenhum e-mail foi enviado (padrão).';
+    }
+    if ($result['details'] !== []) {
+        $msg .= ' ' . implode(' | ', array_slice($result['details'], 0, 5));
+    }
+    if ($result['errors'] !== []) {
+        $msg .= ' Avisos: ' . implode(' | ', array_slice($result['errors'], 0, 3));
+    }
+    redirect_flash($msg);
+}
+
+if ($action === 'register_asaas_webhook') {
+    if (!asaas_is_configured()) {
+        redirect_flash('Configure a API Asaas antes de registrar o webhook.');
+    }
+    $token = trim((string) (app_config()['asaas_webhook_token'] ?? ''));
+    if ($token === '') {
+        redirect_flash('Defina o token do webhook no campo acima e salve antes de registrar no Asaas.');
+    }
+    $result = asaas_register_webhook_in_panel();
+    redirect_flash($result['message']);
+}
+
 if ($action === 'simulate_asaas_webhook') {
     $testEmail = normalize_email((string) ($_POST['test_email'] ?? ''));
     if ($testEmail === '' || !filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
         redirect_flash('Informe um e-mail válido para simular o pagamento.');
     }
     $name = trim((string) ($_POST['test_name'] ?? ''));
+    $sendEmail = isset($_POST['send_email']) && $_POST['send_email'] === '1';
     $payload = asaas_build_test_payload_with_email($testEmail, $name);
     $cfg = app_config();
     $token = trim((string) ($cfg['asaas_webhook_token'] ?? ''));
     if ($token !== '') {
         $_SERVER['HTTP_ASAAS_ACCESS_TOKEN'] = $token;
     }
-    $result = asaas_handle_webhook($payload);
+    if (!$sendEmail) {
+        $result = asaas_provision_from_payment_entity(
+            ['id' => 'chk_SIM_' . date('YmdHis'), 'customerData' => ['email' => $testEmail, 'name' => $name !== '' ? $name : 'Teste']],
+            'simulate',
+            false
+        );
+    } else {
+        $result = asaas_handle_webhook($payload);
+    }
     if ($result['ok']) {
         redirect_flash('Simulação Asaas OK: ' . $result['message'] . " ({$testEmail}).");
     }

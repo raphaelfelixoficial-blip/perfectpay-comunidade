@@ -4,5 +4,11 @@
     "home_message": "Bem-vindo à Comunidade Figurinhas da Copa.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
     "home_video_url": "https://www.youtube.com/watch?v=yskrod-EXeQ",
     "members_enabled": true,
+    "checkout_price": 97,
+    "checkout_compare_price": 197,
+    "promo_banner_enabled": true,
+    "promo_banner_title": "Identifique figurinhas falsas com segurança",
+    "promo_banner_text": "Bastidores, dicas e PDFs exclusivos da Copa 2026 — tudo na comunidade VIP.",
+    "promo_banner_image": "/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp",
     "updated_at": 0
 }

@@ -54,7 +54,47 @@ function asaas_mark_payment_processed(string $paymentId, string $email): void
 function asaas_log(string $message): void
 {
     $line = date('Y-m-d H:i:s') . ' ' . $message . PHP_EOL;
-    @file_put_contents(dirname(__DIR__) . '/data/asaas-webhook.log', $line, FILE_APPEND | LOCK_EX);
+    $path = dirname(__DIR__) . '/data/asaas-webhook.log';
+    $written = @file_put_contents($path, $line, FILE_APPEND | LOCK_EX);
+    if ($written === false) {
+        error_log('[asaas-webhook] ' . trim($message));
+    }
+}
+
+/** Token enviado pelo Asaas no header asaas-access-token (várias formas no Apache/PHP). */
+function asaas_received_webhook_token(): string
+{
+    $candidates = [
+        (string) ($_SERVER['HTTP_ASAAS_ACCESS_TOKEN'] ?? ''),
+    ];
+
+    if (function_exists('getallheaders')) {
+        $headers = getallheaders();
+        if (is_array($headers)) {
+            foreach ($headers as $name => $value) {
+                if (strtolower((string) $name) === 'asaas-access-token') {
+                    $candidates[] = (string) $value;
+                    break;
+                }
+            }
+        }
+    }
+
+    $auth = trim((string) ($_SERVER['HTTP_AUTHORIZATION'] ?? ''));
+    if ($auth !== '' && stripos($auth, 'bearer ') === 0) {
+        $candidates[] = trim(substr($auth, 7));
+    }
+
+    $candidates[] = (string) ($_GET['asaas-access-token'] ?? '');
+
+    foreach ($candidates as $token) {
+        $token = trim($token);
+        if ($token !== '') {
+            return $token;
+        }
+    }
+
+    return '';
 }
 
 function asaas_is_configured(): bool
@@ -163,8 +203,11 @@ function asaas_create_checkout_session(string $customerEmail = '', string $custo
         return ['ok' => false, 'error' => 'Integração Asaas não configurada.'];
     }
 
+    if (!function_exists('site_checkout_price')) {
+        require_once __DIR__ . '/site-status.php';
+    }
     $cfg = app_config();
-    $value = (float) ($cfg['asaas_checkout_value'] ?? 97);
+    $value = site_checkout_price();
     if ($value <= 0) {
         return ['ok' => false, 'error' => 'Valor do checkout inválido em config.php.'];
     }
@@ -241,6 +284,75 @@ function asaas_create_checkout_session(string $customerEmail = '', string $custo
     return ['ok' => true, 'link' => $link, 'checkout_id' => $checkoutId];
 }
 
+/** @return array<string, mixed>|null */
+function asaas_fetch_payment_by_id(string $paymentId): ?array
+{
+    $paymentId = trim($paymentId);
+    if ($paymentId === '') {
+        return null;
+    }
+
+    $response = asaas_api_request('GET', '/payments/' . rawurlencode($paymentId));
+    if (!$response['ok']) {
+        asaas_log("Falha buscar pagamento {$paymentId}: " . $response['error']);
+        return null;
+    }
+
+    return $response['body'];
+}
+
+/** @return array<string, mixed>|null */
+function asaas_fetch_checkout_by_id(string $checkoutId): ?array
+{
+    $checkoutId = trim($checkoutId);
+    if ($checkoutId === '') {
+        return null;
+    }
+
+    $response = asaas_api_request('GET', '/checkouts/' . rawurlencode($checkoutId));
+    if (!$response['ok']) {
+        asaas_log("Falha buscar checkout {$checkoutId}: " . $response['error']);
+        return null;
+    }
+
+    return $response['body'];
+}
+
+/** @param array<string, mixed> $entity */
+function asaas_customer_from_entity(array $entity): array
+{
+    $customerData = $entity['customerData'] ?? null;
+    if (is_array($customerData)) {
+        $email = normalize_email((string) ($customerData['email'] ?? ''));
+        if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'email' => $email,
+                'name' => trim((string) ($customerData['name'] ?? '')),
+            ];
+        }
+    }
+
+    foreach (['customerEmail', 'payerEmail', 'email'] as $field) {
+        $email = normalize_email((string) ($entity[$field] ?? ''));
+        if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'email' => $email,
+                'name' => trim((string) ($entity['payerName'] ?? $entity['name'] ?? '')),
+            ];
+        }
+    }
+
+    $customerId = trim((string) ($entity['customer'] ?? ''));
+    if ($customerId !== '') {
+        $fetched = asaas_fetch_customer_by_id($customerId);
+        if ($fetched !== null) {
+            return $fetched;
+        }
+    }
+
+    return ['email' => '', 'name' => ''];
+}
+
 /** @return array{email:string,name:string}|null */
 function asaas_fetch_customer_by_id(string $customerId): ?array
 {
@@ -275,10 +387,7 @@ function asaas_webhook_token_valid(): bool
         return true;
     }
 
-    $received = trim((string) ($_SERVER['HTTP_ASAAS_ACCESS_TOKEN'] ?? ''));
-    if ($received === '') {
-        $received = trim((string) ($_GET['asaas-access-token'] ?? ''));
-    }
+    $received = asaas_received_webhook_token();
 
     return $received !== '' && hash_equals($expected, $received);
 }
@@ -324,22 +433,16 @@ function asaas_extract_customer_from_payload(array $payload): array
             return ['email' => '', 'name' => ''];
         }
 
-        $customerData = $checkout['customerData'] ?? null;
-        if (is_array($customerData)) {
-            $email = normalize_email((string) ($customerData['email'] ?? ''));
-            if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return [
-                    'email' => $email,
-                    'name' => trim((string) ($customerData['name'] ?? '')),
-                ];
-            }
+        $customer = asaas_customer_from_entity($checkout);
+        if ($customer['email'] !== '') {
+            return $customer;
         }
 
-        $customerId = trim((string) ($checkout['customer'] ?? ''));
-        if ($customerId !== '') {
-            $fetched = asaas_fetch_customer_by_id($customerId);
-            if ($fetched !== null) {
-                return $fetched;
+        $checkoutId = trim((string) ($checkout['id'] ?? ''));
+        if ($checkoutId !== '') {
+            $fetchedCheckout = asaas_fetch_checkout_by_id($checkoutId);
+            if (is_array($fetchedCheckout)) {
+                return asaas_customer_from_entity($fetchedCheckout);
             }
         }
 
@@ -351,15 +454,244 @@ function asaas_extract_customer_from_payload(array $payload): array
         return ['email' => '', 'name' => ''];
     }
 
-    $customerId = trim((string) ($payment['customer'] ?? ''));
-    if ($customerId !== '') {
-        $fetched = asaas_fetch_customer_by_id($customerId);
-        if ($fetched !== null) {
-            return $fetched;
+    $customer = asaas_customer_from_entity($payment);
+    if ($customer['email'] !== '') {
+        return $customer;
+    }
+
+    $paymentId = trim((string) ($payment['id'] ?? ''));
+    if ($paymentId !== '') {
+        $fetchedPayment = asaas_fetch_payment_by_id($paymentId);
+        if (is_array($fetchedPayment)) {
+            $customer = asaas_customer_from_entity($fetchedPayment);
+            if ($customer['email'] !== '') {
+                return $customer;
+            }
+
+            $checkoutId = trim((string) ($fetchedPayment['checkoutSession'] ?? $fetchedPayment['checkout'] ?? ''));
+            if ($checkoutId !== '') {
+                $fetchedCheckout = asaas_fetch_checkout_by_id($checkoutId);
+                if (is_array($fetchedCheckout)) {
+                    return asaas_customer_from_entity($fetchedCheckout);
+                }
+            }
         }
     }
 
     return ['email' => '', 'name' => ''];
+}
+
+/**
+ * @param array<string, mixed> $payment
+ * @return array{ok:bool,http_status:int,message:string,email?:string}
+ */
+function asaas_provision_from_payment_entity(array $payment, string $source = 'api', bool $sendEmail = true): array
+{
+    $paymentId = trim((string) ($payment['id'] ?? ''));
+    $customer = asaas_customer_from_entity($payment);
+    $email = $customer['email'];
+    $name = $customer['name'];
+
+    if ($email === '' && $paymentId !== '') {
+        $fetched = asaas_fetch_payment_by_id($paymentId);
+        if (is_array($fetched)) {
+            $payment = $fetched;
+            $customer = asaas_customer_from_entity($payment);
+            $email = $customer['email'];
+            $name = $customer['name'];
+            if ($email === '') {
+                $checkoutId = trim((string) ($payment['checkoutSession'] ?? $payment['checkout'] ?? ''));
+                if ($checkoutId !== '') {
+                    $checkout = asaas_fetch_checkout_by_id($checkoutId);
+                    if (is_array($checkout)) {
+                        $customer = asaas_customer_from_entity($checkout);
+                        $email = $customer['email'];
+                        $name = $customer['name'];
+                    }
+                }
+            }
+        }
+    }
+
+    if ($email === '') {
+        return ['ok' => false, 'http_status' => 422, 'message' => 'E-mail do comprador ausente', 'email' => ''];
+    }
+
+    if ($paymentId !== '' && asaas_payment_already_processed($paymentId)) {
+        return ['ok' => true, 'http_status' => 200, 'message' => 'Pagamento já processado', 'email' => $email];
+    }
+
+    $result = provision_member_access($email, $name, $sendEmail);
+    if (!$result['ok']) {
+        asaas_log("[{$source}] Falha provisionar {$email}: " . ($result['error'] ?? ''));
+        return ['ok' => false, 'http_status' => 500, 'message' => $result['error'] ?? 'Erro ao cadastrar membro', 'email' => $email];
+    }
+
+    if ($paymentId !== '') {
+        asaas_mark_payment_processed($paymentId, $email);
+    }
+
+    $action = ($result['created'] ?? false) ? 'criado' : 'atualizado';
+    if ($sendEmail) {
+        $mail = ($result['email_sent'] ?? false) ? 'e-mail enviado' : 'e-mail NÃO enviado: ' . ($result['error'] ?? '');
+    } else {
+        $mail = 'sem e-mail (sincronização manual)';
+    }
+    asaas_log("[{$source}] OK {$paymentId}: {$email} {$action}, {$mail}");
+
+    $message = "Membro {$action}";
+    if ($sendEmail) {
+        $message .= '; ' . (($result['email_sent'] ?? false) ? 'e-mail enviado' : ($result['error'] ?? 'e-mail não enviado'));
+    } else {
+        $message .= '; cadastrado sem enviar e-mail';
+    }
+
+    return [
+        'ok' => true,
+        'http_status' => 200,
+        'message' => $message,
+        'email' => $email,
+    ];
+}
+
+/**
+ * Busca cobranças confirmadas/recebidas no Asaas e provisiona as que ainda não foram processadas.
+ *
+ * @return array{ok:bool,processed:int,skipped:int,errors:list<string>,details:list<string>}
+ */
+function asaas_reconcile_recent_payments(int $days = 30, bool $sendEmail = false): array
+{
+    if (!asaas_is_configured()) {
+        return ['ok' => false, 'processed' => 0, 'skipped' => 0, 'errors' => ['Asaas não configurado.'], 'details' => []];
+    }
+
+    $days = max(1, min(90, $days));
+    $since = date('Y-m-d', strtotime('-' . $days . ' days'));
+    $statuses = ['CONFIRMED', 'RECEIVED'];
+    $processed = 0;
+    $skipped = 0;
+    $errors = [];
+    $details = [];
+
+    foreach ($statuses as $status) {
+        $offset = 0;
+        do {
+            $query = http_build_query([
+                'status' => $status,
+                'limit' => 50,
+                'offset' => $offset,
+                'dateCreated[ge]' => $since,
+            ]);
+            $response = asaas_api_request('GET', '/payments?' . $query);
+            if (!$response['ok']) {
+                $errors[] = "Listar {$status}: " . $response['error'];
+                break;
+            }
+
+            $items = $response['body']['data'] ?? [];
+            if (!is_array($items) || $items === []) {
+                break;
+            }
+
+            foreach ($items as $payment) {
+                if (!is_array($payment)) {
+                    continue;
+                }
+                $paymentId = trim((string) ($payment['id'] ?? ''));
+                if ($paymentId !== '' && asaas_payment_already_processed($paymentId)) {
+                    $skipped++;
+                    continue;
+                }
+
+                $result = asaas_provision_from_payment_entity($payment, 'reconcile', $sendEmail);
+                if ($result['ok'] && ($result['message'] ?? '') !== 'Pagamento já processado') {
+                    $processed++;
+                    $details[] = ($result['email'] ?? '') . ': ' . $result['message'];
+                } elseif (!$result['ok']) {
+                    $errors[] = ($paymentId !== '' ? $paymentId : 'pagamento') . ': ' . $result['message'];
+                } else {
+                    $skipped++;
+                }
+            }
+
+            $offset += count($items);
+            $hasMore = (bool) ($response['body']['hasMore'] ?? false);
+        } while ($hasMore && $offset < 200);
+    }
+
+    asaas_log("Reconciliação {$days}d: processados={$processed} ignorados={$skipped} erros=" . count($errors));
+
+    return [
+        'ok' => $errors === [] || $processed > 0,
+        'processed' => $processed,
+        'skipped' => $skipped,
+        'errors' => $errors,
+        'details' => $details,
+    ];
+}
+
+/** @return array{ok:bool,message:string} */
+function asaas_register_webhook_in_panel(): array
+{
+    if (!asaas_is_configured()) {
+        return ['ok' => false, 'message' => 'Asaas não configurado.'];
+    }
+
+    $cfg = app_config();
+    $name = trim((string) ($cfg['asaas_webhook_name'] ?? 'asaas-figu'));
+    $token = trim((string) ($cfg['asaas_webhook_token'] ?? ''));
+    $url = asaas_webhook_url();
+    $events = [
+        'CHECKOUT_PAID',
+        'PAYMENT_CONFIRMED',
+        'PAYMENT_RECEIVED',
+    ];
+
+    $list = asaas_api_request('GET', '/webhooks?limit=20');
+    if ($list['ok'] && is_array($list['body']['data'] ?? null)) {
+        foreach ($list['body']['data'] as $hook) {
+            if (!is_array($hook)) {
+                continue;
+            }
+            $hookUrl = rtrim((string) ($hook['url'] ?? ''), '/');
+            if ($hookUrl === rtrim($url, '/')) {
+                $hookId = trim((string) ($hook['id'] ?? ''));
+                if ($hookId !== '') {
+                    $update = asaas_api_request('PUT', '/webhooks/' . rawurlencode($hookId), [
+                        'name' => $name,
+                        'url' => $url,
+                        'enabled' => true,
+                        'interrupted' => false,
+                        'authToken' => $token !== '' ? $token : null,
+                        'events' => $events,
+                        'sendType' => 'SEQUENTIALLY',
+                    ]);
+                    if ($update['ok']) {
+                        return ['ok' => true, 'message' => 'Webhook existente reativado e atualizado no Asaas.'];
+                    }
+                }
+            }
+        }
+    }
+
+    $body = [
+        'name' => $name,
+        'url' => $url,
+        'enabled' => true,
+        'interrupted' => false,
+        'events' => $events,
+        'sendType' => 'SEQUENTIALLY',
+    ];
+    if ($token !== '') {
+        $body['authToken'] = $token;
+    }
+
+    $create = asaas_api_request('POST', '/webhooks', $body);
+    if ($create['ok']) {
+        return ['ok' => true, 'message' => 'Webhook criado no Asaas com URL e eventos corretos.'];
+    }
+
+    return ['ok' => false, 'message' => $create['error']];
 }
 
 /**
@@ -368,9 +700,13 @@ function asaas_extract_customer_from_payload(array $payload): array
  */
 function asaas_handle_webhook(array $payload): array
 {
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    $eventPreview = strtoupper(trim((string) ($payload['event'] ?? '')));
+    asaas_log("POST recebido IP={$ip} evento={$eventPreview}");
+
     if (!asaas_webhook_token_valid()) {
-        $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
-        asaas_log("Token webhook inválido (IP {$ip}).");
+        $receivedLen = strlen(asaas_received_webhook_token());
+        asaas_log("Token webhook inválido (IP {$ip}, token recebido len={$receivedLen}).");
         return ['ok' => false, 'http_status' => 403, 'message' => 'Forbidden'];
     }
 
@@ -391,8 +727,28 @@ function asaas_handle_webhook(array $payload): array
         return ['ok' => false, 'http_status' => 422, 'message' => 'E-mail do comprador ausente'];
     }
 
+    if ($event === 'CHECKOUT_PAID') {
+        $checkout = $payload['checkout'] ?? [];
+        if (is_array($checkout)) {
+            $checkoutId = trim((string) ($checkout['id'] ?? ''));
+            if ($checkoutId !== '' && asaas_payment_already_processed($checkoutId)) {
+                return ['ok' => true, 'http_status' => 200, 'message' => 'Checkout já processado'];
+            }
+        }
+    }
+
     if ($paymentId !== '' && asaas_payment_already_processed($paymentId)) {
         return ['ok' => true, 'http_status' => 200, 'message' => 'Pagamento já processado'];
+    }
+
+    $paymentEntity = $payload['payment'] ?? null;
+    if (is_array($paymentEntity) && in_array($event, ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED'], true)) {
+        $provision = asaas_provision_from_payment_entity($paymentEntity, 'webhook');
+        return [
+            'ok' => $provision['ok'],
+            'http_status' => (int) $provision['http_status'],
+            'message' => $provision['message'],
+        ];
     }
 
     $result = provision_member_access($email, $name, true);

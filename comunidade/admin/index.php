@@ -68,6 +68,44 @@ unset($_SESSION['flash']);
       <label for="home_video_url">Vídeo da home (landing completa)</label>
       <input type="url" id="home_video_url" name="home_video_url" value="<?= htmlspecialchars((string)($siteStatusRaw['home_video_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="https://www.youtube.com/watch?v=... ou link do Vimeo">
       <p class="hint">Cole o link do YouTube ou Vimeo. Só aparece quando o tipo de página for <strong>Landing completa</strong>.</p>
+
+      <h3 style="margin:1.5rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Preço do checkout (Asaas)</h3>
+      <p class="hint" style="margin-top:0">Escolha o valor cobrado nos botões da landing e em <code>/checkout.php</code>.</p>
+      <?php
+      $currentPrice = (float) ($siteStatusRaw['checkout_price'] ?? 97);
+      $pricePresets = site_checkout_price_presets();
+      $priceIsCustom = !in_array($currentPrice, $pricePresets, true);
+      ?>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem">
+        <?php foreach ($pricePresets as $preset): ?>
+        <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #333;border-radius:6px;cursor:pointer;text-transform:none;font-size:13px;color:#ccc;font-weight:600;background:#0a0a0a">
+          <input type="radio" name="checkout_price_preset" value="<?= htmlspecialchars((string) $preset, ENT_QUOTES, 'UTF-8') ?>" <?= !$priceIsCustom && abs($currentPrice - $preset) < 0.01 ? 'checked' : '' ?> style="width:auto;margin:0">
+          R$ <?= htmlspecialchars(site_format_price_brl($preset), ENT_QUOTES, 'UTF-8') ?>
+        </label>
+        <?php endforeach; ?>
+        <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #333;border-radius:6px;cursor:pointer;text-transform:none;font-size:13px;color:#ccc;font-weight:600;background:#0a0a0a">
+          <input type="radio" name="checkout_price_preset" value="custom" <?= $priceIsCustom ? 'checked' : '' ?> style="width:auto;margin:0">
+          Outro
+        </label>
+      </div>
+      <label for="checkout_price_custom">Valor personalizado (R$)</label>
+      <input type="text" id="checkout_price_custom" name="checkout_price_custom" value="<?= htmlspecialchars(site_format_price_brl($currentPrice), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: 29,90">
+      <label for="checkout_compare_price">Preço “de” riscado (opcional)</label>
+      <input type="text" id="checkout_compare_price" name="checkout_compare_price" value="<?= htmlspecialchars(site_format_price_brl((float)($siteStatusRaw['checkout_compare_price'] ?? 0)), ENT_QUOTES, 'UTF-8') ?>" placeholder="Vazio = o dobro do preço atual">
+
+      <h3 style="margin:1.5rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Banner promocional (landing)</h3>
+      <p class="hint" style="margin-top:0">Faixa largura total, acima da seção de benefícios / identificação (fora da borda do conteúdo).</p>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
+        <input type="checkbox" name="promo_banner_enabled" value="1" <?= !empty($siteStatusRaw['promo_banner_enabled']) ? 'checked' : '' ?> style="width:auto;margin:0">
+        Exibir banner na landing completa
+      </label>
+      <label for="promo_banner_title">Título do banner</label>
+      <input type="text" id="promo_banner_title" name="promo_banner_title" value="<?= htmlspecialchars((string)($siteStatusRaw['promo_banner_title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+      <label for="promo_banner_text">Texto do banner</label>
+      <textarea id="promo_banner_text" name="promo_banner_text" rows="3"><?= htmlspecialchars((string)($siteStatusRaw['promo_banner_text'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
+      <label for="promo_banner_image">Imagem do banner (URL no site)</label>
+      <input type="text" id="promo_banner_image" name="promo_banner_image" value="<?= htmlspecialchars((string)($siteStatusRaw['promo_banner_image'] ?? '/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp'), ENT_QUOTES, 'UTF-8') ?>" placeholder="/caminho-da-imagem.webp">
+
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="checkbox" name="members_enabled" value="1" <?= $siteStatusRaw['members_enabled'] ? 'checked' : '' ?> style="width:auto;margin:0">
         Manter área de membros ativa (comunidade)
@@ -154,7 +192,8 @@ unset($_SESSION['flash']);
       <input type="hidden" name="action" value="save_smtp">
       <label for="smtp_password">Senha SMTP (caixa suporte@agenciajob.com no cPanel)</label>
       <input type="password" id="smtp_password" name="smtp_password" required placeholder="Senha do e-mail no servidor">
-      <p class="hint">Login: suporte@agenciajob.com · host mail.agenciajob.com:465 (SSL)</p>
+      <p class="hint">Login: suporte@agenciajob.com · host mail.agenciajob.com:465 (SSL). Use a senha do e-mail no cPanel (não a senha do painel do site).</p>
+      <p class="hint" style="color:#f0ad4e">Se o teste falhar com &quot;535 Incorrect authentication data&quot;, a senha SMTP está errada — salve a senha correta acima.</p>
       <button type="submit" class="btn">SALVAR SENHA SMTP</button>
     </form>
     <form method="post" action="api.php" style="margin-top:1rem">
@@ -181,10 +220,11 @@ unset($_SESSION['flash']);
       <p class="hint">Deixe em branco para manter a chave já salva no servidor.</p>
       <label for="asaas_webhook_token">Token do webhook (authToken no painel Asaas)</label>
       <input type="text" id="asaas_webhook_token" name="asaas_webhook_token" placeholder="Token que você define ao criar o webhook" value="<?= htmlspecialchars((string)(app_config()['asaas_webhook_token'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+      <p class="hint" style="margin-bottom:1rem">Preço da oferta: configure em <strong>Página inicial → Preço do checkout</strong> (acima).</p>
       <div class="row">
         <div>
-          <label for="asaas_checkout_value">Valor (R$)</label>
-          <input type="text" id="asaas_checkout_value" name="asaas_checkout_value" value="<?= htmlspecialchars((string)(app_config()['asaas_checkout_value'] ?? '97'), ENT_QUOTES, 'UTF-8') ?>" required>
+          <label>Preço ativo agora</label>
+          <input type="text" readonly value="R$ <?= htmlspecialchars(site_format_price_brl(site_checkout_price()), ENT_QUOTES, 'UTF-8') ?>">
         </div>
         <div>
           <label for="asaas_environment">Ambiente</label>
@@ -204,6 +244,25 @@ unset($_SESSION['flash']);
     <label style="margin-top:1rem">Página de obrigado (após pagamento)</label>
     <input type="text" readonly value="<?= htmlspecialchars(rtrim((string)(app_config()['asaas_thankyou_url'] ?? asaas_site_base_url() . '/obrigado.php'), '/'), ENT_QUOTES, 'UTF-8') ?>" onclick="this.select()">
     <p class="hint">Após pagamento aprovado: cadastra membro e envia e-mail automaticamente. Log: <code>comunidade/data/asaas-webhook.log</code> · E-mails: <code>mail.log</code></p>
+    <p class="hint" style="color:#f0ad4e">Se o pagamento foi confirmado no Asaas mas o membro não foi criado, o webhook provavelmente não chegou ao servidor. Use os botões abaixo.</p>
+    <div class="row" style="margin-top:0.75rem">
+      <div>
+        <form method="post" action="api.php">
+          <input type="hidden" name="action" value="register_asaas_webhook">
+          <button type="submit" class="btn">REGISTRAR/REATIVAR WEBHOOK NO ASAAS</button>
+        </form>
+      </div>
+      <div>
+        <form method="post" action="api.php">
+          <input type="hidden" name="action" value="reconcile_asaas">
+          <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#aaa">
+            <input type="checkbox" name="send_email" value="1" style="width:auto;margin:0">
+            Enviar e-mail ao sincronizar (desmarque — só cadastra)
+          </label>
+          <button type="submit" class="btn">SINCRONIZAR PAGAMENTOS (30 DIAS)</button>
+        </form>
+      </div>
+    </div>
     <form method="post" action="api.php" style="margin-top:1rem;padding-top:1rem;border-top:1px solid #2a2a2a">
       <input type="hidden" name="action" value="simulate_asaas_webhook">
       <label for="asaas_test_email">Simular pagamento confirmado</label>
@@ -215,6 +274,10 @@ unset($_SESSION['flash']);
           <input type="text" name="test_name" placeholder="Nome (opcional)">
         </div>
       </div>
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#aaa">
+        <input type="checkbox" name="send_email" value="1" style="width:auto;margin:0">
+        Enviar e-mail na simulação (marque só para testar SMTP)
+      </label>
       <button type="submit" class="btn">SIMULAR PAGAMENTO ASAAS</button>
     </form>
   </div>

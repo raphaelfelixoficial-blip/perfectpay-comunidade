@@ -13,6 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $raw = file_get_contents('php://input') ?: '';
+$ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+$len = strlen($raw);
+asaas_log("Webhook HTTP POST IP={$ip} bytes={$len}");
+
 $payload = json_decode($raw, true);
 
 if (!is_array($payload)) {

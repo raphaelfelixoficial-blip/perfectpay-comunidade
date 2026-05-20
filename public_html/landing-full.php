@@ -160,6 +160,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   @keyframes shimmer{0%{left:-100%}100%{left:200%}}
 
   .divider{height:1px;background:linear-gradient(90deg,transparent,#1a1a1a,transparent);margin:0}
+  <?= site_status_promo_banner_css() ?>
 
   .agency-footer{text-align:center;padding:1.5rem 1rem 2rem;font-size:13px;color:#555;background:#12100a;border-top:1px solid #1a1a1a}
   .agency-footer a{color:#888;text-decoration:none;font-weight:600}
@@ -303,6 +304,8 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
     </div>
   </div>
 
+  <?= site_status_render_promo_banner($S) ?>
+
   <!-- FEATURES -->
   <div class="section">
     <div class="section-title">Benefícios <span class="gold">Exclusivos</span></div>
@@ -381,8 +384,8 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <h2>ENTRE NA <span class="gold">COMUNIDADE</span> AGORA</h2>
       <p>Acesso vitalício à comunidade VIP da Copa 2026 — mais de 1.000 figurinhas em PDF, Legend, holográficas e atualizações exclusivas que não encontrará em lugar nenhum.</p><br/>
       <div class="price-tag">
-        <s>R$ 49,90</s>
-        <strong>R$ 19,90</strong>
+        <s>R$ <?= landing_h($S['checkout_compare_label']) ?></s>
+        <strong>R$ <?= landing_h($S['checkout_price_label']) ?></strong>
         <span>pagamento único — acesso vitalício à comunidade</span>
       </div><br/>
       <a href="/checkout.php" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>

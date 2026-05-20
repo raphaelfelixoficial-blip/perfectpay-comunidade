@@ -29,7 +29,12 @@ function send_password_reset_email(string $email, string $name, string $password
             mail_log("Reset de senha SMTP enviado para {$email}");
             return $result;
         }
-        mail_log("Reset de senha SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
+        mail_log("Reset de senha SMTP falha para {$email}: " . $result['error']);
+        return [
+            'ok' => false,
+            'error' => 'SMTP falhou: ' . ($result['error'] ?? 'erro desconhecido')
+                . '. Atualize a senha da caixa suporte@ no admin.',
+        ];
     }
 
     $sent = mail_send_via_php_mail(
@@ -135,7 +140,12 @@ function send_member_credentials_email(string $email, string $name, string $pass
             mail_log("SMTP enviado para {$email}");
             return $result;
         }
-        mail_log("SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
+        mail_log("SMTP falha para {$email}: " . $result['error']);
+        return [
+            'ok' => false,
+            'error' => 'SMTP falhou: ' . ($result['error'] ?? 'erro desconhecido')
+                . '. Atualize a senha da caixa suporte@ no admin (Integrações → E-mail).',
+        ];
     }
 
     $sent = mail_send_via_php_mail(
@@ -150,10 +160,10 @@ function send_member_credentials_email(string $email, string $name, string $pass
 
     if (!$sent) {
         mail_log("mail() falhou para {$email}");
-        return ['ok' => false, 'error' => 'Configure a senha SMTP da caixa suporte@agenciajob.com no painel admin.'];
+        return ['ok' => false, 'error' => 'Não foi possível enviar o e-mail. Configure SMTP no admin.'];
     }
 
-    mail_log("mail() aceito para {$email} (sem autenticação SMTP — prefira salvar senha no admin)");
+    mail_log("mail() aceito para {$email}");
     return ['ok' => true, 'error' => ''];
 }
 
@@ -369,5 +379,53 @@ function update_smtp_password(string $password): bool
 function smtp_is_configured(): bool
 {
     $cfg = app_config();
-    return mail_use_smtp($cfg);
+    return mail_use_smtp($cfg) && trim((string) ($cfg['smtp_password'] ?? '')) !== '';
+}
+
+/** Testa autenticação SMTP sem enviar mensagem. */
+function smtp_test_auth(): array
+{
+    $cfg = app_config();
+    if (!mail_use_smtp($cfg)) {
+        return ['ok' => false, 'error' => 'SMTP não configurado.'];
+    }
+    if (trim((string) ($cfg['smtp_password'] ?? '')) === '') {
+        return ['ok' => false, 'error' => 'Senha SMTP vazia. Salve a senha no admin.'];
+    }
+
+    $fromEmail = (string) ($cfg['mail_from_email'] ?? 'suporte@agenciajob.com');
+    $host = (string) ($cfg['smtp_host'] ?? 'localhost');
+    $port = (int) ($cfg['smtp_port'] ?? 587);
+    $encryption = strtolower((string) ($cfg['smtp_encryption'] ?? 'tls'));
+    $user = (string) ($cfg['smtp_username'] ?? $fromEmail);
+    $pass = (string) ($cfg['smtp_password'] ?? '');
+
+    $remote = ($encryption === 'ssl' ? 'ssl://' : '') . $host . ':' . $port;
+    $socket = @stream_socket_client($remote, $errno, $errstr, 30, STREAM_CLIENT_CONNECT);
+    if (!$socket) {
+        return ['ok' => false, 'error' => "Conexão falhou: {$errstr} ({$errno})"];
+    }
+
+    try {
+        smtp_expect($socket, [220]);
+        $ehlo = smtp_ehlo_hostname($cfg, $fromEmail);
+        smtp_cmd($socket, 'EHLO ' . $ehlo, [250]);
+        if ($encryption === 'tls') {
+            smtp_cmd($socket, 'STARTTLS', [220]);
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new RuntimeException('TLS não iniciou.');
+            }
+            smtp_cmd($socket, 'EHLO ' . $ehlo, [250]);
+        }
+        smtp_cmd($socket, 'AUTH LOGIN', [334]);
+        smtp_cmd($socket, base64_encode($user), [334]);
+        smtp_cmd($socket, base64_encode($pass), [235]);
+        smtp_cmd($socket, 'QUIT', [221]);
+    } catch (Throwable $e) {
+        fclose($socket);
+        return ['ok' => false, 'error' => $e->getMessage()];
+    }
+
+    fclose($socket);
+    return ['ok' => true, 'error' => ''];
 }
