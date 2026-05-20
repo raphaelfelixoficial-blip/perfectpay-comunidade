@@ -7,7 +7,11 @@ if (!is_file($asaasBootstrap)) {
     $asaasBootstrap = dirname(__DIR__) . '/comunidade/includes/bootstrap.php';
 }
 require_once $asaasBootstrap;
-require_once dirname(__DIR__) . '/comunidade/includes/asaas.php';
+$asaasInclude = __DIR__ . '/comunidade/includes/asaas.php';
+if (!is_file($asaasInclude)) {
+    $asaasInclude = dirname(__DIR__) . '/comunidade/includes/asaas.php';
+}
+require_once $asaasInclude;
 
 if (!asaas_is_configured()) {
     http_response_code(503);
