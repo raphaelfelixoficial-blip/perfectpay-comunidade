@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (!function_exists('comunidade_url')) {
+    require_once __DIR__ . '/bootstrap.php';
+}
+
 function albuns_root(): string
 {
     return dirname(__DIR__) . '/albuns';
@@ -311,7 +315,7 @@ function albuns_total_pdfs(): int
 
 function albuns_view_url(string $relativePath): string
 {
-    return '/albuns/ver.php?p=' . rawurlencode($relativePath);
+    return comunidade_url('/albuns/ver.php?p=' . rawurlencode($relativePath));
 }
 
 function albuns_format_size(int $bytes): string
@@ -392,7 +396,8 @@ function albuns_process_refresh_request(): array
     }
 
     albuns_invalidate_catalog_cache();
-    $categories = albuns_rebuild_catalog_locked();
+    $categories = albuns_build_catalog();
+    albuns_save_catalog_cache($categories);
     $total = array_sum(array_map('count', $categories));
 
     return ['ok' => true, 'total' => $total];
@@ -447,6 +452,10 @@ function render_albuns_refresh_card(string $returnUrl = '/albuns/'): void
 
 function albuns_stream_file(string $path): void
 {
+    if (function_exists('set_time_limit')) {
+        @set_time_limit(0);
+    }
+
     $size = filesize($path);
     if ($size === false) {
         http_response_code(500);

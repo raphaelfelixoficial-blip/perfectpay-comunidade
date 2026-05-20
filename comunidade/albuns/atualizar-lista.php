@@ -26,5 +26,5 @@ if ($result['ok']) {
     $_SESSION['flash'] = (string) ($result['error'] ?? 'Não foi possível atualizar a lista.');
 }
 
-header('Location: ' . $return);
+header('Location: ' . comunidade_url($return));
 exit;
