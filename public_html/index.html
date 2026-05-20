@@ -75,17 +75,6 @@
   .stadium-text h2{font-family:'Syne';font-size:clamp(32px,6vw,56px);color:#fff;letter-spacing:3px;text-shadow:0 4px 20px rgba(0,0,0,0.8)}
   .stadium-text p{color:#ccc;font-size:16px;margin-top:.5rem;text-shadow:0 2px 10px rgba(0,0,0,0.5)}
 
-  /* ===== ALBUM SHOWCASE ===== */
-  .album-showcase-section{background:#0a0a0a;padding:4rem 1.5rem}
-  .album-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;max-width:1100px;margin:0 auto}
-  .album-card{background:#242018;border:2px solid #222;border-radius:8px;overflow:hidden;transition:all .4s;position:relative}
-  .album-card:hover{border-color:var(--br-green);transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,151,57,0.2)}
-  .album-card img{width:100%;height:320px;object-fit:cover;display:block}
-  .album-card-info{padding:1.5rem;text-align:center}
-  .album-card-info h3{font-family:'Syne';font-size:22px;color:#fff;letter-spacing:2px}
-  .album-card-info p{font-size:13px;color:#888;margin-top:4px}
-  .album-card-tag{display:inline-block;margin-top:10px;padding:4px 14px;border-radius:2px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(255,223,0,0.15);color:var(--br-yellow);border:1px solid var(--br-yellow)}
-
   /* ===== RARITY ===== */
   .rarity-section{background:#0d0d0d;padding:4rem 1.5rem;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a}
   .rarity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto}
@@ -178,7 +167,7 @@
   .agency-footer a:hover{color:var(--br-yellow)}
 
   @media(max-width:768px){
-    .album-grid,.testi-grid{grid-template-columns:1fr}
+    .testi-grid{grid-template-columns:1fr}
     .rarity-grid{grid-template-columns:repeat(2,1fr)}
     .steps-grid{grid-template-columns:1fr}
     .step-arrow{display:none}
@@ -197,7 +186,6 @@
     .footer-cta{min-height:auto;padding:4rem 1rem}
     .footer-cta .btn-hero{font-size:clamp(18px,5vw,24px)!important;padding:18px 20px!important;max-width:100%}
     .stadium-banner{height:250px}
-    .album-card img{height:240px}
     .stadium-text{width:calc(100% - 2rem);padding:0 1rem}
     .stadium-text h2{letter-spacing:1px}
   }
@@ -238,38 +226,6 @@
     <div class="stadium-text">
       <h2>16 ESTÁDIOS · 3 PAÍSES</h2>
       <p>Estados Unidos · Canadá · México — A maior Copa da história</p>
-    </div>
-  </div>
-
-  <!-- ALBUM SHOWCASE -->
-  <div class="album-showcase-section">
-    <div class="section-title">Dentro da <span class="green">Plataforma</span> VIP</div>
-    <p class="section-subtitle">Acesso exclusivo à comunidade com todo o conteúdo da Copa 2026 — PDFs, guias e material que não encontra em lugar nenhum</p><br/>
-    <div class="album-grid">
-      <div class="album-card">
-        <img src="https://kimi-web-img.moonshot.cn/img/m.media-amazon.com/eede514a5ea0702557344e9adc558f1d25e2e242.jpg" alt="PDFs exclusivos na plataforma">
-        <div class="album-card-info">
-          <h3>PDFs EXCLUSIVOS</h3>
-          <p>Mais de 1.000 figurinhas em alta resolução</p>
-          <span class="album-card-tag">ACESSO VIP</span>
-        </div>
-      </div>
-      <div class="album-card">
-        <img src="https://kimi-web-img.moonshot.cn/img/http2.mlstatic.com/5dac0d6d6ed25911ea0fa5145aa24a102a5ad9a9.webp" alt="Legend e holográficas VIP">
-        <div class="album-card-info">
-          <h3>LEGEND + HOLO</h3>
-          <p>80+ Legend e holográficas exclusivas</p>
-          <span class="album-card-tag">ULTRA RARO</span>
-        </div>
-      </div>
-      <div class="album-card">
-        <img src="https://kimi-web-img.moonshot.cn/img/paninistore.com/c4aefcc4f1443241e0eca176ea40ffd9cc95ab1e.jpg" alt="Comunidade VIP de membros">
-        <div class="album-card-info">
-          <h3>COMUNIDADE VIP</h3>
-          <p>Grupo exclusivo de membros e trocas</p>
-          <span class="album-card-tag">MEMBROS</span>
-        </div>
-      </div>
     </div>
   </div>
 
