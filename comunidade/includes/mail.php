@@ -132,7 +132,7 @@ function send_member_credentials_email(string $email, string $name, string $pass
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
     $displayName = $name !== '' ? $name : $email;
 
-    $subject = 'Bem-vindo à Comunidade Perfect Pay — seu acesso está liberado';
+    $subject = 'Seu acesso à Comunidade Perfect Pay';
     $content = mail_build_content($displayName, $email, $password, $loginUrl, $siteName);
     $mimeBody = mail_build_mime_body($content['text'], $content['html']);
 
@@ -344,8 +344,10 @@ function update_smtp_password(string $password): bool
     $cfg = require $path;
     $cfg['smtp_password'] = $password;
     $cfg['smtp_host'] = $cfg['smtp_host'] ?? 'localhost';
-    $cfg['smtp_port'] = $cfg['smtp_port'] ?? 587;
-    $cfg['smtp_encryption'] = $cfg['smtp_encryption'] ?? 'tls';
+    $cfg['smtp_port'] = $cfg['smtp_port'] ?? 465;
+    $cfg['smtp_encryption'] = $cfg['smtp_encryption'] ?? 'ssl';
+    $cfg['smtp_host'] = $cfg['smtp_host'] ?? 'mail.agenciajob.com';
+    $cfg['smtp_ehlo'] = $cfg['smtp_ehlo'] ?? 'mail.agenciajob.com';
     $cfg['mail_from_email'] = $cfg['mail_from_email'] ?? 'noreply@agenciajob.com';
     $cfg['mail_reply_to'] = $cfg['mail_reply_to'] ?? 'suporte@agenciajob.com';
     $cfg['smtp_username'] = $cfg['smtp_username'] ?? 'noreply@agenciajob.com';

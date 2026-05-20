@@ -20,13 +20,12 @@ return [
     'mail_login_url' => 'https://perfectpay.agenciajob.com/comunidade/login.php',
     'whatsapp_group_url' => 'https://chat.whatsapp.com/DVBiPgbpbiyC8y6mD8iqIS',
 
-    // SMTP local (Exim/cPanel) — senha da caixa noreply@agenciajob.com no cPanel
-    'smtp_host' => 'localhost',
-    'smtp_port' => 25,
-    'smtp_encryption' => 'none',
+    // SMTP cPanel — use mail.agenciajob.com (porta 465/ssl) para o servidor assinar DKIM
+    'smtp_host' => 'mail.agenciajob.com',
+    'smtp_port' => 465,
+    'smtp_encryption' => 'ssl',
     'smtp_username' => 'noreply@agenciajob.com',
     'smtp_password' => '',
-    // Hostname EHLO do servidor de e-mail (deve ser do domínio agenciajob.com, não perfectpay.agenciajob.com)
     'smtp_ehlo' => 'mail.agenciajob.com',
 
     // Perfect Pay — webhook (Ferramentas > Webhook - Vendas)
