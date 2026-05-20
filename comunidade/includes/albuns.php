@@ -411,14 +411,14 @@ function albuns_refresh_button_styles(): string
   .albuns-refresh-btn{
     display:inline-flex;align-items:center;gap:6px;
     padding:8px 14px;border-radius:4px;
-    border:1px solid #444;background:#1a1a1a;
-    color:#aaa;font-family:'Barlow',sans-serif;
+    border:1px solid #444;    background:#151b32;
+    color:#8b94b8;font-family:'DM Sans',system-ui,sans-serif;
     font-size:13px;font-weight:600;cursor:pointer;
     transition:all .2s;
   }
-  .albuns-refresh-btn:hover{border-color:#009739;color:#FFDF00;background:#141414}
+  .albuns-refresh-btn:hover{border-color:#a78bfa;color:#a78bfa;background:#1c2444}
   .albuns-refresh-btn i{font-size:15px}
-  .member-flash{padding:10px 14px;border-radius:6px;margin-bottom:1rem;font-size:13px;background:rgba(0,151,57,.15);border:1px solid #009739;color:#ccc}
+  .member-flash,.pp-flash{padding:10px 14px;border-radius:10px;margin-bottom:1rem;font-size:13px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.35);color:#e8eaf4}
 CSS;
 }
 

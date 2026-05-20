@@ -16,10 +16,10 @@ $title = landing_h($S['home_title']);
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $title ?> — Copa 2026</title>
+<title><?= $title ?> — Perfect Pay</title>
 <link rel="icon" href="/favicon.jpg" type="image/jpeg">
 <link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style><?= site_status_home_styles() ?></style>
 </head>
 <body>
@@ -36,9 +36,7 @@ $title = landing_h($S['home_title']);
     <a href="https://perfectpay.agenciajob.com/comunidade/login.php">Área de membros →</a>
   </p>
   <?php endif; ?>
-  <p class="home-footer">
-    Desenvolvido por <a href="https://www.instagram.com/raphaelnogueirafelix/" target="_blank" rel="noopener noreferrer">Agência Job</a>
-  </p>
+  <p class="home-footer">© <?= (int) date('Y') ?> Perfect Pay · Comunidade exclusiva</p>
 </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ require_once dirname(__DIR__) . '/includes/albuns.php';
 require_once dirname(__DIR__) . '/includes/site-status.php';
 require_once dirname(__DIR__) . '/includes/mail.php';
 require_once dirname(__DIR__) . '/includes/nav.php';
+require_once dirname(__DIR__) . '/includes/theme.php';
 require_admin();
 $user = session_user();
 $members = load_members();
@@ -20,42 +21,18 @@ unset($_SESSION['flash']);
 <meta name="robots" content="noindex, nofollow">
 <title>Admin — Perfect Pay VIP</title>
 <?php render_favicon(); ?>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<?= pp_fonts_link() ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-  :root{--br-green:#009739;--br-yellow:#FFDF00;--br-blue:#002776}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#050505;font-family:'Barlow',sans-serif;color:#eee;min-height:100vh}
-  .wrap{max-width:900px;margin:0 auto;padding:2rem 1.25rem}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
-  h1{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px}
-  h1 span{color:var(--br-yellow)}
-  .links a{color:#888;margin-left:1rem;font-size:14px;text-decoration:none}
-  .links a:hover{color:var(--br-yellow)}
-  .card{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem}
-  .card h2{font-family:'Bebas Neue',sans-serif;font-size:22px;margin-bottom:1rem;color:var(--br-yellow)}
-  label{display:block;font-size:12px;color:#999;margin-bottom:6px;text-transform:uppercase}
-  input,textarea{width:100%;padding:12px;border-radius:6px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:1rem}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-  @media(max-width:600px){.row{grid-template-columns:1fr}}
-  .btn{padding:12px 20px;border:none;border-radius:6px;background:var(--br-yellow);color:var(--br-blue);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;cursor:pointer}
-  .btn-danger{background:#dc3545;color:#fff}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #222}
-  th{color:#888;font-size:11px;text-transform:uppercase}
-  .flash{padding:12px;border-radius:6px;margin-bottom:1rem;background:rgba(0,151,57,.2);border:1px solid var(--br-green)}
-  .pwd-box{background:#0d0d0d;padding:12px;border-radius:6px;font-family:monospace;color:var(--br-yellow);margin-top:8px;word-break:break-all}
-  .hint{font-size:12px;color:#666;margin-top:-8px;margin-bottom:1rem}
-  .page-nav{max-width:900px}
-  <?= page_nav_styles() ?>
-  <?= albuns_refresh_button_styles() ?>
+<?= pp_admin_shell_styles() ?>
+<?= albuns_refresh_button_styles() ?>
 </style>
 </head>
 <body>
 <?php render_page_nav('admin'); ?>
 <div class="wrap">
   <header>
-    <h1>ADMIN <span>VIP</span></h1>
+    <h1 class="admin-title">Admin <span>VIP</span></h1>
     <div class="links">
       <span style="color:#666;font-size:13px"><?= htmlspecialchars((string)$user['email'], ENT_QUOTES, 'UTF-8') ?></span>
       <a href="<?= htmlspecialchars(comunidade_url('/'), ENT_QUOTES, 'UTF-8') ?>">Área do membro</a>
@@ -168,7 +145,7 @@ unset($_SESSION['flash']);
   <div class="card">
     <h2>E-mail do servidor (SMTP)</h2>
     <?php if (smtp_is_configured()): ?>
-      <p class="hint" style="color:#009739;margin-bottom:1rem">SMTP configurado — envio como noreply@agenciajob.com (servidor)</p>
+      <p class="hint smtp-ok" style="margin-bottom:1rem">SMTP configurado — envio como noreply@agenciajob.com (servidor)</p>
     <?php else: ?>
       <p class="hint" style="color:#dc3545;margin-bottom:1rem">SMTP não configurado — salve a senha da caixa noreply@agenciajob.com (cPanel).</p>
     <?php endif; ?>
@@ -226,6 +203,6 @@ unset($_SESSION['flash']);
     </form>
   </div>
 </div>
-<?php render_agency_footer(); ?>
+<?php render_pp_footer(); ?>
 </body>
 </html>

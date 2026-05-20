@@ -212,23 +212,22 @@ function site_status_save(
 
 function site_status_home_styles(): string
 {
-    return <<<'CSS'
-  :root{--br-green:#009739;--br-yellow:#FFDF00;--br-blue:#002776}
+    if (!function_exists('pp_css_variables')) {
+        require_once __DIR__ . '/theme.php';
+    }
+    return pp_css_variables() . pp_footer_styles() . <<<'CSS'
   *{box-sizing:border-box;margin:0;padding:0}
-  body{min-height:100vh;background:#0a0a0a;color:#e8e4dc;font-family:'Barlow',system-ui,sans-serif;line-height:1.7}
+  body{min-height:100vh;background:var(--pp-bg);color:var(--pp-text);font-family:var(--pp-font-body);line-height:1.7}
   .home-wrap{max-width:640px;margin:0 auto;padding:3rem 1.25rem 4rem}
-  .home-brand{font-family:'Bebas Neue',Georgia,serif;font-size:clamp(42px,10vw,56px);letter-spacing:3px;color:#fff;margin-bottom:.25rem}
-  .home-brand span{color:var(--br-yellow)}
-  .home-rule{width:48px;height:3px;background:var(--br-green);margin:1.25rem 0 2rem}
-  .home-content{font-size:17px;color:#ccc}
+  .home-brand{font-family:var(--pp-font-head);font-size:clamp(2.5rem,10vw,3.5rem);font-weight:800;letter-spacing:-.02em;color:var(--pp-text);margin-bottom:.25rem}
+  .home-brand span{color:var(--pp-primary)}
+  .home-rule{width:48px;height:4px;background:linear-gradient(90deg,var(--pp-primary),var(--pp-accent));margin:1.25rem 0 2rem;border-radius:2px}
+  .home-content{font-size:17px;color:var(--pp-muted)}
   .home-content p{margin-bottom:1.25rem}
-  .home-content p:last-child{margin-bottom:0}
-  .home-footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #222;font-size:13px;color:#666;text-align:center}
-  .home-footer a{color:#888;text-decoration:none}
-  .home-footer a:hover{color:var(--br-yellow)}
+  .home-footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--pp-border);font-size:13px;color:var(--pp-muted);text-align:center}
+  .home-footer a{color:var(--pp-primary);text-decoration:none}
   .home-members{margin-top:2rem}
-  .home-members a{display:inline-flex;align-items:center;gap:8px;color:var(--br-yellow);font-weight:600;font-size:14px;text-decoration:none}
-  .home-members a:hover{text-decoration:underline}
+  .home-members a{display:inline-flex;align-items:center;gap:8px;color:var(--pp-accent);font-weight:600;font-size:14px;text-decoration:none}
 CSS;
 }
 
@@ -244,7 +243,7 @@ function render_members_area_closed_page(): void
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Área indisponível — <?= $title ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style><?= site_status_home_styles() ?></style>
 </head>
 <body>
