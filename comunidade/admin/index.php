@@ -189,8 +189,10 @@ unset($_SESSION['flash']);
   <div class="card">
     <h2><i class="ti ti-plug-connected"></i> Integração Perfect Pay</h2>
     <p class="hint" style="margin-top:0">Após compra aprovada, o webhook libera acesso e envia e-mail com login e senha.</p>
-    <label>Página de obrigado (URL no checkout Perfect Pay)</label>
+    <label>Página de obrigado — pagamento aprovado</label>
     <input type="text" readonly value="https://perfectpay.agenciajob.com/obrigado.php" onclick="this.select()">
+    <label style="margin-top:1rem">Página de boleto emitido</label>
+    <input type="text" readonly value="https://perfectpay.agenciajob.com/boleto-emitido.php" onclick="this.select()">
     <label>Webhook (URL em Ferramentas → Webhook - Vendas)</label>
     <input type="text" readonly value="https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php" onclick="this.select()">
     <p class="hint">Eventos: <strong>Aprovado</strong> (obrigatório). Token já em <code>config.php</code>. SMTP (noreply@) precisa estar configurado acima.</p>

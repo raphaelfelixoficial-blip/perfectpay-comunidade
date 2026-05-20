@@ -22,10 +22,13 @@ Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/dat
 
 ## Integração Perfect Pay (compra → acesso automático)
 
-1. **Página de obrigado** (redirecionamento após compra no checkout):
+1. **Página de obrigado** (pagamento aprovado):
    `https://perfectpay.agenciajob.com/obrigado.php`
 
-2. **Webhook** (cadastro automático + e-mail com login/senha):
+2. **Página de boleto emitido** (quando o cliente gera boleto):
+   `https://perfectpay.agenciajob.com/boleto-emitido.php`
+
+3. **Webhook** (cadastro automático + e-mail com login/senha):
    `https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php`
 
    No painel Perfect Pay: **Ferramentas → Webhook - Vendas → Adicionar**
@@ -33,11 +36,11 @@ Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/dat
    - Eventos: marque **Aprovado** (e opcionalmente **Completo**)
    - Copie o **token** do webhook para `perfectpay_webhook_token` em `comunidade/data/config.php`
 
-3. **Teste na Perfect Pay:** o envio de teste do painel deles só reenvia uma venda **real** já aprovada na conta. Sem venda, aparece *“nenhuma venda com o evento desejado”*. Alternativas:
+4. **Teste na Perfect Pay:** o envio de teste do painel deles só reenvia uma venda **real** já aprovada na conta. Sem venda, aparece *“nenhuma venda com o evento desejado”*. Alternativas:
    - Simulador no admin: **Integração Perfect Pay → Simular venda aprovada**
    - Fazer uma compra teste (cartão/boleto) e aprovar
 
-4. Quando a venda for aprovada (`sale_status_enum` = 2), o sistema:
+5. Quando a venda for aprovada (`sale_status_enum` = 2), o sistema:
    - cadastra o e-mail do comprador na comunidade
    - envia e-mail com link de login, e-mail e senha
 
