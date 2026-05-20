@@ -353,9 +353,9 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   <!-- FIGURINHA PERSONALIZADA -->
   <div class="sticker-section">
     <div class="section-title">Sua <span class="gold">Figurinha</span> Personalizada</div>
-    <p class="section-subtitle">Crie sua figurinha exclusiva com a ER Arte Digital — escolha o modelo, envie sua foto e receba em alta qualidade. Atendimento 100% humanizado.</p>
+    <p class="section-subtitle">Crie sua figurinha exclusiva — escolha o modelo, envie sua foto e receba em alta qualidade.</p>
     <div class="sticker-grid">
-      <a href="https://www.instagram.com/er.artedigital/" target="_blank" rel="noopener noreferrer" class="sticker-card-big sticker-card-link">
+      <div class="sticker-card-big">
         <div class="sticker-img-wrap">
           <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.55.jpeg" alt="Escolha o modelo da figurinha personalizada">
         </div>
@@ -364,8 +364,8 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
           <div class="sticker-type">Você escolhe o modelo da figurinha</div>
           <span class="sticker-rarity gold">PASSO 1</span>
         </div>
-      </a>
-      <a href="https://www.instagram.com/er.artedigital/" target="_blank" rel="noopener noreferrer" class="sticker-card-big sticker-card-link">
+      </div>
+      <div class="sticker-card-big">
         <div class="sticker-img-wrap">
           <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.54%20(1).jpeg" alt="Envie sua foto e seus dados">
         </div>
@@ -374,8 +374,8 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
           <div class="sticker-type">Passa sua foto e seus dados</div>
           <span class="sticker-rarity silver">PASSO 2</span>
         </div>
-      </a>
-      <a href="https://www.instagram.com/er.artedigital/" target="_blank" rel="noopener noreferrer" class="sticker-card-big sticker-card-link">
+      </div>
+      <div class="sticker-card-big">
         <div class="sticker-img-wrap">
           <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.54.jpeg" alt="Personalize posição e cor da Legend">
         </div>
@@ -384,11 +384,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
           <div class="sticker-type">Escolhe posição em campo ou cor da Legend — e recebe sua figurinha personalizada</div>
           <span class="sticker-rarity legend">PASSO 3</span>
         </div>
-      </a>
-    </div>
-    <div class="sticker-cta-wrap">
-      <a href="https://www.instagram.com/er.artedigital/" target="_blank" rel="noopener noreferrer" class="btn-instagram"><i class="ti ti-brand-instagram"></i><span class="btn-instagram-text">Solicite aqui sua figurinha personalizada<small>@er.artedigital</small></span></a>
-      <p class="sticker-cta-note"><strong>Atendimento 100% humanizado</strong> — tire dúvidas e acompanhe seu pedido direto no Instagram</p>
+      </div>
     </div>
   </div>
 

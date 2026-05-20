@@ -74,11 +74,6 @@ $featuredDownloads = load_downloads($albunsCatalog);
   }
   .btn-instagram:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(131,58,180,.45)}
   .btn-instagram small{display:block;font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:0;font-weight:500;opacity:.95;margin-top:4px}
-  .btn-instagram-arte{
-    background:linear-gradient(135deg,#009739,#002776);
-    box-shadow:0 8px 32px rgba(0,151,57,.3);
-  }
-  .btn-instagram-arte:hover{box-shadow:0 12px 40px rgba(0,151,57,.45)}
   <?= page_nav_styles() ?>
   <?= albuns_refresh_button_styles() ?>
 </style>
@@ -131,10 +126,6 @@ $featuredDownloads = load_downloads($albunsCatalog);
   <a href="https://www.instagram.com/raphaelnogueirafelix/" class="btn btn-instagram" target="_blank" rel="noopener noreferrer">
     <i class="ti ti-brand-instagram" style="font-size:28px;flex-shrink:0"></i>
     <span>PEDIR NO WEBSITE INSTAGRAM<small>@raphaelnogueirafelix</small></span>
-  </a>
-  <a href="https://www.instagram.com/er.artedigital/" class="btn btn-instagram btn-instagram-arte" target="_blank" rel="noopener noreferrer">
-    <i class="ti ti-brand-instagram" style="font-size:28px;flex-shrink:0"></i>
-    <span>PEDIR ARTE FOTO NO INSTAGRAM<small>@er.artedigital</small></span>
   </a>
   <div class="note"><i class="ti ti-info-circle"></i> Os PDFs abrem no navegador. Acesso exclusivo para membros logados — não compartilhe seu login.</div>
   <p class="footer">Comunidade Perfect Pay · Copa 2026</p>
