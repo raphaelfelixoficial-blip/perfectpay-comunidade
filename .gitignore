@@ -1,0 +1,19 @@
+.DS_Store
+Thumbs.db
+*.log
+
+# Config e dados do servidor (NUNCA versionar — ficam só em produção)
+comunidade/data/config.php
+comunidade/data/sessions/
+comunidade/data/mail.log
+comunidade/data/allowed_emails.json
+comunidade/data/downloads.json
+comunidade/data/albuns-catalog.json
+comunidade/data/site-status.json
+public_html/data/site-status.json
+
+# Backup local ao sincronizar do servidor
+backup-servidor/
+
+# Arquivos HTML antigos na raiz (cópias de desenvolvimento)
+/perfectpay_vip*.html

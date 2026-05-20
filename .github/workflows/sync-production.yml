@@ -1,0 +1,67 @@
+name: Sincronizar produção → GitHub
+
+# Baixa do servidor a versão em produção (HTML) para o repositório.
+# Os usuários (allowed_emails.json) e PDFs NÃO vão para o Git — ficam só no servidor.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Baixar index.html da produção
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/agenciajob/public_html/perfectpay.agenciajob.com/index.html" \
+            public_html/index.html
+
+      - name: Commit se houver diferença
+        run: |
+          git config user.name "Perfect Pay Deploy"
+          git config user.email "noreply@agenciajob.com"
+          git add public_html/index.html
+          if git diff --staged --quiet; then
+            echo "index.html já está igual à produção."
+          else
+            git commit -m "Sync: index.html da produção (manual)."
+            git push
+          fi
+
+      - name: Backup servidor (artefato)
+        run: |
+          mkdir -p backup-servidor/data backup-servidor/albuns-lista
+          BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com/comunidade"
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$BASE/data/allowed_emails.json" \
+            backup-servidor/data/ 2>/dev/null || true
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$BASE/data/downloads.json" \
+            backup-servidor/data/ 2>/dev/null || true
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "find $BASE/albuns -name '*.pdf' 2>/dev/null" \
+            > backup-servidor/albuns-lista/pdfs.txt || true
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-servidor-${{ github.run_id }}
+          path: backup-servidor/
+          retention-days: 7

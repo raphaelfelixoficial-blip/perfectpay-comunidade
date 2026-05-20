@@ -1,0 +1,10 @@
+{
+    "members": [
+        {
+            "email": "membro@exemplo.com",
+            "name": "Nome",
+            "password_hash": "$2y$10$substituaPeloHashGeradoNoAdmin",
+            "added_at": "2026-05-18T12:00-03:00"
+        }
+    ]
+}

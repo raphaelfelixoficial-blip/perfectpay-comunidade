@@ -1,0 +1,11 @@
+Options -Indexes
+
+# Bloqueia acesso direto aos PDFs — só via ver.php com login
+<FilesMatch "\.(pdf|exe)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^$ index.php [L]
+</IfModule>

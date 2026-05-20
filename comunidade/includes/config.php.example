@@ -1,0 +1,29 @@
+<?php
+/**
+ * Copie para config.php e ajuste as credenciais.
+ * O arquivo config.php não é versionado no Git.
+ */
+return [
+    'timezone' => 'America/Sao_Paulo',
+    'site_name' => 'Comunidade Perfect Pay',
+    'session_secret' => 'ALTERE-ESTA-CHAVE-ALEATORIA-LONGA',
+    'admin_email' => 'noreply@agenciajob.com',
+    // Senha padrão inicial: PerfectPayAdmin2026! — altere após o primeiro login
+    'admin_password_hash' => '$2y$10$rt0rhSaE433womirBaCCg.Mo2rMKbkqIS.wp1phxz9lLrOK1ZBKlq',
+    'session_lifetime' => 86400 * 7,
+
+    // E-mail ao cadastrar membro (use um endereço real do seu domínio no cPanel)
+    'mail_enabled' => true,
+    'mail_from_email' => 'noreply@agenciajob.com',
+    'mail_from_name' => 'Comunidade Perfect Pay',
+    'mail_reply_to' => 'noreply@agenciajob.com',
+    'mail_login_url' => 'https://perfectpay.agenciajob.com/comunidade/login.php',
+    'whatsapp_group_url' => 'https://chat.whatsapp.com/DVBiPgbpbiyC8y6mD8iqIS',
+
+    // SMTP Hostinger — login com a conta principal; envio como noreply (alias)
+    'smtp_host' => 'smtp.hostinger.com',
+    'smtp_port' => 465,
+    'smtp_encryption' => 'ssl',
+    'smtp_username' => 'noreply@agenciajob.com',
+    'smtp_password' => '',
+];

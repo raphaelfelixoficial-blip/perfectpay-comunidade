@@ -1,0 +1,93 @@
+name: Deploy Perfect Pay Comunidade
+
+# Secrets: SSH_HOST (5.78.75.201), SSH_USER (root), SSH_PRIVATE_KEY
+#
+# REGRAS DE SEGURANÇA (não remover):
+# - public_html: SEM --delete → nunca apaga imagens/uploads no servidor
+# - comunidade: SEM --delete → nunca apaga PDFs em /albuns/ nem dados em /data/
+# - allowed_emails.json = cadastro de usuários (fica só no servidor)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          SSH_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new"
+          echo "SSH_OPTS=$SSH_OPTS" >> "$GITHUB_ENV"
+          echo "REMOTE=${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" >> "$GITHUB_ENV"
+          echo "BASE=/home/agenciajob/public_html/perfectpay.agenciajob.com" >> "$GITHUB_ENV"
+
+      - name: Deploy site principal (sem apagar arquivos do servidor)
+        run: |
+          rsync -avz \
+            -e "ssh $SSH_OPTS" \
+            --exclude '.git' \
+            --exclude 'data/site-status.json' \
+            public_html/ \
+            "$REMOTE:$BASE/"
+
+      - name: Deploy área de comunidade (preserva PDFs e banco de usuários)
+        run: |
+          rsync -avz \
+            -e "ssh $SSH_OPTS" \
+            --exclude 'data/allowed_emails.json' \
+            --exclude 'data/downloads.json' \
+            --exclude 'data/albuns-catalog.json' \
+            --exclude 'data/site-status.json' \
+            --exclude 'data/config.php' \
+            --exclude 'data/sessions/' \
+            --exclude 'data/mail.log' \
+            --exclude 'albuns/' \
+            --exclude 'arquivos/' \
+            comunidade/ \
+            "$REMOTE:$BASE/comunidade/"
+
+      - name: Deploy apenas PHP da pasta albuns (preserva PDFs no servidor)
+        run: |
+          rsync -avz \
+            -e "ssh $SSH_OPTS" \
+            comunidade/albuns/index.php \
+            comunidade/albuns/ver.php \
+            comunidade/albuns/atualizar-lista.php \
+            comunidade/albuns/.htaccess \
+            "$REMOTE:$BASE/comunidade/albuns/"
+
+      - name: Deploy painel admin (garante botões e APIs)
+        run: |
+          rsync -avz \
+            -e "ssh $SSH_OPTS" \
+            comunidade/admin/ \
+            "$REMOTE:$BASE/comunidade/admin/"
+
+      - name: Verificar dados protegidos no servidor
+        run: |
+          ssh $SSH_OPTS "$REMOTE" bash -s <<'REMOTE'
+          set -e
+          BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com"
+          DATA="$BASE/comunidade/data"
+          ALBUNS="$BASE/comunidade/albuns"
+          echo "=== Pós-deploy Perfect Pay ==="
+          if [ -f "$DATA/allowed_emails.json" ]; then
+            echo -n "Usuários cadastrados: "
+            grep -c '"email"' "$DATA/allowed_emails.json" 2>/dev/null || echo "0"
+          else
+            echo "AVISO: allowed_emails.json não existe no servidor"
+          fi
+          echo -n "PDFs em /albuns/: "
+          find "$ALBUNS" -name '*.pdf' 2>/dev/null | wc -l
+          echo -n "Imagens na home: "
+          find "$BASE" -maxdepth 1 \( -iname '*.webp' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) 2>/dev/null | wc -l
+          REMOTE
