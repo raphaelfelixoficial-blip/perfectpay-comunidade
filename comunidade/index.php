@@ -35,7 +35,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
 .hero-panel h1{font-family:var(--pp-font-head);font-size:clamp(2rem,7vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
 .hero-panel h1 em{font-style:normal;color:var(--pp-primary)}
 .hero-panel .lead{color:var(--pp-muted);font-size:15px;max-width:480px;margin:0 auto}
-.welcome{background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(45,212,191,.08));border:1px solid var(--pp-border);border-radius:var(--pp-radius);padding:1.25rem;text-align:center;margin-bottom:2rem}
+.welcome{background:linear-gradient(135deg,rgba(250,204,21,.14),rgba(234,179,8,.08));border:1px solid var(--pp-border);border-radius:var(--pp-radius);padding:1.25rem;text-align:center;margin-bottom:2rem}
 .welcome strong{display:block;font-family:var(--pp-font-head);font-size:1.25rem;color:var(--pp-accent);margin-bottom:.35rem}
 .section-title{font-family:var(--pp-font-head);font-size:1.1rem;font-weight:700;color:var(--pp-text);margin:2rem 0 1rem;display:flex;align-items:center;gap:10px}
 .section-title::before{content:'';width:4px;height:1.1em;background:var(--pp-primary);border-radius:2px}
@@ -55,7 +55,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
 .btn-albuns-main{background:linear-gradient(135deg,var(--pp-accent),#14b8a6);color:var(--pp-cta-text);border:none;padding:20px;font-family:var(--pp-font-head);font-size:1.15rem;font-weight:700;justify-content:center}
 .btn-albuns-main .icon{background:rgba(255,255,255,.2);color:#fff}
 .btn-albuns-main small{display:block;font-family:var(--pp-font-body);font-size:12px;font-weight:500;opacity:.9;margin-top:4px}
-.btn-ig .icon{background:rgba(167,139,250,.15);color:var(--pp-primary)}
+.btn-ig .icon{background:rgba(250,204,21,.18);color:var(--pp-primary)}
 .dl-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
 .note{margin-top:1.5rem;padding:1rem;background:var(--pp-bg-soft);border:1px solid var(--pp-border);border-radius:var(--pp-radius-sm);font-size:13px;color:var(--pp-muted);text-align:center}
 </style>
@@ -96,7 +96,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
   <div class="dl-list">
     <?php foreach ($featuredDownloads as $dl): ?>
     <a href="<?= htmlspecialchars($dl['url'], ENT_QUOTES, 'UTF-8') ?>" class="action-btn" target="_blank" rel="noopener">
-      <span class="icon" style="background:rgba(45,212,191,.12);color:var(--pp-accent)"><i class="ti <?= htmlspecialchars($dl['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></span>
+      <span class="icon" style="background:rgba(250,204,21,.15);color:var(--pp-accent)"><i class="ti <?= htmlspecialchars($dl['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></span>
       <span class="body"><strong><?= htmlspecialchars($dl['title'], ENT_QUOTES, 'UTF-8') ?></strong><span><?= htmlspecialchars($dl['desc'], ENT_QUOTES, 'UTF-8') ?></span></span>
       <i class="ti ti-eye arrow"></i>
     </a>

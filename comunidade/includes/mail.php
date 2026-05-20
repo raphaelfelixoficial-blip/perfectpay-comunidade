@@ -89,7 +89,7 @@ function mail_build_reset_content(string $displayName, string $email, string $pa
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:32px 16px">
     <tr><td align="center">
       <table width="100%" style="max-width:560px;background:#141414;border:1px solid #2a2a2a;border-radius:8px">
-        <tr><td style="background:linear-gradient(135deg,#7c3aed,#0c1024);padding:24px;text-align:center">
+        <tr><td style="background:linear-gradient(135deg,#ca8a04,#12100a);padding:24px;text-align:center">
           <p style="margin:0;font-size:20px;color:#FFDF00;font-weight:bold">Nova senha — {$siteName}</p>
         </td></tr>
         <tr><td style="padding:24px">
@@ -241,7 +241,7 @@ function mail_build_content(string $displayName, string $email, string $password
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:32px 16px">
     <tr><td align="center">
       <table width="100%" style="max-width:560px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden">
-        <tr><td style="background:linear-gradient(135deg,#7c3aed,#0c1024);padding:28px 24px;text-align:center">
+        <tr><td style="background:linear-gradient(135deg,#ca8a04,#12100a);padding:28px 24px;text-align:center">
           <p style="margin:0;font-size:22px;line-height:1.3">🔥 <strong style="color:#FFDF00">Bem-vindo à Comunidade Perfect Pay!</strong> 🔥</p>
         </td></tr>
         <tr><td style="padding:28px 24px">
@@ -272,7 +272,7 @@ function mail_build_content(string $displayName, string $email, string $password
             <a href="{$safeLogin}" style="display:inline-block;background:#FFDF00;color:#002776;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">ACESSAR ÁREA VIP</a>
           </p>
           <p style="text-align:center;margin:0 0 12px">
-            <a href="{$safeAlbuns}" style="display:inline-block;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">📚 VER PDFs ONLINE</a>
+            <a href="{$safeAlbuns}" style="display:inline-block;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">📚 VER PDFs ONLINE</a>
           </p>
           <p style="text-align:center;margin:0">
             <a href="{$safeWhatsapp}" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">💬 GRUPO VIP WHATSAPP</a>

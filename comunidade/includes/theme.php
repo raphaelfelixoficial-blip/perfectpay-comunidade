@@ -15,20 +15,20 @@ function pp_css_variables(): string
 {
     return <<<'CSS'
   :root{
-    --pp-bg:#0c1024;
-    --pp-bg-soft:#10162e;
-    --pp-card:#151b32;
-    --pp-card-hover:#1c2444;
-    --pp-border:#2a3458;
-    --pp-text:#e8eaf4;
-    --pp-muted:#8b94b8;
-    --pp-primary:#a78bfa;
-    --pp-primary-glow:rgba(167,139,250,.35);
-    --pp-accent:#2dd4bf;
-    --pp-accent-glow:rgba(45,212,191,.25);
-    --pp-cta:#f97316;
-    --pp-cta-hover:#fb923c;
-    --pp-cta-text:#0c1024;
+    --pp-bg:#12100a;
+    --pp-bg-soft:#1c1810;
+    --pp-card:#242018;
+    --pp-card-hover:#2e2818;
+    --pp-border:#4a4028;
+    --pp-text:#faf6e8;
+    --pp-muted:#b8a878;
+    --pp-primary:#facc15;
+    --pp-primary-glow:rgba(250,204,21,.35);
+    --pp-accent:#eab308;
+    --pp-accent-glow:rgba(234,179,8,.28);
+    --pp-cta:#FFDF00;
+    --pp-cta-hover:#fde047;
+    --pp-cta-text:#1a1400;
     --pp-danger:#f43f5e;
     --pp-success:#34d399;
     --pp-radius:14px;
@@ -75,8 +75,8 @@ function pp_app_shell_styles(): string
     min-height:100vh;
     background:var(--pp-bg);
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(167,139,250,.12), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 50%, rgba(45,212,191,.06), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(250,204,21,.14), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 50%, rgba(234,179,8,.08), transparent);
     font-family:var(--pp-font-body);
     color:var(--pp-text);
     line-height:1.6;
@@ -142,9 +142,9 @@ function pp_app_shell_styles(): string
     cursor:pointer;
     text-decoration:none;
     transition:transform .2s,box-shadow .2s;
-    box-shadow:0 8px 28px rgba(249,115,22,.35);
+    box-shadow:0 8px 28px rgba(250,204,21,.35);
   }
-  .pp-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.45)}
+  .pp-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(250,204,21,.5)}
   .pp-btn-ghost{
     background:transparent;
     color:var(--pp-muted);
@@ -166,8 +166,8 @@ function pp_app_shell_styles(): string
     margin-bottom:1rem;
   }
   .pp-flash{
-    background:rgba(45,212,191,.1);
-    border:1px solid rgba(45,212,191,.35);
+    background:rgba(250,204,21,.1);
+    border:1px solid rgba(250,204,21,.4);
     color:var(--pp-text);
     padding:12px 14px;
     border-radius:var(--pp-radius-sm);
@@ -180,8 +180,8 @@ function pp_app_shell_styles(): string
     gap:8px;
     padding:6px 14px;
     border-radius:999px;
-    background:rgba(167,139,250,.12);
-    border:1px solid rgba(167,139,250,.35);
+    background:rgba(250,204,21,.12);
+    border:1px solid rgba(250,204,21,.4);
     color:var(--pp-primary);
     font-size:11px;
     font-weight:700;
@@ -215,7 +215,7 @@ function pp_nav_styles(): string
   .page-nav-hint{display:block;font-size:10px;font-weight:500;color:var(--pp-muted);text-transform:uppercase;margin-top:2px}
   .page-nav-current{
     flex-shrink:0;padding:8px 16px;border-radius:999px;
-    background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.4);
+    background:rgba(250,204,21,.15);border:1px solid rgba(250,204,21,.45);
     color:var(--pp-primary);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   }
   @media(max-width:480px){
@@ -245,13 +245,13 @@ function pp_admin_shell_styles(): string
     width:auto;padding:12px 22px;border:none;border-radius:var(--pp-radius-sm);
     background:linear-gradient(135deg,var(--pp-cta),var(--pp-cta-hover));color:var(--pp-cta-text);
     font-family:var(--pp-font-head);font-size:1rem;font-weight:700;letter-spacing:.02em;cursor:pointer;
-    box-shadow:0 6px 20px rgba(249,115,22,.3);
+    box-shadow:0 6px 20px rgba(250,204,21,.3);
   }
   .btn-danger{background:var(--pp-danger);color:#fff;box-shadow:none}
   table{width:100%;border-collapse:collapse;font-size:14px}
   th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--pp-border)}
   th{color:var(--pp-muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-  .flash{padding:12px 14px;border-radius:var(--pp-radius-sm);margin-bottom:1rem;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.35);color:var(--pp-text);font-size:14px}
+  .flash{padding:12px 14px;border-radius:var(--pp-radius-sm);margin-bottom:1rem;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.4);color:var(--pp-text);font-size:14px}
   .pwd-box{background:var(--pp-bg-soft);padding:12px;border-radius:var(--pp-radius-sm);font-family:monospace;color:var(--pp-accent);margin-top:8px;word-break:break-all;border:1px solid var(--pp-border)}
   .hint{font-size:12px;color:var(--pp-muted);margin-top:-8px;margin-bottom:1rem;line-height:1.5}
   .page-nav{max-width:900px}
