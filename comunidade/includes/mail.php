@@ -132,7 +132,7 @@ function send_member_credentials_email(string $email, string $name, string $pass
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
     $displayName = $name !== '' ? $name : $email;
 
-    $subject = 'Seu acesso à Comunidade Perfect Pay';
+    $subject = 'Compra aprovada — dados de acesso à comunidade';
     $content = mail_build_content($displayName, $email, $password, $loginUrl, $siteName);
     $mimeBody = mail_build_mime_body($content['text'], $content['html']);
 
@@ -201,89 +201,62 @@ function mail_build_mime_body(string $textBody, string $htmlBody): string
 function mail_build_content(string $displayName, string $email, string $password, string $loginUrl, string $siteName): array
 {
     $cfg = app_config();
-    $whatsappUrl = (string) ($cfg['whatsapp_group_url'] ?? 'https://chat.whatsapp.com/DVBiPgbpbiyC8y6mD8iqIS');
-    $albunsUrl = rtrim((string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php'), '/');
-    $albunsUrl = preg_replace('#/login\.php$#', '', $albunsUrl) . '/albuns/';
+    $supportEmail = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
 
     $textBody = implode("\n", [
-        "Olá, {$displayName}!",
+        "Olá, {$displayName},",
         '',
-        'Bem-vindo à Comunidade Perfect Pay!',
+        'Sua compra na Comunidade Perfect Pay foi aprovada.',
+        'Este e-mail contém os dados para acessar a área de membros (mensagem automática).',
         '',
-        'Agora você faz parte da nossa biblioteca exclusiva de PDFs da comunidade.',
-        'Aqui você terá acesso a:',
-        '- Conteúdos especiais sobre Copa do Mundo',
-        '- Bastidores dos vídeos do canal',
-        '- Dicas de tecnologia e segurança digital',
-        '- Materiais exclusivos, projetos e novidades antecipadas',
+        'Página de login:',
+        $loginUrl,
         '',
-        'Aproveite ao máximo e fique ligado nas atualizações!',
+        'E-mail de login: ' . $email,
+        'Senha de acesso: ' . $password,
         '',
-        '--- SEU ACESSO PESSOAL (não compartilhe) ---',
-        'Área VIP: ' . $loginUrl,
-        'E-mail: ' . $email,
-        'Senha: ' . $password,
+        'Não compartilhe esta senha. Você pode alterá-la após entrar.',
         '',
-        'Ver PDFs online: ' . $albunsUrl,
-        'Grupo VIP WhatsApp: ' . $whatsappUrl,
+        'Dúvidas: ' . $supportEmail,
         '',
-        '— Equipe Perfect Pay',
+        '— Agencia Job / Perfect Pay',
+        'https://perfectpay.agenciajob.com',
     ]);
 
     $safeName = htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8');
     $safeEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
     $safePassword = htmlspecialchars($password, ENT_QUOTES, 'UTF-8');
     $safeLogin = htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8');
-    $safeWhatsapp = htmlspecialchars($whatsappUrl, ENT_QUOTES, 'UTF-8');
-    $safeAlbuns = htmlspecialchars($albunsUrl, ENT_QUOTES, 'UTF-8');
+    $safeSupport = htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8');
 
     $htmlBody = <<<HTML
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#050505;font-family:Arial,Helvetica,sans-serif;color:#f0ede8">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:32px 16px">
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:24px 16px">
     <tr><td align="center">
-      <table width="100%" style="max-width:560px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden">
-        <tr><td style="background:linear-gradient(135deg,#ca8a04,#12100a);padding:28px 24px;text-align:center">
-          <p style="margin:0;font-size:22px;line-height:1.3">🔥 <strong style="color:#FFDF00">Bem-vindo à Comunidade Perfect Pay!</strong> 🔥</p>
+      <table width="100%" style="max-width:520px;background:#ffffff;border:1px solid #e4e4e7;border-radius:8px">
+        <tr><td style="padding:24px 28px 8px;font-size:18px;font-weight:bold;color:#1a1a1a">
+          Comunidade Perfect Pay
         </td></tr>
-        <tr><td style="padding:28px 24px">
-          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#eee">Olá, <strong style="color:#FFDF00">{$safeName}</strong>!</p>
-          <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#ccc">Agora você faz parte da nossa <strong>biblioteca exclusiva de PDFs</strong> da comunidade 😄</p>
-          <p style="margin:0 0 10px;font-size:14px;color:#aaa">Aqui você terá acesso a:</p>
-          <ul style="margin:0 0 20px;padding-left:20px;font-size:14px;line-height:1.9;color:#ccc">
-            <li>⚽ Conteúdos especiais sobre Copa do Mundo</li>
-            <li>🎥 Bastidores dos vídeos do canal</li>
-            <li>💻 Dicas de tecnologia e segurança digital</li>
-            <li>🚀 Materiais exclusivos, projetos e novidades antecipadas</li>
-          </ul>
-          <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#bbb">Aproveite ao máximo e fique ligado nas atualizações, porque sempre estaremos trazendo conteúdos novos por aqui ❤️</p>
-
-          <p style="margin:0 0 10px;font-size:12px;letter-spacing:2px;color:#FFDF00;font-weight:bold;text-transform:uppercase">Seu acesso pessoal</p>
-          <p style="margin:0 0 12px;font-size:13px;color:#888">Guarde estes dados — são só seus. Não compartilhe o link de login.</p>
-          <table width="100%" style="background:#0a0a0a;border:1px solid #333;border-radius:6px;margin-bottom:20px">
-            <tr><td style="padding:16px;font-size:14px;line-height:1.9">
-              <strong style="color:#888">Área VIP:</strong><br>
-              <a href="{$safeLogin}" style="color:#4da3ff;word-break:break-all">{$safeLogin}</a><br><br>
-              <strong style="color:#888">E-mail:</strong><br><span style="color:#fff">{$safeEmail}</span><br><br>
-              <strong style="color:#888">Senha:</strong><br>
-              <span style="color:#FFDF00;font-size:18px;font-weight:bold;letter-spacing:1px">{$safePassword}</span>
+        <tr><td style="padding:0 28px 16px;font-size:14px;line-height:1.6;color:#3f3f46">
+          Olá, {$safeName}. Sua compra foi <strong>aprovada</strong>. Seguem os dados para entrar na área de membros.
+        </td></tr>
+        <tr><td style="padding:0 28px 20px">
+          <table width="100%" style="background:#f9fafb;border:1px solid #e4e4e7;border-radius:6px">
+            <tr><td style="padding:16px;font-size:14px;line-height:1.8;color:#27272a">
+              <strong>Login:</strong> {$safeEmail}<br>
+              <strong>Senha:</strong> {$safePassword}<br>
+              <strong>Link:</strong> <a href="{$safeLogin}" style="color:#2563eb">{$safeLogin}</a>
             </td></tr>
           </table>
-
-          <p style="text-align:center;margin:0 0 12px">
-            <a href="{$safeLogin}" style="display:inline-block;background:#FFDF00;color:#002776;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">ACESSAR ÁREA VIP</a>
-          </p>
-          <p style="text-align:center;margin:0 0 12px">
-            <a href="{$safeAlbuns}" style="display:inline-block;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">📚 VER PDFs ONLINE</a>
-          </p>
-          <p style="text-align:center;margin:0">
-            <a href="{$safeWhatsapp}" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">💬 GRUPO VIP WHATSAPP</a>
-          </p>
         </td></tr>
-        <tr><td style="padding:16px 24px;border-top:1px solid #222;text-align:center;font-size:12px;color:#666">
-          Comunidade Perfect Pay · Copa do Mundo 2026
+        <tr><td style="padding:0 28px 24px">
+          <a href="{$safeLogin}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 20px;border-radius:6px">Acessar área de membros</a>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #e4e4e7;font-size:12px;line-height:1.5;color:#71717a">
+          Mensagem automática após confirmação de pagamento. Suporte: <a href="mailto:{$safeSupport}" style="color:#2563eb">{$safeSupport}</a>
         </td></tr>
       </table>
     </td></tr>
@@ -310,7 +283,9 @@ function mail_extra_headers(string $fromEmail, string $replyTo): array
     }
     $lines = [
         'Message-ID: <' . bin2hex(random_bytes(8)) . '.' . time() . '@' . $domain . '>',
-        'X-Mailer: PerfectPay-Comunidade',
+        'X-Priority: 3',
+        'Importance: Normal',
+        'Auto-Submitted: auto-generated',
     ];
     if ($replyTo !== '') {
         $lines[] = 'Reply-To: <' . $replyTo . '>';
