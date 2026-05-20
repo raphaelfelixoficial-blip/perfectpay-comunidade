@@ -31,8 +31,8 @@ function site_status_defaults(): array
 {
     return [
         'home_layout' => 'simple',
-        'home_title' => 'Perfect Pay',
-        'home_message' => "Bem-vindo ao Perfect Pay.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
+        'home_title' => 'Figurinhas da Copa',
+        'home_message' => "Bem-vindo à Comunidade Figurinhas da Copa.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
         'home_video_url' => 'https://www.youtube.com/watch?v=yskrod-EXeQ',
         'members_enabled' => true,
         'updated_at' => 0,
@@ -90,7 +90,7 @@ function site_status_normalize(array $raw): array
     $custom = trim((string) ($raw['custom_message'] ?? ''));
     $mode = (string) ($raw['mode'] ?? 'open');
     $legacyMessages = [
-        'open' => 'Bem-vindo ao Perfect Pay.',
+        'open' => 'Bem-vindo à Comunidade Figurinhas da Copa.',
         'goal_reached' => "Encerramos as inscrições.\n\nParabéns a todos que garantiram o acesso!",
         'offer_closed' => "Oferta finalizada.\n\nObrigado pelo interesse.",
         'thanks' => "Parabéns a quem entrou na comunidade!\n\nObrigado a todos que compraram.",
@@ -99,7 +99,7 @@ function site_status_normalize(array $raw): array
 
     return [
         'home_layout' => $mode === 'open' ? 'full' : 'simple',
-        'home_title' => 'Perfect Pay',
+        'home_title' => 'Figurinhas da Copa',
         'home_message' => $message,
         'home_video_url' => $defaults['home_video_url'],
         'members_enabled' => $mode === 'open',

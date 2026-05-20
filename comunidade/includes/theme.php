@@ -57,7 +57,7 @@ CSS;
 function render_pp_footer(): void
 {
     ?>
-<footer class="pp-footer">© <?= (int) date('Y') ?> Perfect Pay · Comunidade exclusiva</footer>
+<footer class="pp-footer">© <?= (int) date('Y') ?> Comunidade Figurinhas da Copa · Copa 2026</footer>
 <?php
 }
 

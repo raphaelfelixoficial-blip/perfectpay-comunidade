@@ -5,7 +5,7 @@ require_once dirname(__DIR__) . '/includes/albuns.php';
 require_once dirname(__DIR__) . '/includes/site-status.php';
 require_once dirname(__DIR__) . '/includes/mail.php';
 require_once dirname(__DIR__) . '/includes/members.php';
-require_once dirname(__DIR__) . '/includes/perfectpay.php';
+require_once dirname(__DIR__) . '/includes/asaas.php';
 require_admin();
 start_session();
 
@@ -168,29 +168,44 @@ if ($action === 'test_email') {
     if (!smtp_is_configured()) {
         redirect_flash('Configure a senha SMTP da caixa suporte@ antes de testar.');
     }
-    $result = send_member_credentials_email($testTo, 'Teste Perfect Pay', 'senha-teste-123');
+    $result = send_member_credentials_email($testTo, 'Teste Figurinhas da Copa', 'senha-teste-123');
     if ($result['ok']) {
         redirect_flash("E-mail de teste enviado para {$testTo}. Verifique a caixa de entrada e o spam.");
     }
     redirect_flash('Falha no teste: ' . $result['error']);
 }
 
-if ($action === 'simulate_webhook') {
+if ($action === 'save_asaas') {
+    $apiKey = (string) ($_POST['asaas_api_key'] ?? '');
+    $webhookToken = (string) ($_POST['asaas_webhook_token'] ?? '');
+    $value = (float) str_replace(',', '.', (string) ($_POST['asaas_checkout_value'] ?? '97'));
+    $environment = (string) ($_POST['asaas_environment'] ?? 'production');
+    if ($apiKey === '' && !asaas_is_configured()) {
+        redirect_flash('Informe a chave API do Asaas (Integrações → API).');
+    }
+    if (update_asaas_settings($apiKey, $webhookToken, $value > 0 ? $value : 97, $environment)) {
+        redirect_flash('Asaas configurado. Cadastre o webhook no painel Asaas e teste uma compra.');
+    }
+    redirect_flash('Não foi possível salvar configuração Asaas.');
+}
+
+if ($action === 'simulate_asaas_webhook') {
     $testEmail = normalize_email((string) ($_POST['test_email'] ?? ''));
     if ($testEmail === '' || !filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
-        redirect_flash('Informe um e-mail válido para simular a compra.');
-    }
-    $cfg = app_config();
-    if (trim((string) ($cfg['perfectpay_webhook_token'] ?? '')) === '') {
-        redirect_flash('Configure perfectpay_webhook_token em data/config.php antes de simular.');
+        redirect_flash('Informe um e-mail válido para simular o pagamento.');
     }
     $name = trim((string) ($_POST['test_name'] ?? ''));
-    $payload = perfectpay_build_test_payload($testEmail, $name);
-    $result = perfectpay_handle_webhook($payload);
-    if ($result['ok']) {
-        redirect_flash('Simulação OK: ' . $result['message'] . " ({$testEmail}). Verifique o e-mail e a lista de membros.");
+    $payload = asaas_build_test_payload_with_email($testEmail, $name);
+    $cfg = app_config();
+    $token = trim((string) ($cfg['asaas_webhook_token'] ?? ''));
+    if ($token !== '') {
+        $_SERVER['HTTP_ASAAS_ACCESS_TOKEN'] = $token;
     }
-    redirect_flash('Simulação falhou: ' . $result['message']);
+    $result = asaas_handle_webhook($payload);
+    if ($result['ok']) {
+        redirect_flash('Simulação Asaas OK: ' . $result['message'] . " ({$testEmail}).");
+    }
+    redirect_flash('Simulação Asaas falhou: ' . $result['message']);
 }
 
 if ($action === 'change_admin_password') {

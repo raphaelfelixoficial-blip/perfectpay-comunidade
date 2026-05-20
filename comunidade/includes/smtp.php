@@ -89,10 +89,10 @@ function smtp_send(
         $message .= 'Message-ID: <' . bin2hex(random_bytes(8)) . '.' . time() . '@' . $domain . '>' . "\r\n";
         $message .= 'Subject: ' . mail_encode_subject($subject) . "\r\n";
         $message .= 'MIME-Version: 1.0' . "\r\n";
-        $message .= 'X-Mailer: PerfectPay-Comunidade' . "\r\n";
+        $message .= 'X-Mailer: FigurinhasDaCopa-Comunidade' . "\r\n";
         $message .= $mimeBody . "\r\n";
 
-        fwrite($socket, $message . "\r\n.\r\n");
+        smtp_write_message($socket, $message);
         smtp_expect($socket, [250]);
         smtp_cmd($socket, 'QUIT', [221]);
     } catch (Throwable $e) {
@@ -102,6 +102,22 @@ function smtp_send(
 
     fclose($socket);
     return ['ok' => true, 'error' => ''];
+}
+
+function smtp_write_message($socket, string $data): void
+{
+    $lines = preg_split("/\r\n|\n|\r/", $data) ?: [];
+    foreach ($lines as $line) {
+        while (strlen($line) > 990) {
+            fwrite($socket, substr($line, 0, 990) . "\r\n");
+            $line = substr($line, 990);
+        }
+        if ($line === '.') {
+            $line = '..';
+        }
+        fwrite($socket, $line . "\r\n");
+    }
+    fwrite($socket, ".\r\n");
 }
 
 function smtp_cmd($socket, string $cmd, array $okCodes): string

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comunidade Perfect Pay — Copa do Mundo 2026</title>
+<title>Comunidade Figurinhas da Copa — Copa do Mundo 2026</title>
 <link rel="icon" href="/favicon.jpg" type="image/jpeg">
 <link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
 <link rel="apple-touch-icon" href="/favicon.jpg">
@@ -33,7 +33,9 @@
   .badge-hero{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;max-width:100%;background:rgba(0,151,57,0.2);border:1px solid rgba(255,223,0,0.6);color:var(--br-yellow);font-size:clamp(10px,2.5vw,12px);font-weight:700;letter-spacing:clamp(1px,1vw,4px);text-transform:uppercase;padding:8px clamp(12px,4vw,24px);border-radius:2px;margin-bottom:1.5rem;backdrop-filter:blur(10px);text-align:center;line-height:1.4}
   .badge-hero i{font-size:16px}
 
-  .hero-content h1{font-family:'Syne',sans-serif;font-size:clamp(28px,8vw,72px);letter-spacing:clamp(0px,0.5vw,3px);line-height:1.05;color:#fff;margin-bottom:.5rem;text-shadow:0 4px 30px rgba(0,0,0,0.8);word-break:break-word;hyphens:auto}
+  .hero-content h1.hero-title{font-family:'Syne',sans-serif;font-size:clamp(22px,4.5vw,48px);letter-spacing:.03em;line-height:1.1;color:#fff;margin-bottom:.75rem;text-shadow:0 4px 30px rgba(0,0,0,0.8);hyphens:none;word-break:normal;display:flex;flex-direction:column;align-items:center;gap:.15em;max-width:min(100%,34rem);padding:0 .5rem}
+  .hero-content h1 .hero-line{display:block;white-space:nowrap;max-width:100%;text-align:center}
+  .hero-content h1 .hero-line.gold{font-size:1.08em;letter-spacing:.02em}
   .hero-content h1 .gold{color:var(--br-yellow);text-shadow:0 0 40px rgba(255,223,0,0.5),0 4px 20px rgba(0,0,0,0.5)}
   .hero-content h1 .green{color:var(--br-green);text-shadow:0 0 30px rgba(0,151,57,0.6),0 4px 20px rgba(0,0,0,0.5)}
   .hero-content h1 .blue{color:#4da3ff;text-shadow:0 0 30px rgba(0,39,118,0.8),0 4px 20px rgba(0,0,0,0.5)}
@@ -168,7 +170,7 @@
   @media(max-width:768px){
     .hero-full{min-height:100dvh;padding:4rem 0 3rem}
     .hero-content{padding:1rem}
-    .hero-content h1{font-size:clamp(24px,8.5vw,38px)}
+    .hero-content h1.hero-title{font-size:clamp(20px,5.2vw,34px)}
     .badge-hero{margin-bottom:1rem}
     .hero-video{margin-bottom:1rem}
     .hero-desc{margin-bottom:1.25rem}
@@ -209,8 +211,12 @@
     .testi-grid{grid-template-columns:1fr}
     .rarity-card .rarity-name{font-size:18px}
   }
+  @media(max-width:400px){
+    .hero-content h1 .hero-line.gold{white-space:normal;text-wrap:balance;letter-spacing:.01em}
+  }
   @media(max-width:360px){
-    .hero-content h1{font-size:22px}
+    .hero-content h1.hero-title{font-size:clamp(17px,4.8vw,22px)}
+    .hero-content h1 .hero-line.gold{font-size:1em}
     .timer-sep{display:none}
     .timer{gap:6px}
   }
@@ -224,12 +230,17 @@
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="badge-hero"><i class="ti ti-users"></i> Comunidade Exclusiva FIFA World Cup 2026</div>
-    <h1>COMUNIDADE <span class="gold">PERFECT PAY</span><br><span class="green">VIP</span> <span class="blue">2026</span></h1>
+    <h1 class="hero-title">
+      <span class="hero-line">COMUNIDADE</span>
+      <span class="hero-line gold">FIGURINHAS</span>
+      <span class="hero-line gold">DA COPA</span>
+      <span class="hero-line hero-line-vip"><span class="green">VIP</span> <span class="blue">2026</span></span>
+    </h1>
     <div class="hero-video">
       <iframe src="https://www.youtube.com/embed/yskrod-EXeQ?si=0YfGEEez-4B18HJu" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
     </div>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
-    <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
+    <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
     <div class="hero-stats">
       <div class="hero-stat"><strong>+500</strong><span>Membros VIP</span></div>
       <div class="hero-stat"><strong>+1000</strong><span>Figurinhas na Plataforma</span></div>
@@ -284,7 +295,7 @@
         <div class="timer-sep">:</div>
         <div class="timer-box"><strong id="t-s">00</strong><span>seg</span></div>
       </div>
-      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
+      <a href="/checkout.php" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
     </div>
   </div>
 
@@ -295,7 +306,7 @@
       <div class="feat"><i class="ti ti-file-text feat-icon"></i><div class="feat-text"><strong>Acesso a Todos os PDFs</strong>Mais de 1.000 figurinhas em alta resolução — 980 do álbum + 80+ Legend exclusivas na plataforma</div></div>
       <div class="feat"><i class="ti ti-star feat-icon"></i><div class="feat-text"><strong>Legend Exclusivas</strong>Messi, Cristiano Ronaldo, Vini Jr, Haaland, Mbappé e todas as raridades disponíveis para membros VIP</div></div>
       <div class="feat"><i class="ti ti-sparkles feat-icon"></i><div class="feat-text"><strong>Holográficas na Plataforma</strong>Edições especiais em PDF — conteúdo exclusivo que não encontra em lugar nenhum</div></div>
-      <div class="feat"><i class="ti ti-video feat-icon"></i><div class="feat-text"><strong>Bastidores do Canal</strong>Saiba tudo sobre figurinhas com conteúdo exclusivo Perfect Pay — dicas, análises e identificação de falsas</div></div>
+      <div class="feat"><i class="ti ti-video feat-icon"></i><div class="feat-text"><strong>Bastidores do Canal</strong>Saiba tudo sobre figurinhas com conteúdo exclusivo Figurinhas da Copa — dicas, análises e identificação de falsas</div></div>
       <div class="feat"><i class="ti ti-cpu feat-icon"></i><div class="feat-text"><strong>Scans em 600 DPI</strong>Qualidade profissional — cada figurinha em alta definição dentro da plataforma</div></div>
       <div class="feat"><i class="ti ti-shield feat-icon"></i><div class="feat-text"><strong>Acesso Vitalício à Plataforma</strong>Entre na comunidade e mantenha acesso permanente com atualizações pós-Copa</div></div>
       <div class="feat"><i class="ti ti-lock feat-icon"></i><div class="feat-text"><strong>Atualizações Exclusivas</strong>Novos PDFs adicionados constantemente após convocações e lançamentos oficiais</div></div>
@@ -370,7 +381,7 @@
         <strong>R$ 19,90</strong>
         <span>pagamento único — acesso vitalício à comunidade</span>
       </div><br/>
-      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>
+      <a href="/checkout.php" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>
       <div style="margin-top:1.5rem">
         <a href="mailto:suporte@agenciajob.com" class="btn-sec">Tenho dúvidas</a>
         <a href="https://perfectpay.agenciajob.com/comunidade/login.php" class="btn-sec">Já sou membro — entrar</a>
@@ -383,7 +394,7 @@
 
 </div>
 
-<footer style="text-align:center;padding:1.5rem;font-size:12px;color:#b8a878;border-top:1px solid #4a4028;background:#12100a">© Perfect Pay · Comunidade exclusiva</footer>
+<footer style="text-align:center;padding:1.5rem;font-size:12px;color:#b8a878;border-top:1px solid #4a4028;background:#12100a">© Comunidade Figurinhas da Copa · Copa 2026</footer>
 
 <script>
 let end = Date.now() + (23*3600+47*60)*1000;
@@ -408,54 +419,6 @@ setInterval(tick,1000);
     });
   });
 </script>
-<!-- Balão WhatsApp -->
-<a href="https://wa.me/5511998475658" 
-   class="whatsapp-float" 
-   target="_blank">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         viewBox="0 0 32 32" 
-         width="32" 
-         height="32" 
-         fill="white">
-        <path d="M16 .4C7.4.4.4 7.4.4 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.6 0 15.6-7 15.6-15.6S24.6.4 16 .4zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.9 1.3 1.3-4.8-.3-.5c-1.3-2-1.9-4.3-1.9-6.7 0-7.1 5.8-12.9 12.9-12.9S28.9 8.9 28.9 16 23.1 28.7 16 28.7zm7.1-9.6c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.9.2-.2.4-1 1.2-1.2 1.4-.2.2-.5.3-.9.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.5-2.2-2.9-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.3-.6.1-.2 0-.5-.1-.7-.1-.2-.9-2.1-1.2-2.8-.3-.7-.6-.6-.9-.6h-.8c-.3 0-.7.1-1 .5-.3.4-1.3 1.3-1.3 3.1 0 1.8 1.3 3.5 1.5 3.7.2.2 2.5 3.8 6.1 5.3.8.4 1.5.6 2 .7.8.3 1.5.2 2 .1.6-.1 2.2-.9 2.5-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5z"/>
-    </svg>
-</a>
-
-<style>
-.whatsapp-float {
-    position: fixed;
-    width: 65px;
-    height: 65px;
-    bottom: 20px;
-    right: 20px;
-    background: #25D366;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 9999;
-    transition: 0.3s;
-    animation: pulse 2s infinite;
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.1);
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-    }
-}
-</style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-G869ZPLWSB"></script>
 <script>

@@ -4,6 +4,7 @@ require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/albuns.php';
 require_once dirname(__DIR__) . '/includes/site-status.php';
 require_once dirname(__DIR__) . '/includes/mail.php';
+require_once dirname(__DIR__) . '/includes/asaas.php';
 require_once dirname(__DIR__) . '/includes/nav.php';
 require_once dirname(__DIR__) . '/includes/theme.php';
 require_admin();
@@ -19,7 +20,7 @@ unset($_SESSION['flash']);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Admin — Perfect Pay VIP</title>
+<title>Admin — Figurinhas da Copa VIP</title>
 <?php render_favicon(); ?>
 <?= pp_fonts_link() ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -167,31 +168,54 @@ unset($_SESSION['flash']);
   </div>
 
   <div class="card">
-    <h2><i class="ti ti-plug-connected"></i> Integração Perfect Pay</h2>
-    <p class="hint" style="margin-top:0">Após compra aprovada, o webhook libera acesso e envia e-mail com login e senha.</p>
-    <label>Página de obrigado — pagamento aprovado</label>
-    <input type="text" readonly value="https://perfectpay.agenciajob.com/obrigado.php" onclick="this.select()">
-    <label style="margin-top:1rem">Página de boleto emitido</label>
-    <input type="text" readonly value="https://perfectpay.agenciajob.com/boleto-emitido.php" onclick="this.select()">
-    <label>Webhook (URL em Ferramentas → Webhook - Vendas)</label>
-    <input type="text" readonly value="https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php" onclick="this.select()">
-    <p class="hint">No painel Perfect Pay: marque o produto/checkout <strong>PPU38CQC76U</strong>, evento <strong>Aprovado (status 2)</strong>, cole a URL do webhook e o mesmo token de <code>config.php</code>. Sem isso a venda não cadastra sozinha.</p>
-    <p class="hint">Log de entregas: <code>comunidade/data/perfectpay-webhook.log</code> · E-mails: <code>mail.log</code></p>
-    <p class="hint" style="margin-top:.75rem"><strong>E-mail no spam?</strong> Use SMTP <code>mail.agenciajob.com:465</code> (SSL) com a mesma caixa do remetente (<code>suporte@</code> ou <code>noreply@</code>). No Gmail: marque “Não é spam” no primeiro e-mail. Remetente <code>suporte@</code> costuma entregar melhor que <code>noreply@</code>.</p>
-    <p class="hint" style="color:#c9a227;margin-top:.75rem"><strong>Teste na Perfect Pay:</strong> o botão de teste deles só funciona se existir uma <em>venda real</em> com status Aprovado na conta — por isso aparece “nenhuma venda com o evento desejado”. Use o simulador abaixo ou faça uma compra teste.</p>
-    <form method="post" action="api.php" style="margin-top:1rem;padding-top:1rem;border-top:1px solid #2a2a2a">
-      <input type="hidden" name="action" value="simulate_webhook">
-      <label for="webhook_test_email">Simular compra aprovada (mesmo fluxo do webhook)</label>
+    <h2><i class="ti ti-credit-card"></i> Checkout Asaas</h2>
+    <?php if (asaas_is_configured()): ?>
+      <p class="hint smtp-ok" style="margin-bottom:1rem">API Asaas configurada — checkout ativo em <code>/checkout.php</code></p>
+    <?php else: ?>
+      <p class="hint" style="color:#dc3545;margin-bottom:1rem">Chave API Asaas não configurada.</p>
+    <?php endif; ?>
+    <form method="post" action="api.php">
+      <input type="hidden" name="action" value="save_asaas">
+      <label for="asaas_api_key">Chave API Asaas (access_token)</label>
+      <input type="password" id="asaas_api_key" name="asaas_api_key" placeholder="Cole a chave de Integrações → API" autocomplete="off">
+      <p class="hint">Deixe em branco para manter a chave já salva no servidor.</p>
+      <label for="asaas_webhook_token">Token do webhook (authToken no painel Asaas)</label>
+      <input type="text" id="asaas_webhook_token" name="asaas_webhook_token" placeholder="Token que você define ao criar o webhook" value="<?= htmlspecialchars((string)(app_config()['asaas_webhook_token'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
       <div class="row">
         <div>
-          <input type="email" id="webhook_test_email" name="test_email" required placeholder="email@comprador.com" value="<?= htmlspecialchars((string)($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+          <label for="asaas_checkout_value">Valor (R$)</label>
+          <input type="text" id="asaas_checkout_value" name="asaas_checkout_value" value="<?= htmlspecialchars((string)(app_config()['asaas_checkout_value'] ?? '97'), ENT_QUOTES, 'UTF-8') ?>" required>
         </div>
         <div>
-          <input type="text" name="test_name" placeholder="Nome do comprador (opcional)">
+          <label for="asaas_environment">Ambiente</label>
+          <select id="asaas_environment" name="asaas_environment" style="width:100%;padding:10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px">
+            <option value="production" <?= (app_config()['asaas_environment'] ?? 'production') === 'production' ? 'selected' : '' ?>>Produção</option>
+            <option value="sandbox" <?= (app_config()['asaas_environment'] ?? '') === 'sandbox' ? 'selected' : '' ?>>Sandbox (testes)</option>
+          </select>
         </div>
       </div>
-      <button type="submit" class="btn">SIMULAR VENDA APROVADA</button>
-      <p class="hint">Cadastra o e-mail, gera senha e envia o e-mail de acesso (se SMTP estiver OK).</p>
+      <button type="submit" class="btn">SALVAR ASAAS</button>
+    </form>
+    <label style="margin-top:1rem">URL do checkout (botões da home)</label>
+    <input type="text" readonly value="<?= htmlspecialchars(asaas_checkout_url(), ENT_QUOTES, 'UTF-8') ?>" onclick="this.select()">
+    <label style="margin-top:1rem">Webhook no Asaas (nome: <code><?= htmlspecialchars((string)(app_config()['asaas_webhook_name'] ?? 'asaas-figu'), ENT_QUOTES, 'UTF-8') ?></code>)</label>
+    <input type="text" readonly value="<?= htmlspecialchars(asaas_webhook_url(), ENT_QUOTES, 'UTF-8') ?>" onclick="this.select()">
+    <p class="hint">Eventos recomendados: <code>CHECKOUT_PAID</code>, <code>PAYMENT_CONFIRMED</code>, <code>PAYMENT_RECEIVED</code>. O Asaas envia o header <code>asaas-access-token</code> com o mesmo token acima.</p>
+    <label style="margin-top:1rem">Página de obrigado (após pagamento)</label>
+    <input type="text" readonly value="<?= htmlspecialchars(rtrim((string)(app_config()['asaas_thankyou_url'] ?? asaas_site_base_url() . '/obrigado.php'), '/'), ENT_QUOTES, 'UTF-8') ?>" onclick="this.select()">
+    <p class="hint">Após pagamento aprovado: cadastra membro e envia e-mail automaticamente. Log: <code>comunidade/data/asaas-webhook.log</code> · E-mails: <code>mail.log</code></p>
+    <form method="post" action="api.php" style="margin-top:1rem;padding-top:1rem;border-top:1px solid #2a2a2a">
+      <input type="hidden" name="action" value="simulate_asaas_webhook">
+      <label for="asaas_test_email">Simular pagamento confirmado</label>
+      <div class="row">
+        <div>
+          <input type="email" id="asaas_test_email" name="test_email" required placeholder="email@comprador.com" value="<?= htmlspecialchars((string)($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div>
+          <input type="text" name="test_name" placeholder="Nome (opcional)">
+        </div>
+      </div>
+      <button type="submit" class="btn">SIMULAR PAGAMENTO ASAAS</button>
     </form>
   </div>
 

@@ -14,12 +14,12 @@ function send_password_reset_email(string $email, string $name, string $password
 
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'suporte@agenciajob.com');
     $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
-    $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Perfect Pay');
+    $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Figurinhas da Copa');
     $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
-    $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
+    $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Figurinhas da Copa');
     $displayName = $name !== '' ? $name : $email;
 
-    $subject = 'Nova senha — Comunidade Perfect Pay';
+    $subject = 'Nova senha — Comunidade Figurinhas da Copa';
     $content = mail_build_reset_content($displayName, $email, $password, $loginUrl, $siteName);
     $mimeBody = mail_build_mime_body($content['text'], $content['html']);
 
@@ -32,22 +32,15 @@ function send_password_reset_email(string $email, string $name, string $password
         mail_log("Reset de senha SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
     }
 
-    $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
-    $headers = array_merge([
-        'MIME-Version: 1.0',
-        'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
-        'From: ' . mail_format_address($fromName, $fromEmail),
-    ], mail_extra_headers($fromEmail, $replyTo));
-
-    $body = "--{$boundary}\r\n";
-    $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $body .= $content['text'] . "\r\n\r\n";
-    $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    $body .= $content['html'] . "\r\n\r\n";
-    $body .= "--{$boundary}--";
-
-    $sent = @mail($email, mail_encode_subject($subject), $body, implode("\r\n", $headers));
+    $sent = mail_send_via_php_mail(
+        $email,
+        $subject,
+        $content['text'],
+        $content['html'],
+        $fromEmail,
+        $fromName,
+        $replyTo
+    );
 
     if (!$sent) {
         mail_log("Reset mail() falhou para {$email}");
@@ -71,7 +64,7 @@ function mail_build_reset_content(string $displayName, string $email, string $pa
         '',
         'Se não foi você, ignore este e-mail ou avise o suporte.',
         '',
-        '— Equipe Perfect Pay',
+        '— Equipe Figurinhas da Copa',
     ]);
 
     $safeName = htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8');
@@ -127,12 +120,12 @@ function send_member_credentials_email(string $email, string $name, string $pass
 
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'suporte@agenciajob.com');
     $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
-    $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Perfect Pay');
+    $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Figurinhas da Copa');
     $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
-    $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Perfect Pay');
+    $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Figurinhas da Copa');
     $displayName = $name !== '' ? $name : $email;
 
-    $subject = 'Seu acesso à Comunidade Perfect Pay';
+    $subject = 'Seu acesso à Comunidade Figurinhas da Copa';
     $content = mail_build_content($displayName, $email, $password, $loginUrl, $siteName);
     $mimeBody = mail_build_mime_body($content['text'], $content['html']);
 
@@ -145,22 +138,15 @@ function send_member_credentials_email(string $email, string $name, string $pass
         mail_log("SMTP falha para {$email}: " . $result['error'] . ' — tentando mail()');
     }
 
-    $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
-    $headers = array_merge([
-        'MIME-Version: 1.0',
-        'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
-        'From: ' . mail_format_address($fromName, $fromEmail),
-    ], mail_extra_headers($fromEmail, $replyTo));
-
-    $body = "--{$boundary}\r\n";
-    $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $body .= $content['text'] . "\r\n\r\n";
-    $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    $body .= $content['html'] . "\r\n\r\n";
-    $body .= "--{$boundary}--";
-
-    $sent = @mail($email, mail_encode_subject($subject), $body, implode("\r\n", $headers));
+    $sent = mail_send_via_php_mail(
+        $email,
+        $subject,
+        $content['text'],
+        $content['html'],
+        $fromEmail,
+        $fromName,
+        $replyTo
+    );
 
     if (!$sent) {
         mail_log("mail() falhou para {$email}");
@@ -184,31 +170,59 @@ function mail_use_smtp(array $cfg): bool
     return $noTls || $local || !empty($cfg['smtp_password']);
 }
 
+function mail_chunk_base64(string $content): string
+{
+    return rtrim(chunk_split(base64_encode($content), 76, "\r\n"), "\r\n");
+}
+
 function mail_build_mime_body(string $textBody, string $htmlBody): string
 {
-    $boundary = 'perfectpay_' . bin2hex(random_bytes(8));
+    $boundary = 'figcop_' . bin2hex(random_bytes(8));
     $body = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"' . "\r\n\r\n";
     $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $body .= $textBody . "\r\n\r\n";
+    $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
+    $body .= mail_chunk_base64($textBody) . "\r\n\r\n";
     $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    $body .= $htmlBody . "\r\n\r\n";
-    $body .= "--{$boundary}--";
+    $body .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
+    $body .= mail_chunk_base64($htmlBody) . "\r\n\r\n";
+    $body .= "--{$boundary}--\r\n";
     return $body;
+}
+
+function mail_send_via_php_mail(
+    string $toEmail,
+    string $subject,
+    string $textBody,
+    string $htmlBody,
+    string $fromEmail,
+    string $fromName,
+    string $replyTo
+): bool {
+    $mimeBody = mail_build_mime_body($textBody, $htmlBody);
+    $splitAt = strpos($mimeBody, "\r\n\r\n");
+    $contentType = $splitAt !== false ? substr($mimeBody, 0, $splitAt) : 'Content-Type: text/plain; charset=UTF-8';
+    $body = $splitAt !== false ? substr($mimeBody, $splitAt + 4) : $mimeBody;
+
+    $headers = array_merge([
+        'MIME-Version: 1.0',
+        $contentType,
+        'From: ' . mail_format_address($fromName, $fromEmail),
+    ], mail_extra_headers($fromEmail, $replyTo));
+
+    return (bool) @mail($toEmail, mail_encode_subject($subject), $body, implode("\r\n", $headers));
 }
 
 function mail_build_content(string $displayName, string $email, string $password, string $loginUrl, string $siteName): array
 {
-    $cfg = app_config();
-    $whatsappUrl = (string) ($cfg['whatsapp_group_url'] ?? 'https://chat.whatsapp.com/DVBiPgbpbiyC8y6mD8iqIS');
-    $albunsUrl = rtrim((string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php'), '/');
+    $albunsUrl = rtrim((string) (app_config()['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php'), '/');
     $albunsUrl = preg_replace('#/login\.php$#', '', $albunsUrl) . '/albuns/';
 
     $textBody = implode("\n", [
         "Olá, {$displayName}!",
         '',
-        'Bem-vindo à Comunidade Perfect Pay!',
+        'Bem-vindo à Comunidade Figurinhas da Copa!',
         '',
         'Agora você faz parte da nossa biblioteca exclusiva de PDFs da comunidade.',
         'Aqui você terá acesso a:',
@@ -225,16 +239,14 @@ function mail_build_content(string $displayName, string $email, string $password
         'Senha: ' . $password,
         '',
         'Ver PDFs online: ' . $albunsUrl,
-        'Grupo VIP WhatsApp: ' . $whatsappUrl,
         '',
-        '— Equipe Perfect Pay',
+        '— Equipe Figurinhas da Copa',
     ]);
 
     $safeName = htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8');
     $safeEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
     $safePassword = htmlspecialchars($password, ENT_QUOTES, 'UTF-8');
     $safeLogin = htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8');
-    $safeWhatsapp = htmlspecialchars($whatsappUrl, ENT_QUOTES, 'UTF-8');
     $safeAlbuns = htmlspecialchars($albunsUrl, ENT_QUOTES, 'UTF-8');
 
     $htmlBody = <<<HTML
@@ -246,7 +258,7 @@ function mail_build_content(string $displayName, string $email, string $password
     <tr><td align="center">
       <table width="100%" style="max-width:560px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden">
         <tr><td style="background:linear-gradient(135deg,#ca8a04,#12100a);padding:28px 24px;text-align:center">
-          <p style="margin:0;font-size:22px;line-height:1.3">🔥 <strong style="color:#FFDF00">Bem-vindo à Comunidade Perfect Pay!</strong> 🔥</p>
+          <p style="margin:0;font-size:22px;line-height:1.3">🔥 <strong style="color:#FFDF00">Bem-vindo à Comunidade Figurinhas da Copa!</strong> 🔥</p>
         </td></tr>
         <tr><td style="padding:28px 24px">
           <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#eee">Olá, <strong style="color:#FFDF00">{$safeName}</strong>!</p>
@@ -275,15 +287,12 @@ function mail_build_content(string $displayName, string $email, string $password
           <p style="text-align:center;margin:0 0 12px">
             <a href="{$safeLogin}" style="display:inline-block;background:#FFDF00;color:#002776;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">ACESSAR ÁREA VIP</a>
           </p>
-          <p style="text-align:center;margin:0 0 12px">
-            <a href="{$safeAlbuns}" style="display:inline-block;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">📚 VER PDFs ONLINE</a>
-          </p>
           <p style="text-align:center;margin:0">
-            <a href="{$safeWhatsapp}" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">💬 GRUPO VIP WHATSAPP</a>
+            <a href="{$safeAlbuns}" style="display:inline-block;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:4px;font-size:15px;margin:4px">📚 VER PDFs ONLINE</a>
           </p>
         </td></tr>
         <tr><td style="padding:16px 24px;border-top:1px solid #222;text-align:center;font-size:12px;color:#666">
-          Comunidade Perfect Pay · Copa do Mundo 2026
+          Comunidade Figurinhas da Copa · Copa do Mundo 2026
         </td></tr>
       </table>
     </td></tr>

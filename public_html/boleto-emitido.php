@@ -26,7 +26,7 @@ $billetUrlSafe = $billetUrl !== '' ? htmlspecialchars($billetUrl, ENT_QUOTES, 'U
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Boleto emitido — Perfect Pay</title>
+<title>Boleto emitido — Figurinhas da Copa</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -47,8 +47,8 @@ $billetUrlSafe = $billetUrl !== '' ? htmlspecialchars($billetUrl, ENT_QUOTES, 'U
 <body>
   <div class="card">
     <div class="icon"><i class="ti ti-file-invoice"></i></div>
-    <h1>Boleto <span>emitido</span></h1>
-    <p>Seu boleto foi gerado. Pague até o vencimento para liberar o acesso à comunidade.</p>
+    <h1>Pagamento <span>pendente</span></h1>
+    <p>Conclua o pagamento no checkout Asaas (Pix ou cartão) para liberar o acesso à comunidade.</p>
     <?php if ($emailSafe !== ''): ?>
     <div class="info-box" style="background:#10162e;border:1px solid var(--pp-border);border-radius:12px;padding:14px;margin:1rem 0;text-align:left">
       <strong style="font-size:11px;text-transform:uppercase;color:var(--pp-muted)">E-mail da compra</strong><br><?= $emailSafe ?>
@@ -56,7 +56,9 @@ $billetUrlSafe = $billetUrl !== '' ? htmlspecialchars($billetUrl, ENT_QUOTES, 'U
     <?php endif; ?>
     <div class="alert">Após a confirmação do pagamento você receberá o e-mail com <strong>login e senha</strong> de acesso.</div>
     <?php if ($billetUrlSafe !== ''): ?>
-    <a href="<?= $billetUrlSafe ?>" class="btn" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Abrir boleto</a>
+    <a href="<?= $billetUrlSafe ?>" class="btn" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Continuar pagamento</a>
+    <?php else: ?>
+    <a href="/checkout.php" class="btn"><i class="ti ti-shopping-cart"></i> Ir para o checkout</a>
     <?php endif; ?>
     <br><a href="<?= htmlspecialchars($comunidadeUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn-ghost">Sobre a comunidade →</a>
     <p class="footer">Dúvidas? <a href="mailto:suporte@agenciajob.com" style="color:var(--pp-primary)">suporte@agenciajob.com</a></p>

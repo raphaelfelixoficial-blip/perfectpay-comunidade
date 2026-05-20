@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Login — Perfect Pay</title>
+<title>Login — Figurinhas da Copa</title>
 <?php render_favicon(); ?>
 <?= pp_fonts_link() ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -51,7 +51,7 @@ body{display:flex;flex-direction:column;padding:1rem 0}
   <div class="login-wrap">
     <form class="pp-card" method="post" action="" style="width:100%;max-width:420px">
       <div class="pp-badge"><i class="ti ti-lock"></i> Área de membros</div>
-      <h1 class="pp-head">Perfect Pay <em>VIP</em></h1>
+      <h1 class="pp-head">Figurinhas da Copa <em>VIP</em></h1>
       <p class="pp-hint">Acesse com o e-mail autorizado e a senha enviada após a compra.</p>
       <?php if ($error): ?><div class="pp-err"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
       <label class="pp-label" for="email">E-mail</label>

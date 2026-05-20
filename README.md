@@ -32,34 +32,25 @@ No cPanel do domínio **agenciajob.com** (não só o subdomínio perfectpay):
 
 Teste em [mail-tester.com](https://www.mail-tester.com) após configurar DNS (aguarde até 24h de propagação).
 
-## Checkout (oferta atual)
+## Pagamento (Asaas)
 
-- **Link de compra:** https://checkout.perfectpay.com.br/pay/PPU38CQC76U  
-  Produto: *COMUNIDADE FIGURINHAS DA COPA - Oferta Especial*
+Único meio de pagamento: **Asaas** (Pix + cartão via checkout).
 
-## Integração Perfect Pay (compra → acesso automático)
+- **Botões da home:** https://perfectpay.agenciajob.com/checkout.php  
+  Cria uma sessão de checkout Asaas (Pix + cartão) e redireciona para pagamento.
+- **Webhook:** https://perfectpay.agenciajob.com/comunidade/webhook/asaas.php  
+  Eventos: `CHECKOUT_PAID`, `PAYMENT_CONFIRMED`, `PAYMENT_RECEIVED`
+- **Config:** `comunidade/data/config.php` (`asaas_api_key`, `asaas_webhook_token`, `asaas_checkout_value`)
+- **Admin:** seção *Checkout Asaas* — salvar chave, token e simular pagamento
 
-1. **Página de obrigado** (pagamento aprovado):
-   `https://perfectpay.agenciajob.com/obrigado.php`
+### Cadastrar webhook no Asaas
 
-2. **Página de boleto emitido** (quando o cliente gera boleto):
-   `https://perfectpay.agenciajob.com/boleto-emitido.php`
-
-3. **Webhook** (cadastro automático + e-mail com login/senha):
-   `https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php`
-
-   No painel Perfect Pay: **Ferramentas → Webhook - Vendas → Adicionar**
-   - URL: endpoint acima
-   - Marque o checkout/plano **PPU38CQC76U** e eventos **Aprovado** (e opcionalmente **Completo**)
-   - Copie o **token** do webhook para `perfectpay_webhook_token` em `comunidade/data/config.php`
-
-4. **Teste na Perfect Pay:** o envio de teste do painel deles só reenvia uma venda **real** já aprovada na conta. Sem venda, aparece *“nenhuma venda com o evento desejado”*. Alternativas:
-   - Simulador no admin: **Integração Perfect Pay → Simular venda aprovada**
-   - Fazer uma compra teste (cartão/boleto) e aprovar
-
-5. Quando a venda for aprovada (`sale_status_enum` = 2), o sistema:
-   - cadastra o e-mail do comprador na comunidade
-   - envia e-mail com link de login, e-mail e senha
+1. Painel Asaas → **Integrações → Webhooks → Adicionar**
+2. URL: endpoint acima
+3. Marque os eventos de pagamento/checkout listados
+4. Defina um **authToken** e cole o mesmo valor em `asaas_webhook_token` (admin ou config.php)
+5. Teste: admin → **Simular pagamento Asaas** ou compra real em `/checkout.php`
+6. Após pagamento confirmado: cadastra o membro e envia e-mail com login e senha (`obrigado.php`)
 
 ## Deploy
 

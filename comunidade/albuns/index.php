@@ -17,7 +17,7 @@ $total = array_sum(array_map('count', $categories));
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Álbuns — Perfect Pay</title>
+<title>Álbuns — Figurinhas da Copa</title>
 <?php render_favicon(); ?>
 <?= pp_fonts_link() ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">

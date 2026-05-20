@@ -16,7 +16,7 @@ $title = landing_h($S['home_title']);
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $title ?> — Perfect Pay</title>
+<title><?= $title ?> — Figurinhas da Copa</title>
 <link rel="icon" href="/favicon.jpg" type="image/jpeg">
 <link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@ $title = landing_h($S['home_title']);
     <a href="https://perfectpay.agenciajob.com/comunidade/login.php">Área de membros →</a>
   </p>
   <?php endif; ?>
-  <p class="home-footer">© <?= (int) date('Y') ?> Perfect Pay · Comunidade exclusiva</p>
+  <p class="home-footer">© <?= (int) date('Y') ?> Comunidade Figurinhas da Copa · Copa 2026</p>
 </div>
 </body>
 </html>

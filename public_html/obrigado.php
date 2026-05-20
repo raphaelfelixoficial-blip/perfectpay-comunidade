@@ -15,7 +15,7 @@ $emailSafe = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Obrigado — Perfect Pay</title>
+<title>Obrigado — Figurinhas da Copa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@ $emailSafe = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)
   <div class="card">
     <div class="icon"><i class="ti ti-circle-check"></i></div>
     <h1>Compra <span>confirmada</span></h1>
-    <p>Parabéns! Sua compra foi aprovada e o acesso à <strong style="color:var(--pp-text)">Comunidade Perfect Pay</strong> está sendo liberado.</p>
+    <p>Parabéns! Sua compra foi aprovada e o acesso à <strong style="color:var(--pp-text)">Comunidade Figurinhas da Copa</strong> está sendo liberado.</p>
     <?php if ($emailSafe !== ''): ?>
     <div class="info-box"><strong>E-mail de acesso</strong><span><?= $emailSafe ?></span></div>
     <?php endif; ?>
