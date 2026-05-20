@@ -141,3 +141,22 @@ function perfectpay_handle_webhook(array $payload): array
         'message' => "Membro {$action}; {$mail}",
     ];
 }
+
+/** Payload de venda aprovada para teste (admin ou curl). */
+function perfectpay_build_test_payload(string $email, string $name = ''): array
+{
+    $cfg = app_config();
+    return [
+        'token' => (string) ($cfg['perfectpay_webhook_token'] ?? ''),
+        'code' => 'PPTEST_' . date('YmdHis') . '_' . bin2hex(random_bytes(3)),
+        'sale_status_enum' => 2,
+        'sale_status_detail' => 'approved',
+        'date_approved' => date('Y-m-d H:i:s'),
+        'customer' => [
+            'email' => $email,
+            'full_name' => $name !== '' ? $name : 'Teste Comunidade',
+        ],
+        'product' => ['code' => 'TEST', 'name' => 'Teste webhook'],
+        'plan' => ['code' => 'TEST', 'name' => 'Plano teste'],
+    ];
+}

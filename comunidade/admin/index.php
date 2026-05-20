@@ -193,7 +193,22 @@ unset($_SESSION['flash']);
     <input type="text" readonly value="https://perfectpay.agenciajob.com/obrigado.php" onclick="this.select()">
     <label>Webhook (URL em Ferramentas → Webhook - Vendas)</label>
     <input type="text" readonly value="https://perfectpay.agenciajob.com/comunidade/webhook/perfectpay.php" onclick="this.select()">
-    <p class="hint">Eventos: <strong>Aprovado</strong> (obrigatório). Cole o token do webhook em <code>comunidade/data/config.php</code> → <code>perfectpay_webhook_token</code>. SMTP (noreply@) precisa estar configurado acima.</p>
+    <p class="hint">Eventos: <strong>Aprovado</strong> (obrigatório). Token já em <code>config.php</code>. SMTP (noreply@) precisa estar configurado acima.</p>
+    <p class="hint" style="color:#c9a227;margin-top:.75rem"><strong>Teste na Perfect Pay:</strong> o botão de teste deles só funciona se existir uma <em>venda real</em> com status Aprovado na conta — por isso aparece “nenhuma venda com o evento desejado”. Use o simulador abaixo ou faça uma compra teste.</p>
+    <form method="post" action="api.php" style="margin-top:1rem;padding-top:1rem;border-top:1px solid #2a2a2a">
+      <input type="hidden" name="action" value="simulate_webhook">
+      <label for="webhook_test_email">Simular compra aprovada (mesmo fluxo do webhook)</label>
+      <div class="row">
+        <div>
+          <input type="email" id="webhook_test_email" name="test_email" required placeholder="email@comprador.com" value="<?= htmlspecialchars((string)($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div>
+          <input type="text" name="test_name" placeholder="Nome do comprador (opcional)">
+        </div>
+      </div>
+      <button type="submit" class="btn">SIMULAR VENDA APROVADA</button>
+      <p class="hint">Cadastra o e-mail, gera senha e envia o e-mail de acesso (se SMTP estiver OK).</p>
+    </form>
   </div>
 
   <div class="card">

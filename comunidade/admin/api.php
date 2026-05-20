@@ -5,6 +5,7 @@ require_once dirname(__DIR__) . '/includes/albuns.php';
 require_once dirname(__DIR__) . '/includes/site-status.php';
 require_once dirname(__DIR__) . '/includes/mail.php';
 require_once dirname(__DIR__) . '/includes/members.php';
+require_once dirname(__DIR__) . '/includes/perfectpay.php';
 require_admin();
 start_session();
 
@@ -171,6 +172,24 @@ if ($action === 'test_email') {
         redirect_flash("E-mail de teste enviado para {$testTo}. Verifique a caixa de entrada e o spam.");
     }
     redirect_flash('Falha no teste: ' . $result['error']);
+}
+
+if ($action === 'simulate_webhook') {
+    $testEmail = normalize_email((string) ($_POST['test_email'] ?? ''));
+    if ($testEmail === '' || !filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+        redirect_flash('Informe um e-mail válido para simular a compra.');
+    }
+    $cfg = app_config();
+    if (trim((string) ($cfg['perfectpay_webhook_token'] ?? '')) === '') {
+        redirect_flash('Configure perfectpay_webhook_token em data/config.php antes de simular.');
+    }
+    $name = trim((string) ($_POST['test_name'] ?? ''));
+    $payload = perfectpay_build_test_payload($testEmail, $name);
+    $result = perfectpay_handle_webhook($payload);
+    if ($result['ok']) {
+        redirect_flash('Simulação OK: ' . $result['message'] . " ({$testEmail}). Verifique o e-mail e a lista de membros.");
+    }
+    redirect_flash('Simulação falhou: ' . $result['message']);
 }
 
 if ($action === 'change_admin_password') {
