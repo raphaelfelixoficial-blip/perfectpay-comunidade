@@ -58,7 +58,7 @@ unset($_SESSION['flash']);
       </label>
       <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="radio" name="home_layout" value="full" <?= ($siteStatusRaw['home_layout'] ?? '') === 'full' ? 'checked' : '' ?> style="width:auto;margin:4px 0 0">
-        <span><strong style="color:#fff">Landing completa</strong><br><span style="color:#888;font-size:12px">Página longa original com vídeo, oferta, figurinhas e botões de compra</span></span>
+        <span><strong style="color:#fff">Landing completa</strong><br><span style="color:#888;font-size:12px">Página longa com vídeo, oferta, benefícios e botões de compra</span></span>
       </label>
       <label for="home_title">Título (home simples)</label>
       <input type="text" id="home_title" name="home_title" value="<?= htmlspecialchars($siteStatusRaw['home_title'], ENT_QUOTES, 'UTF-8') ?>" required>

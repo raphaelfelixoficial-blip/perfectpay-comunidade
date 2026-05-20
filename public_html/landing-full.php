@@ -105,31 +105,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .rarity-silver{--rarity-color:#c0c0c0}
   .rarity-gold{--rarity-color:var(--br-yellow)}
 
-  /* ===== STICKER CARDS BIG ===== */
-  .sticker-section{background:#12100a;padding:4rem 1.5rem}
-  .sticker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1100px;margin:0 auto}
-  .sticker-card-big{background:#242018;border:2px solid #222;border-radius:12px;overflow:hidden;transition:all .4s;position:relative}
-  .sticker-card-big:hover{border-color:var(--br-yellow);transform:translateY(-6px);box-shadow:0 15px 50px rgba(255,223,0,0.1)}
-  .sticker-card-big .sticker-img-wrap{position:relative;height:280px;overflow:hidden}
-  .sticker-card-big .sticker-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
-  .sticker-card-big:hover .sticker-img-wrap img{transform:scale(1.08)}
-  .sticker-card-big .sticker-img-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(transparent,#242018)}
-  .sticker-card-big .sticker-info{padding:1.5rem}
-  .sticker-card-big .sticker-name{font-family:'Syne';font-size:22px;color:#fff;letter-spacing:2px}
-  .sticker-card-big .sticker-type{font-size:13px;color:#888;margin-top:4px}
-  .sticker-card-big .sticker-rarity{display:inline-block;margin-top:12px;padding:5px 16px;border-radius:3px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
-  .sticker-rarity.gold{background:rgba(255,223,0,0.15);color:var(--br-yellow);border:1px solid var(--br-yellow)}
-  .sticker-rarity.silver{background:rgba(192,192,192,0.15);color:#c0c0c0;border:1px solid #c0c0c0}
-  .sticker-rarity.legend{background:rgba(155,89,182,0.15);color:#9b59b6;border:1px solid #9b59b6}
-  .sticker-card-link{display:block;text-decoration:none;color:inherit}
-  .sticker-cta-wrap{text-align:center;margin-top:2.5rem}
-  .sticker-cta-wrap .btn-instagram{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;font-family:'Syne';font-size:18px;letter-spacing:1px;padding:14px 32px;border-radius:4px;text-decoration:none;border:2px solid var(--br-yellow);transition:all .25s}
-  .sticker-cta-wrap .btn-instagram-text{display:flex;flex-direction:column;align-items:center;line-height:1.2;text-align:center}
-  .sticker-cta-wrap .btn-instagram small{display:block;font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:0;font-weight:500;opacity:.9;margin-top:4px}
-  .sticker-cta-wrap .btn-instagram:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(131,58,180,0.4)}
-  .sticker-cta-note{font-size:14px;color:#888;margin-top:1rem;line-height:1.6}
-  .sticker-cta-note strong{color:var(--br-yellow)}
-
   /* ===== URGENCY ===== */
   .urgency{background:#0d0d0d;border:2px solid var(--br-green);border-radius:8px;padding:2rem;margin:0 auto 2rem;max-width:700px;text-align:center;position:relative;overflow:hidden;box-shadow:0 0 30px rgba(0,151,57,0.15)}
   .urgency::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at center,rgba(255,223,0,0.06) 0%,transparent 70%);pointer-events:none}
@@ -207,7 +182,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .agency-footer a:hover{color:var(--br-yellow)}
 
   @media(max-width:768px){
-    .album-grid,.sticker-grid,.testi-grid{grid-template-columns:1fr}
+    .album-grid,.testi-grid{grid-template-columns:1fr}
     .rarity-grid{grid-template-columns:repeat(2,1fr)}
     .steps-grid{grid-template-columns:1fr}
     .step-arrow{display:none}
@@ -227,7 +202,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
     .footer-cta .btn-hero{font-size:clamp(18px,5vw,24px)!important;padding:18px 20px!important;max-width:100%}
     .stadium-banner{height:250px}
     .album-card img{height:240px}
-    .sticker-card-big .sticker-img-wrap{height:220px}
     .stadium-text{width:calc(100% - 2rem);padding:0 1rem}
     .stadium-text h2{letter-spacing:1px}
   }
@@ -347,44 +321,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
         <div class="timer-box"><strong id="t-s">00</strong><span>seg</span></div>
       </div>
       <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC6TK" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
-    </div>
-  </div>
-
-  <!-- FIGURINHA PERSONALIZADA -->
-  <div class="sticker-section">
-    <div class="section-title">Sua <span class="gold">Figurinha</span> Personalizada</div>
-    <p class="section-subtitle">Crie sua figurinha exclusiva — escolha o modelo, envie sua foto e receba em alta qualidade.</p>
-    <div class="sticker-grid">
-      <div class="sticker-card-big">
-        <div class="sticker-img-wrap">
-          <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.55.jpeg" alt="Escolha o modelo da figurinha personalizada">
-        </div>
-        <div class="sticker-info">
-          <div class="sticker-name">ESCOLHA O MODELO</div>
-          <div class="sticker-type">Você escolhe o modelo da figurinha</div>
-          <span class="sticker-rarity gold">PASSO 1</span>
-        </div>
-      </div>
-      <div class="sticker-card-big">
-        <div class="sticker-img-wrap">
-          <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.54%20(1).jpeg" alt="Envie sua foto e seus dados">
-        </div>
-        <div class="sticker-info">
-          <div class="sticker-name">ENVIE SUA FOTO</div>
-          <div class="sticker-type">Passa sua foto e seus dados</div>
-          <span class="sticker-rarity silver">PASSO 2</span>
-        </div>
-      </div>
-      <div class="sticker-card-big">
-        <div class="sticker-img-wrap">
-          <img src="/WhatsApp%20Image%202026-05-18%20at%2001.58.54.jpeg" alt="Personalize posição e cor da Legend">
-        </div>
-        <div class="sticker-info">
-          <div class="sticker-name">PERSONALIZE</div>
-          <div class="sticker-type">Escolhe posição em campo ou cor da Legend — e recebe sua figurinha personalizada</div>
-          <span class="sticker-rarity legend">PASSO 3</span>
-        </div>
-      </div>
     </div>
   </div>
 
