@@ -12,11 +12,10 @@ return [
     'admin_password_hash' => '$2y$10$X8cMRoV4Onq3ggTV9ks7zuc.Sx8kbsxZyr2E6pXMKHgdBCxppA3Na',
     'session_lifetime' => 86400 * 7,
 
-    // Envio: noreply@agenciajob.com (caixa no servidor cPanel, não Hostinger)
+    // Envio: suporte@agenciajob.com (caixa no servidor cPanel)
     'mail_enabled' => true,
-    // noreply@ ou suporte@ — se trocar o e-mail, use a senha da MESMA caixa no SMTP abaixo
-    'mail_from_email' => 'noreply@agenciajob.com',
-    'mail_from_name' => 'Perfect Pay',
+    'mail_from_email' => 'suporte@agenciajob.com',
+    'mail_from_name' => 'Comunidade Perfect Pay',
     'mail_reply_to' => 'suporte@agenciajob.com',
     'mail_login_url' => 'https://perfectpay.agenciajob.com/comunidade/login.php',
     'whatsapp_group_url' => 'https://chat.whatsapp.com/DVBiPgbpbiyC8y6mD8iqIS',
@@ -25,7 +24,7 @@ return [
     'smtp_host' => 'mail.agenciajob.com',
     'smtp_port' => 465,
     'smtp_encryption' => 'ssl',
-    'smtp_username' => 'noreply@agenciajob.com',
+    'smtp_username' => 'suporte@agenciajob.com',
     'smtp_password' => '',
     'smtp_ehlo' => 'mail.agenciajob.com',
 

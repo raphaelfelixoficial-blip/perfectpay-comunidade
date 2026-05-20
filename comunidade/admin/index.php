@@ -96,7 +96,7 @@ unset($_SESSION['flash']);
         <input type="checkbox" name="send_email" value="1" checked style="width:auto;margin:0">
         Enviar e-mail automático com link de login, e-mail e senha
       </label>
-      <p class="hint">E-mails enviados de noreply@agenciajob.com · respostas para suporte@agenciajob.com</p>
+      <p class="hint">E-mails enviados de suporte@agenciajob.com</p>
       <button type="submit" class="btn">ADICIONAR E-MAIL</button>
     </form>
   </div>
@@ -145,15 +145,15 @@ unset($_SESSION['flash']);
   <div class="card">
     <h2>E-mail do servidor (SMTP)</h2>
     <?php if (smtp_is_configured()): ?>
-      <p class="hint smtp-ok" style="margin-bottom:1rem">SMTP configurado — envio como noreply@agenciajob.com (servidor)</p>
+      <p class="hint smtp-ok" style="margin-bottom:1rem">SMTP configurado — envio como suporte@agenciajob.com (servidor)</p>
     <?php else: ?>
-      <p class="hint" style="color:#dc3545;margin-bottom:1rem">SMTP não configurado — salve a senha da caixa noreply@agenciajob.com (cPanel).</p>
+      <p class="hint" style="color:#dc3545;margin-bottom:1rem">SMTP não configurado — salve a senha da caixa suporte@agenciajob.com (cPanel).</p>
     <?php endif; ?>
     <form method="post" action="api.php">
       <input type="hidden" name="action" value="save_smtp">
-      <label for="smtp_password">Senha SMTP (caixa noreply@agenciajob.com no cPanel)</label>
+      <label for="smtp_password">Senha SMTP (caixa suporte@agenciajob.com no cPanel)</label>
       <input type="password" id="smtp_password" name="smtp_password" required placeholder="Senha do e-mail no servidor">
-      <p class="hint">Login: noreply@agenciajob.com · host localhost:587 (TLS) · admin do painel: suporte@agenciajob.com</p>
+      <p class="hint">Login: suporte@agenciajob.com · host mail.agenciajob.com:465 (SSL)</p>
       <button type="submit" class="btn">SALVAR SENHA SMTP</button>
     </form>
     <form method="post" action="api.php" style="margin-top:1rem">
