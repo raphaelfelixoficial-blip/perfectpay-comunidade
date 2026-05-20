@@ -34,6 +34,49 @@ function app_config(): array
     return $config;
 }
 
+/** Caminho web da pasta comunidade (ex.: /comunidade). */
+function comunidade_web_base(): string
+{
+    static $base = null;
+    if ($base !== null) {
+        return $base;
+    }
+
+    $docRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+    $appRoot = str_replace('\\', '/', dirname(__DIR__));
+
+    if ($docRoot !== '' && str_starts_with($appRoot, $docRoot)) {
+        $base = rtrim(substr($appRoot, strlen($docRoot)), '/');
+        return $base;
+    }
+
+    $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    if (preg_match('#^(/.+?)/comunidade(?:/|$)#', $script, $m)) {
+        $base = $m[1] . '/comunidade';
+        return $base;
+    }
+
+    $dir = dirname($script);
+    if (in_array(basename($dir), ['admin', 'albuns'], true)) {
+        $dir = dirname($dir);
+    }
+
+    $base = ($dir === '/' || $dir === '\\') ? '' : rtrim($dir, '/');
+    return $base;
+}
+
+function comunidade_url(string $path = '/'): string
+{
+    if ($path === '' || $path === '/') {
+        return comunidade_web_base() . '/';
+    }
+    if ($path[0] !== '/') {
+        $path = '/' . $path;
+    }
+
+    return comunidade_web_base() . $path;
+}
+
 function emails_file(): string
 {
     global $emailsFile;

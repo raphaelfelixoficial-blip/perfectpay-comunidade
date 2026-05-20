@@ -209,7 +209,7 @@ function render_members_area_closed_page(): void
   </div>
   <p class="home-footer">
     <a href="https://perfectpay.agenciajob.com/">← Voltar ao site</a>
-    · <a href="/login.php?admin=1">Admin</a>
+    · <a href="<?= htmlspecialchars(comunidade_url('/login.php?admin=1'), ENT_QUOTES, 'UTF-8') ?>">Admin</a>
   </p>
 </div>
 </body>

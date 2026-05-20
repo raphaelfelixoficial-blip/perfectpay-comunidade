@@ -88,7 +88,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
 <div class="page">
   <div class="user-bar">
     <span>Olá, <?= htmlspecialchars((string)($user['name'] ?? $user['email']), ENT_QUOTES, 'UTF-8') ?></span>
-    <a href="/logout.php">Sair</a>
+    <a href="<?= htmlspecialchars(comunidade_url('/logout.php'), ENT_QUOTES, 'UTF-8') ?>">Sair</a>
   </div>
   <div class="top-bar">
     <div class="badge"><i class="ti ti-circle-check"></i> Acesso liberado</div>
@@ -123,7 +123,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
-  <a href="/albuns/" class="btn btn-albuns">
+  <a href="<?= htmlspecialchars(comunidade_url('/albuns/'), ENT_QUOTES, 'UTF-8') ?>" class="btn btn-albuns">
     <i class="ti ti-books" style="font-size:28px"></i>
     <span>VER TODOS OS PDFs ONLINE<?php if ($albunsCount > 0): ?><small><?= (int)$albunsCount ?> arquivos — PDF Definitivo, bônus e álbuns históricos</small><?php endif; ?></span>
   </a>

@@ -8,7 +8,7 @@ require_admin();
 start_session();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /admin/');
+    header('Location: ' . comunidade_url('/admin/'));
     exit;
 }
 
@@ -19,7 +19,7 @@ $sendEmail = should_send_member_email();
 function redirect_flash(string $message): void
 {
     $_SESSION['flash'] = $message;
-    header('Location: /admin/');
+    header('Location: ' . comunidade_url('/admin/'));
     exit;
 }
 

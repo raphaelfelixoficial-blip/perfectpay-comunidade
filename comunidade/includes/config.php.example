@@ -9,7 +9,7 @@ return [
     'session_secret' => 'ALTERE-ESTA-CHAVE-ALEATORIA-LONGA',
     'admin_email' => 'suporte@agenciajob.com',
     // Senha padrão inicial: PerfectPayAdmin2026! — altere após o primeiro login
-    'admin_password_hash' => '$2y$10$rt0rhSaE433womirBaCCg.Mo2rMKbkqIS.wp1phxz9lLrOK1ZBKlq',
+    'admin_password_hash' => '$2y$10$X8cMRoV4Onq3ggTV9ks7zuc.Sx8kbsxZyr2E6pXMKHgdBCxppA3Na',
     'session_lifetime' => 86400 * 7,
 
     // Envio: noreply@agenciajob.com (caixa no servidor cPanel, não Hostinger)

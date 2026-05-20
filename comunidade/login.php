@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/nav.php';
 
 start_session();
 if (is_member()) {
-    header('Location: ' . (is_admin() ? '/admin/' : '/'));
+    header('Location: ' . comunidade_url(is_admin() ? '/admin/' : '/'));
     exit;
 }
 
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = login_user($email, $password);
     if ($result['ok']) {
         persist_session($result['user']);
-        header('Location: ' . (($result['user']['role'] ?? '') === 'admin' ? '/admin/' : '/'));
+        header('Location: ' . comunidade_url(($result['user']['role'] ?? '') === 'admin' ? '/admin/' : '/'));
         exit;
     }
     $error = $result['error'] ?? 'Não foi possível entrar.';
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="password">Senha</label>
     <input type="password" id="password" name="password" required autocomplete="current-password">
     <button type="submit" class="btn">ENTRAR</button>
-    <a href="/reset-senha.php" class="reset-link"><i class="ti ti-key"></i> Esqueci minha senha</a>
+    <a href="<?= htmlspecialchars(comunidade_url('/reset-senha.php'), ENT_QUOTES, 'UTF-8') ?>" class="reset-link"><i class="ti ti-key"></i> Esqueci minha senha</a>
   </form>
   </div>
   <?php render_agency_footer(); ?>

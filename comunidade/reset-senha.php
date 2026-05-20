@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="email" id="email" name="email" required autocomplete="email" value="<?= htmlspecialchars((string)($_POST['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
     <button type="submit" class="btn">ENVIAR NOVA SENHA</button>
     <?php endif; ?>
-    <a href="/login.php" class="back"><i class="ti ti-arrow-left"></i> Voltar ao login</a>
+    <a href="<?= htmlspecialchars(comunidade_url('/login.php'), ENT_QUOTES, 'UTF-8') ?>" class="back"><i class="ti ti-arrow-left"></i> Voltar ao login</a>
   </form>
   </div>
   <?php render_agency_footer(); ?>

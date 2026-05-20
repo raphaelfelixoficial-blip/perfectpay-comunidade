@@ -12,11 +12,11 @@ function render_page_nav(string $current): void
 
     $steps = [
         'home' => ['url' => $siteHome, 'label' => 'Site', 'short' => 'Início'],
-        'login' => ['url' => '/login.php', 'label' => 'Login', 'short' => 'Login'],
-        'member' => ['url' => '/', 'label' => 'Área VIP', 'short' => 'VIP'],
+        'login' => ['url' => comunidade_url('/login.php'), 'label' => 'Login', 'short' => 'Login'],
+        'member' => ['url' => comunidade_url('/'), 'label' => 'Área VIP', 'short' => 'VIP'],
     ];
     if ($isAdmin) {
-        $steps['admin'] = ['url' => '/admin/', 'label' => 'Admin', 'short' => 'Admin'];
+        $steps['admin'] = ['url' => comunidade_url('/admin/'), 'label' => 'Admin', 'short' => 'Admin'];
     }
 
     $order = array_keys($steps);

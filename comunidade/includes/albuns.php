@@ -425,7 +425,7 @@ function render_albuns_refresh_button(string $returnUrl = '/albuns/'): void
     }
     ?>
     <div class="albuns-refresh-wrap">
-      <form class="albuns-refresh-form" method="post" action="/albuns/atualizar-lista.php">
+      <form class="albuns-refresh-form" method="post" action="<?= htmlspecialchars(comunidade_url('/albuns/atualizar-lista.php'), ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="return" value="<?= htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8') ?>">
         <button type="submit" class="albuns-refresh-btn" title="Atualiza os nomes dos PDFs na lista">
           <i class="ti ti-refresh"></i> Atualizar lista

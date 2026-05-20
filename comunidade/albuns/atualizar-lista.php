@@ -9,7 +9,7 @@ require_member();
 start_session();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /albuns/');
+    header('Location: ' . comunidade_url('/albuns/'));
     exit;
 }
 

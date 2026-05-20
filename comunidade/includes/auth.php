@@ -13,9 +13,13 @@ function start_session(): void
 
     $cfg = app_config();
     session_name('perfectpay_vip_sess');
+    $cookiePath = comunidade_web_base() . '/';
+    if ($cookiePath === '//') {
+        $cookiePath = '/';
+    }
     session_set_cookie_params([
         'lifetime' => (int) ($cfg['session_lifetime'] ?? 604800),
-        'path' => '/',
+        'path' => $cookiePath,
         'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
         'httponly' => true,
         'samesite' => 'Lax',
@@ -58,7 +62,7 @@ function require_member(): void
 {
     members_area_gate();
     if (!is_member()) {
-        header('Location: /login.php');
+        header('Location: ' . comunidade_url('/login.php'));
         exit;
     }
 }
@@ -70,7 +74,7 @@ function require_admin(): void
             render_members_area_closed_page();
             exit;
         }
-        header('Location: /login.php');
+        header('Location: ' . comunidade_url('/login.php'));
         exit;
     }
 }

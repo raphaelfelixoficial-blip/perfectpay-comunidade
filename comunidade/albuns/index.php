@@ -47,7 +47,7 @@ $total = array_sum(array_map('count', $categories));
 <div class="wrap">
   <div class="top">
     <h1>ÁLBUNS <span>VIP</span> <small style="font-size:14px;color:#666;font-family:Barlow,sans-serif">(<?= (int)$total ?> PDFs)</small></h1>
-    <a href="/" class="back"><i class="ti ti-arrow-left"></i> Voltar à área VIP</a>
+    <a href="<?= htmlspecialchars(comunidade_url('/'), ENT_QUOTES, 'UTF-8') ?>" class="back"><i class="ti ti-arrow-left"></i> Voltar à área VIP</a>
   </div>
 
   <?php if ($flash): ?>

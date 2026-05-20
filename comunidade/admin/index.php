@@ -58,8 +58,8 @@ unset($_SESSION['flash']);
     <h1>ADMIN <span>VIP</span></h1>
     <div class="links">
       <span style="color:#666;font-size:13px"><?= htmlspecialchars((string)$user['email'], ENT_QUOTES, 'UTF-8') ?></span>
-      <a href="/">Área do membro</a>
-      <a href="/logout.php">Sair</a>
+      <a href="<?= htmlspecialchars(comunidade_url('/'), ENT_QUOTES, 'UTF-8') ?>">Área do membro</a>
+      <a href="<?= htmlspecialchars(comunidade_url('/logout.php'), ENT_QUOTES, 'UTF-8') ?>">Sair</a>
     </div>
   </header>
 
@@ -91,7 +91,7 @@ unset($_SESSION['flash']);
         <input type="checkbox" name="members_enabled" value="1" <?= $siteStatusRaw['members_enabled'] ? 'checked' : '' ?> style="width:auto;margin:0">
         Manter área de membros ativa (comunidade)
       </label>
-      <p class="hint">Desmarcado: área VIP fechada; admin entra por <a href="/login.php?admin=1" style="color:#FFDF00">login.php?admin=1</a></p>
+      <p class="hint">Desmarcado: área VIP fechada; admin entra por <a href="<?= htmlspecialchars(comunidade_url('/login.php?admin=1'), ENT_QUOTES, 'UTF-8') ?>" style="color:#FFDF00">login com ?admin=1</a></p>
       <button type="submit" class="btn">SALVAR PÁGINA</button>
     </form>
   </div>
