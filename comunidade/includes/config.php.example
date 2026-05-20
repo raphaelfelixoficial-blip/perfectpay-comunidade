@@ -30,8 +30,10 @@ return [
     // Perfect Pay — webhook (Ferramentas > Webhook - Vendas)
     // Cole o token exibido ao criar o webhook no painel Perfect Pay
     'perfectpay_webhook_token' => '',
-    // Opcional: códigos de produto/plano separados por vírgula (vazio = todos)
+    // Checkout: https://checkout.perfectpay.com.br/pay/PPU38CQC76U
+    // Opcional: códigos product/plan do webhook separados por vírgula (vazio = todos)
     'perfectpay_product_codes' => '',
+    'perfectpay_checkout_url' => 'https://checkout.perfectpay.com.br/pay/PPU38CQC76U',
     'perfectpay_thankyou_url' => 'https://perfectpay.agenciajob.com/obrigado.php',
     'perfectpay_billet_url' => 'https://perfectpay.agenciajob.com/boleto-emitido.php',
 ];

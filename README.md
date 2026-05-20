@@ -20,6 +20,11 @@ Cópia adaptada do [swatec-site](https://github.com/raphaelfelixoficial-blip/swa
 
 Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/data/config.php`.
 
+## Checkout (oferta atual)
+
+- **Link de compra:** https://checkout.perfectpay.com.br/pay/PPU38CQC76U  
+  Produto: *COMUNIDADE FIGURINHAS DA COPA - Oferta Especial*
+
 ## Integração Perfect Pay (compra → acesso automático)
 
 1. **Página de obrigado** (pagamento aprovado):
@@ -33,7 +38,7 @@ Configure a senha SMTP da caixa `noreply@` no painel admin ou em `comunidade/dat
 
    No painel Perfect Pay: **Ferramentas → Webhook - Vendas → Adicionar**
    - URL: endpoint acima
-   - Eventos: marque **Aprovado** (e opcionalmente **Completo**)
+   - Marque o checkout/plano **PPU38CQC76U** e eventos **Aprovado** (e opcionalmente **Completo**)
    - Copie o **token** do webhook para `perfectpay_webhook_token` em `comunidade/data/config.php`
 
 4. **Teste na Perfect Pay:** o envio de teste do painel deles só reenvia uma venda **real** já aprovada na conta. Sem venda, aparece *“nenhuma venda com o evento desejado”*. Alternativas:

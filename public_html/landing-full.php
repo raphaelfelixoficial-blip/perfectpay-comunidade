@@ -233,7 +233,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <iframe src="<?= $heroVideoEmbedSafe ?>" title="Vídeo Comunidade Perfect Pay" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
     </div>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
-    <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC6TK" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
+    <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
     <div class="hero-stats">
       <div class="hero-stat"><strong>+500</strong><span>Membros VIP</span></div>
       <div class="hero-stat"><strong>+1000</strong><span>Figurinhas na Plataforma</span></div>
@@ -288,7 +288,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
         <div class="timer-sep">:</div>
         <div class="timer-box"><strong id="t-s">00</strong><span>seg</span></div>
       </div>
-      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC6TK" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
+      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
     </div>
   </div>
 
@@ -374,7 +374,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
         <strong>R$ 19,90</strong>
         <span>pagamento único — acesso vitalício à comunidade</span>
       </div><br/>
-      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC6TK" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>
+      <a href="https://checkout.perfectpay.com.br/pay/PPU38CQC76U" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>
       <div style="margin-top:1.5rem">
         <a href="mailto:suporte@agenciajob.com" class="btn-sec">Tenho dúvidas</a>
         <a href="https://perfectpay.agenciajob.com/comunidade/login.php" class="btn-sec">Já sou membro — entrar</a>
