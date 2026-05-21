@@ -243,6 +243,7 @@ unset($_SESSION['flash']);
     <p class="hint">Eventos recomendados: <code>CHECKOUT_PAID</code>, <code>PAYMENT_CONFIRMED</code>, <code>PAYMENT_RECEIVED</code>. O Asaas envia o header <code>asaas-access-token</code> com o mesmo token acima.</p>
     <label style="margin-top:1rem">Página de obrigado (após pagamento)</label>
     <input type="text" readonly value="<?= htmlspecialchars(rtrim((string)(app_config()['asaas_thankyou_url'] ?? asaas_site_base_url() . '/obrigado.php'), '/'), ENT_QUOTES, 'UTF-8') ?>" onclick="this.select()">
+    <p class="hint">Checkout: <strong>transparente</strong> em <code>/checkout.php</code> (PIX com QR na página + cartão, sem redirecionar ao Asaas). Em <code>config.php</code>, <code>checkout_mode</code> = <code>redirect</code> volta ao checkout hospedado Asaas.</p>
     <p class="hint">Após pagamento aprovado: cadastra membro e envia e-mail automaticamente. Log: <code>comunidade/data/asaas-webhook.log</code> · E-mails: <code>mail.log</code></p>
     <p class="hint" style="color:#f0ad4e">Se o pagamento foi confirmado no Asaas mas o membro não foi criado, o webhook provavelmente não chegou ao servidor. Use os botões abaixo.</p>
     <div class="row" style="margin-top:0.75rem">

@@ -813,6 +813,290 @@ function asaas_build_test_payload_with_email(string $email, string $name = ''): 
     ];
 }
 
+/** transparent = página própria; redirect = checkout hospedado Asaas */
+function asaas_checkout_mode(): string
+{
+    $mode = strtolower(trim((string) (app_config()['checkout_mode'] ?? 'transparent')));
+
+    return $mode === 'redirect' ? 'redirect' : 'transparent';
+}
+
+/** @return array{name:string,description:string,value:float} */
+function asaas_checkout_product(): array
+{
+    if (!function_exists('site_checkout_price')) {
+        require_once __DIR__ . '/site-status.php';
+    }
+    $cfg = app_config();
+    $value = site_checkout_price();
+    $name = trim((string) ($cfg['asaas_checkout_item_name'] ?? 'Comunidade VIP'));
+
+    return [
+        'name' => $name !== '' ? $name : 'Comunidade VIP',
+        'description' => trim((string) ($cfg['asaas_checkout_item_description'] ?? 'Acesso figurinhas Copa 2026')),
+        'value' => round(max(1, $value), 2),
+    ];
+}
+
+function asaas_sanitize_cpf_cnpj(string $cpfCnpj): string
+{
+    $digits = preg_replace('/\D/', '', $cpfCnpj) ?? '';
+    if (strlen($digits) === 11 || strlen($digits) === 14) {
+        return $digits;
+    }
+
+    return '';
+}
+
+/** @return array{ok:bool,customer_id?:string,error?:string} */
+function asaas_upsert_customer(string $name, string $email, string $cpfCnpj): array
+{
+    $email = normalize_email($email);
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['ok' => false, 'error' => 'E-mail inválido.'];
+    }
+
+    $cpfCnpj = asaas_sanitize_cpf_cnpj($cpfCnpj);
+    if ($cpfCnpj === '') {
+        return ['ok' => false, 'error' => 'Informe um CPF ou CNPJ válido.'];
+    }
+
+    $name = trim($name);
+    if ($name === '') {
+        $name = $email;
+    }
+
+    $search = asaas_api_request('GET', '/customers?email=' . rawurlencode($email) . '&limit=1');
+    if ($search['ok'] && is_array($search['body']['data'] ?? null)) {
+        foreach ($search['body']['data'] as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $id = trim((string) ($row['id'] ?? ''));
+            if ($id !== '') {
+                $update = asaas_api_request('PUT', '/customers/' . rawurlencode($id), [
+                    'name' => $name,
+                    'cpfCnpj' => $cpfCnpj,
+                    'email' => $email,
+                    'notificationDisabled' => true,
+                ]);
+                if ($update['ok']) {
+                    return ['ok' => true, 'customer_id' => $id];
+                }
+            }
+        }
+    }
+
+    $create = asaas_api_request('POST', '/customers', [
+        'name' => $name,
+        'email' => $email,
+        'cpfCnpj' => $cpfCnpj,
+        'notificationDisabled' => true,
+    ]);
+    if (!$create['ok']) {
+        return ['ok' => false, 'error' => $create['error']];
+    }
+
+    $id = trim((string) ($create['body']['id'] ?? ''));
+    if ($id === '') {
+        return ['ok' => false, 'error' => 'Asaas não retornou ID do cliente.'];
+    }
+
+    return ['ok' => true, 'customer_id' => $id];
+}
+
+function asaas_payment_status_is_paid(string $status): bool
+{
+    $status = strtoupper(trim($status));
+
+    return in_array($status, ['CONFIRMED', 'RECEIVED'], true);
+}
+
+/** @return array{ok:bool,paid:bool,status:string,provisioned:bool,redirect?:string,message?:string,error?:string} */
+function asaas_finalize_paid_payment(string $paymentId, string $email, string $name): array
+{
+    $paymentId = trim($paymentId);
+    $email = normalize_email($email);
+    if ($paymentId === '' || $email === '') {
+        return ['ok' => false, 'paid' => false, 'status' => '', 'provisioned' => false, 'error' => 'Dados inválidos.'];
+    }
+
+    $fetched = asaas_fetch_payment_by_id($paymentId);
+    if (!is_array($fetched)) {
+        return ['ok' => false, 'paid' => false, 'status' => '', 'provisioned' => false, 'error' => 'Pagamento não encontrado.'];
+    }
+
+    $status = strtoupper(trim((string) ($fetched['status'] ?? '')));
+    if (!asaas_payment_status_is_paid($status)) {
+        return ['ok' => true, 'paid' => false, 'status' => $status, 'provisioned' => false];
+    }
+
+    if (!asaas_payment_already_processed($paymentId)) {
+        $provision = provision_member_access($email, $name, true);
+        if (!$provision['ok']) {
+            return ['ok' => false, 'paid' => true, 'status' => $status, 'provisioned' => false, 'error' => $provision['error'] ?? 'Erro ao liberar acesso.'];
+        }
+        asaas_mark_payment_processed($paymentId, $email);
+        $mailMsg = ($provision['email_sent'] ?? false) ? '' : (' ' . ($provision['error'] ?? ''));
+        asaas_log("Transparent OK {$paymentId}: {$email}{$mailMsg}");
+    }
+
+    $thankyou = rtrim((string) (app_config()['asaas_thankyou_url'] ?? site_url('/obrigado.php')), '/');
+
+    return [
+        'ok' => true,
+        'paid' => true,
+        'status' => $status,
+        'provisioned' => true,
+        'redirect' => $thankyou . '?email=' . rawurlencode($email),
+        'message' => 'Pagamento confirmado.',
+    ];
+}
+
+/**
+ * Checkout transparente — PIX com QR Code na página.
+ *
+ * @return array{ok:bool,payment_id?:string,encoded_image?:string,pix_copy?:string,expiration?:string,value?:float,error?:string}
+ */
+function asaas_create_transparent_pix(string $name, string $email, string $cpfCnpj): array
+{
+    if (!asaas_is_configured()) {
+        return ['ok' => false, 'error' => 'Pagamento não configurado.'];
+    }
+
+    $customer = asaas_upsert_customer($name, $email, $cpfCnpj);
+    if (!$customer['ok']) {
+        return ['ok' => false, 'error' => $customer['error'] ?? 'Erro ao cadastrar cliente.'];
+    }
+
+    $product = asaas_checkout_product();
+    $dueDate = date('Y-m-d');
+    $payment = asaas_api_request('POST', '/payments', [
+        'customer' => $customer['customer_id'],
+        'billingType' => 'PIX',
+        'value' => $product['value'],
+        'dueDate' => $dueDate,
+        'description' => substr($product['name'], 0, 100),
+        'externalReference' => 'figcop_pix_' . date('YmdHis') . '_' . bin2hex(random_bytes(3)),
+    ]);
+    if (!$payment['ok']) {
+        return ['ok' => false, 'error' => $payment['error']];
+    }
+
+    $paymentId = trim((string) ($payment['body']['id'] ?? ''));
+    if ($paymentId === '') {
+        return ['ok' => false, 'error' => 'Asaas não retornou ID da cobrança.'];
+    }
+
+    $qr = asaas_api_request('GET', '/payments/' . rawurlencode($paymentId) . '/pixQrCode');
+    if (!$qr['ok']) {
+        return ['ok' => false, 'error' => $qr['error']];
+    }
+
+    return [
+        'ok' => true,
+        'payment_id' => $paymentId,
+        'encoded_image' => (string) ($qr['body']['encodedImage'] ?? ''),
+        'pix_copy' => (string) ($qr['body']['payload'] ?? ''),
+        'expiration' => (string) ($qr['body']['expirationDate'] ?? ''),
+        'value' => $product['value'],
+    ];
+}
+
+/**
+ * Checkout transparente — cartão na página (sem endereço visível).
+ *
+ * @param array{holderName:string,number:string,expiryMonth:string,expiryYear:string,ccv:string,phone?:string} $card
+ * @return array{ok:bool,payment_id?:string,paid?:bool,redirect?:string,message?:string,error?:string}
+ */
+function asaas_create_transparent_card(string $name, string $email, string $cpfCnpj, array $card): array
+{
+    if (!asaas_is_configured()) {
+        return ['ok' => false, 'error' => 'Pagamento não configurado.'];
+    }
+
+    $customer = asaas_upsert_customer($name, $email, $cpfCnpj);
+    if (!$customer['ok']) {
+        return ['ok' => false, 'error' => $customer['error'] ?? 'Erro ao cadastrar cliente.'];
+    }
+
+    $holderName = trim((string) ($card['holderName'] ?? ''));
+    $number = preg_replace('/\D/', '', (string) ($card['number'] ?? '')) ?? '';
+    $expiryMonth = str_pad(preg_replace('/\D/', '', (string) ($card['expiryMonth'] ?? '')) ?? '', 2, '0', STR_PAD_LEFT);
+    $expiryYear = preg_replace('/\D/', '', (string) ($card['expiryYear'] ?? '')) ?? '';
+    $ccv = preg_replace('/\D/', '', (string) ($card['ccv'] ?? '')) ?? '';
+
+    if ($holderName === '' || strlen($number) < 13 || strlen($expiryMonth) !== 2 || strlen($expiryYear) < 2 || strlen($ccv) < 3) {
+        return ['ok' => false, 'error' => 'Dados do cartão incompletos.'];
+    }
+
+    if (strlen($expiryYear) === 2) {
+        $expiryYear = '20' . $expiryYear;
+    }
+
+    $phone = preg_replace('/\D/', '', (string) ($card['phone'] ?? '')) ?? '';
+    if ($phone === '') {
+        $phone = '11999999999';
+    }
+
+    $product = asaas_checkout_product();
+    $cpf = asaas_sanitize_cpf_cnpj($cpfCnpj);
+
+    $payment = asaas_api_request('POST', '/payments', [
+        'customer' => $customer['customer_id'],
+        'billingType' => 'CREDIT_CARD',
+        'value' => $product['value'],
+        'dueDate' => date('Y-m-d'),
+        'description' => substr($product['name'], 0, 100),
+        'externalReference' => 'figcop_card_' . date('YmdHis') . '_' . bin2hex(random_bytes(3)),
+        'creditCard' => [
+            'holderName' => $holderName,
+            'number' => $number,
+            'expiryMonth' => $expiryMonth,
+            'expiryYear' => $expiryYear,
+            'ccv' => $ccv,
+        ],
+        'creditCardHolderInfo' => [
+            'name' => trim($name) !== '' ? trim($name) : $holderName,
+            'email' => normalize_email($email),
+            'cpfCnpj' => $cpf,
+            'postalCode' => '01310100',
+            'addressNumber' => '0',
+            'phone' => $phone,
+        ],
+    ]);
+
+    if (!$payment['ok']) {
+        return ['ok' => false, 'error' => $payment['error']];
+    }
+
+    $paymentId = trim((string) ($payment['body']['id'] ?? ''));
+    $status = strtoupper(trim((string) ($payment['body']['status'] ?? '')));
+    if ($paymentId === '') {
+        return ['ok' => false, 'error' => 'Asaas não retornou ID da cobrança.'];
+    }
+
+    if (asaas_payment_status_is_paid($status)) {
+        $done = asaas_finalize_paid_payment($paymentId, $email, $name);
+
+        return [
+            'ok' => $done['ok'],
+            'payment_id' => $paymentId,
+            'paid' => true,
+            'redirect' => $done['redirect'] ?? null,
+            'message' => $done['message'] ?? 'Pagamento aprovado.',
+            'error' => $done['error'] ?? null,
+        ];
+    }
+
+    return [
+        'ok' => true,
+        'payment_id' => $paymentId,
+        'paid' => false,
+        'message' => 'Pagamento em processamento. Aguarde a confirmação.',
+    ];
+}
+
 function update_asaas_settings(
     string $apiKey,
     string $webhookToken,

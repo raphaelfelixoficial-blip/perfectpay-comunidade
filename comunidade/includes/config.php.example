@@ -29,6 +29,8 @@ return [
 
     // Pagamento — Asaas (único meio de pagamento)
     'payment_provider' => 'asaas',
+    // transparent = checkout na sua página (PIX QR + cartão); redirect = página Asaas
+    'checkout_mode' => 'transparent',
     'site_base_url' => 'https://copa.agenciajob.com',
 
     // Asaas — https://docs.asaas.com/docs/checkout-asaas
