@@ -31,7 +31,9 @@ if ($action === 'save_site_status') {
     $homeMessage = (string) ($_POST['home_message'] ?? '');
     $membersEnabled = isset($_POST['members_enabled']);
     $homeVideoUrl = (string) ($_POST['home_video_url'] ?? '');
+    $existing = site_status_load_raw();
     $offer = site_status_offer_from_post($_POST);
+    $offer['site_favicon'] = site_status_favicon_from_post($_POST, $existing);
     $hero = site_status_hero_from_post($_POST);
     $heroFile = $_FILES['home_hero_image_file'] ?? null;
     if (
@@ -45,6 +47,19 @@ if ($action === 'save_site_status') {
             $hero['home_hero_show_image'] = true;
         } else {
             redirect_flash('Página não salva: ' . ($upload['error'] ?? 'erro no upload da imagem.'));
+        }
+    }
+    $faviconFile = $_FILES['site_favicon_file'] ?? null;
+    if (
+        is_array($faviconFile)
+        && (int) ($faviconFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE
+        && is_uploaded_file((string) ($faviconFile['tmp_name'] ?? ''))
+    ) {
+        $upload = site_status_store_uploaded_image($faviconFile, 'uploads/favicon', true);
+        if ($upload['ok']) {
+            $offer['site_favicon'] = $upload['path'];
+        } else {
+            redirect_flash('Página não salva: ' . ($upload['error'] ?? 'erro no upload do favicon.'));
         }
     }
     $offer['_hero'] = $hero;

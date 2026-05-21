@@ -43,6 +43,7 @@ require_once __DIR__ . '/comunidade/includes/site-status.php';
 if (!function_exists('site_checkout_price')) {
     require_once dirname(__DIR__) . '/comunidade/includes/site-status.php';
 }
+$siteView = site_status_view();
 $product = asaas_checkout_product();
 $priceLabel = site_format_price_brl($product['value']);
 $compare = site_checkout_compare_price();
@@ -56,7 +57,7 @@ $thankyouBase = rtrim((string) (app_config()['asaas_thankyou_url'] ?? site_url('
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Finalizar compra — Figurinhas da Copa</title>
-<link rel="icon" href="/favicon.jpg" type="image/jpeg">
+<?php site_status_render_favicon_tags(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -98,11 +99,15 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,
 .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(0,0,0,.2);border-top-color:#1a1400;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:400px){.field-row{grid-template-columns:1fr}}
+<?= site_status_promo_banner_css() ?>
 </style>
 </head>
-<body>
+<body class="checkout-page">
 <div class="wrap">
   <a href="/" class="back"><i class="ti ti-arrow-left"></i> Voltar ao site</a>
+</div>
+<?= site_status_render_promo_banner($siteView) ?>
+<div class="wrap">
   <div class="card">
     <div class="product">
       <div class="product-icon"><i class="ti ti-trophy"></i></div>

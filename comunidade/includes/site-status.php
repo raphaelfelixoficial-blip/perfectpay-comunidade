@@ -43,9 +43,87 @@ function site_status_defaults(): array
         'promo_banner_enabled' => true,
         'promo_banner_title' => 'Identifique figurinhas falsas com segurança',
         'promo_banner_text' => 'Bastidores, dicas e PDFs exclusivos da Copa 2026 — tudo na comunidade VIP.',
-        'promo_banner_image' => '/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp',
+        'promo_banner_image' => '/uploads/banner/figurinhas-copa.png',
+        'site_favicon' => '/favicon.jpg',
         'updated_at' => 0,
     ];
+}
+
+function site_status_default_favicon(): string
+{
+    return '/favicon.jpg';
+}
+
+function site_status_is_allowed_favicon_path(string $path): bool
+{
+    $path = strtolower($path);
+    foreach (['png', 'jpg', 'jpeg', 'webp', 'ico'] as $ext) {
+        if (str_ends_with($path, '.' . $ext)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/** @param array<string, mixed> $post @param array<string, mixed> $existing */
+function site_status_favicon_from_post(array $post, array $existing): string
+{
+    $path = site_status_public_image_path(trim((string) ($post['site_favicon'] ?? '')));
+    if ($path !== '') {
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+        if (site_status_is_allowed_favicon_path($path)) {
+            return $path;
+        }
+    }
+
+    $current = site_status_public_image_path((string) ($existing['site_favicon'] ?? ''));
+
+    return $current !== '' ? $current : site_status_default_favicon();
+}
+
+function site_status_favicon_path(): string
+{
+    $raw = site_status_load_raw();
+    $path = site_status_public_image_path(trim((string) ($raw['site_favicon'] ?? '')));
+
+    return $path !== '' ? $path : site_status_default_favicon();
+}
+
+function site_status_favicon_mime(string $path): string
+{
+    $ext = strtolower(pathinfo(parse_url($path, PHP_URL_PATH) ?: $path, PATHINFO_EXTENSION));
+
+    return match ($ext) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        'ico' => 'image/x-icon',
+        'svg' => 'image/svg+xml',
+        default => 'image/jpeg',
+    };
+}
+
+function site_status_favicon_url(): string
+{
+    $path = site_status_favicon_path();
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    return site_url($path);
+}
+
+function site_status_render_favicon_tags(): void
+{
+    $url = site_status_favicon_url();
+    $mime = site_status_favicon_mime(site_status_favicon_path());
+    $urlSafe = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    $mimeSafe = htmlspecialchars($mime, ENT_QUOTES, 'UTF-8');
+    echo '<link rel="icon" href="' . $urlSafe . '" type="' . $mimeSafe . '">' . "\n";
+    echo '<link rel="shortcut icon" href="' . $urlSafe . '" type="' . $mimeSafe . '">' . "\n";
+    echo '<link rel="apple-touch-icon" href="' . $urlSafe . '">' . "\n";
 }
 
 function site_format_price_brl(float $value): string
@@ -181,7 +259,7 @@ function site_status_detect_upload_image_mime(string $tmpPath, string $originalN
  * @param array<string, mixed> $file
  * @return array{ok:bool,path?:string,error?:string}
  */
-function site_status_store_uploaded_image(array $file, string $subdir = 'uploads'): array
+function site_status_store_uploaded_image(array $file, string $subdir = 'uploads', bool $allowIco = false): array
 {
     $tmp = (string) ($file['tmp_name'] ?? '');
     $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
@@ -199,8 +277,18 @@ function site_status_store_uploaded_image(array $file, string $subdir = 'uploads
 
     $mime = site_status_detect_upload_image_mime($tmp, (string) ($file['name'] ?? ''));
     $map = site_status_image_mime_map();
+    if ($allowIco) {
+        $map['image/x-icon'] = 'ico';
+        $map['image/vnd.microsoft.icon'] = 'ico';
+    }
     if ($mime === '' || !isset($map[$mime])) {
-        return ['ok' => false, 'error' => 'Use PNG, JPEG ou WebP.'];
+        $ext = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+        if ($allowIco && $ext === 'ico') {
+            $mime = 'image/x-icon';
+        }
+    }
+    if ($mime === '' || !isset($map[$mime])) {
+        return ['ok' => false, 'error' => $allowIco ? 'Use PNG, JPEG, WebP ou ICO.' : 'Use PNG, JPEG ou WebP.'];
     }
 
     $ext = $map[$mime];
@@ -336,6 +424,7 @@ function site_status_normalize(array $raw): array
             'promo_banner_title' => trim((string) ($raw['promo_banner_title'] ?? site_status_defaults()['promo_banner_title'])),
             'promo_banner_text' => trim((string) ($raw['promo_banner_text'] ?? site_status_defaults()['promo_banner_text'])),
             'promo_banner_image' => trim((string) ($raw['promo_banner_image'] ?? site_status_defaults()['promo_banner_image'])),
+            'site_favicon' => site_status_public_image_path((string) ($raw['site_favicon'] ?? site_status_default_favicon())) ?: site_status_default_favicon(),
             'updated_at' => (int) ($raw['updated_at'] ?? 0),
         ];
     }
@@ -366,6 +455,7 @@ function site_status_normalize(array $raw): array
         'promo_banner_title' => $defaults['promo_banner_title'],
         'promo_banner_text' => $defaults['promo_banner_text'],
         'promo_banner_image' => $defaults['promo_banner_image'],
+        'site_favicon' => site_status_default_favicon(),
         'updated_at' => (int) ($raw['updated_at'] ?? 0),
     ];
 }
@@ -399,8 +489,8 @@ function site_status_render_hero_media(array $view): string
 function site_status_hero_media_css(): string
 {
     return <<<'CSS'
-.hero-media-image{width:100%;max-width:560px;margin:0 auto 1.5rem;border-radius:8px;overflow:hidden;border:2px solid rgba(0,151,57,0.45);box-shadow:0 8px 32px rgba(0,0,0,0.55)}
-.hero-media-image img{width:100%;height:auto;display:block;vertical-align:middle}
+.hero-media-image{width:100%;max-width:560px;margin:0 auto 1.5rem;line-height:0;overflow:hidden}
+.hero-media-image img{width:100%;height:auto;display:block;vertical-align:middle;border:0}
 .hero-media-image--solo img{max-height:min(70vh,420px);object-fit:cover}
 .hero-media-image--below{margin-top:0;margin-bottom:1.25rem}
 CSS;
@@ -409,23 +499,8 @@ CSS;
 function site_status_promo_banner_css(): string
 {
     return <<<'CSS'
-.promo-bleed-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);position:relative;left:0;overflow:hidden}
-.promo-bleed{display:grid;grid-template-columns:1fr;min-height:clamp(200px,42vw,380px);background:#0a0906}
-@media(min-width:768px){.promo-bleed{grid-template-columns:1.1fr 1fr;min-height:320px}}
-.promo-bleed-media{position:relative;min-height:200px}
-.promo-bleed-media img{width:100%;height:100%;object-fit:cover;display:block;min-height:200px}
-.promo-bleed-media::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,16,10,.15) 0%,rgba(18,16,10,.85) 55%,#12100a 100%)}
-@media(max-width:767px){.promo-bleed-media::after{background:linear-gradient(180deg,rgba(18,16,10,.1) 30%,rgba(18,16,10,.92) 100%)}}
-.promo-bleed-body{display:flex;flex-direction:column;justify-content:center;gap:12px;padding:clamp(1.25rem,5vw,2.5rem);background:linear-gradient(135deg,#1a1608 0%,#12100a 100%);border-top:3px solid var(--br-yellow)}
-@media(min-width:768px){.promo-bleed-body{border-top:none;border-left:3px solid var(--br-yellow)}}
-.promo-bleed-kicker{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--br-yellow)}
-.promo-bleed-title{font-family:'Syne',sans-serif;font-size:clamp(1.35rem,4.5vw,2rem);line-height:1.15;color:#fff;font-weight:800}
-.promo-bleed-text{font-size:clamp(14px,2.5vw,16px);line-height:1.65;color:#ccc;max-width:36rem}
-.promo-bleed-price{display:inline-flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:4px}
-.promo-bleed-price s{color:#777;font-size:1rem}
-.promo-bleed-price strong{font-family:'Syne',sans-serif;font-size:clamp(1.75rem,5vw,2.5rem);color:var(--br-yellow)}
-.promo-bleed-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;width:fit-content;max-width:100%;padding:14px 24px;border-radius:10px;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#1a1400;font-family:'Syne',sans-serif;font-weight:800;text-decoration:none;font-size:15px}
-.promo-bleed-cta:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.promo-banner-img-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);line-height:0;overflow:hidden;background:#0a0906}
+.promo-banner-img-wrap img{width:100%;height:auto;display:block;vertical-align:middle}
 CSS;
 }
 
@@ -436,33 +511,16 @@ function site_status_render_promo_banner(array $view): string
         return '';
     }
 
-    $title = trim((string) ($view['promo_banner_title'] ?? ''));
-    $text = trim((string) ($view['promo_banner_text'] ?? ''));
-    $image = trim((string) ($view['promo_banner_image'] ?? ''));
-    if ($title === '' && $text === '') {
-        return '';
+    $image = site_status_public_image_path(trim((string) ($view['promo_banner_image'] ?? '')));
+    if ($image === '') {
+        $image = site_status_defaults()['promo_banner_image'];
     }
 
-    $titleSafe = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
-    $textSafe = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-    $imageSafe = htmlspecialchars($image !== '' ? $image : '/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp', ENT_QUOTES, 'UTF-8');
-    $priceLabel = htmlspecialchars((string) ($view['checkout_price_label'] ?? '97,00'), ENT_QUOTES, 'UTF-8');
-    $compareLabel = htmlspecialchars((string) ($view['checkout_compare_label'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $imageSafe = htmlspecialchars($image, ENT_QUOTES, 'UTF-8');
 
     return <<<HTML
-<div class="promo-bleed-wrap" id="identificacao">
-  <section class="promo-bleed" aria-label="Destaque da oferta">
-    <div class="promo-bleed-media">
-      <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
-    </div>
-    <div class="promo-bleed-body">
-      <span class="promo-bleed-kicker">Comunidade VIP · Copa 2026</span>
-      <h2 class="promo-bleed-title">{$titleSafe}</h2>
-      <p class="promo-bleed-text">{$textSafe}</p>
-      <div class="promo-bleed-price"><s>R$ {$compareLabel}</s><strong>R$ {$priceLabel}</strong></div>
-      <a href="/checkout.php" class="promo-bleed-cta"><i class="ti ti-lock-access"></i> Garantir meu acesso</a>
-    </div>
-  </section>
+<div class="promo-banner-img-wrap" id="identificacao">
+  <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
 </div>
 HTML;
 }
@@ -516,6 +574,7 @@ function site_status_view(): array
         'promo_banner_title' => trim((string) ($raw['promo_banner_title'] ?? site_status_defaults()['promo_banner_title'])),
         'promo_banner_text' => trim((string) ($raw['promo_banner_text'] ?? site_status_defaults()['promo_banner_text'])),
         'promo_banner_image' => trim((string) ($raw['promo_banner_image'] ?? site_status_defaults()['promo_banner_image'])),
+        'site_favicon' => site_status_favicon_path(),
         'updated_at' => (int) ($raw['updated_at'] ?? 0),
     ];
 }
@@ -594,6 +653,7 @@ function site_status_save(
         'promo_banner_title' => trim((string) ($offer['promo_banner_title'] ?? $defaults['promo_banner_title'])),
         'promo_banner_text' => trim((string) ($offer['promo_banner_text'] ?? $defaults['promo_banner_text'])),
         'promo_banner_image' => trim((string) ($offer['promo_banner_image'] ?? $defaults['promo_banner_image'])),
+        'site_favicon' => site_status_public_image_path(trim((string) ($offer['site_favicon'] ?? $defaults['site_favicon']))) ?: site_status_default_favicon(),
         'updated_at' => time(),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
@@ -647,6 +707,7 @@ function render_members_area_closed_page(): void
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Área indisponível — <?= $title ?></title>
+<?php site_status_render_favicon_tags(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style><?= site_status_home_styles() ?></style>
 </head>

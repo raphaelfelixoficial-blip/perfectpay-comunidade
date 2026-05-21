@@ -8,9 +8,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comunidade Figurinhas da Copa — Copa do Mundo 2026</title>
-<link rel="icon" href="/favicon.jpg" type="image/jpeg">
-<link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
-<link rel="apple-touch-icon" href="/favicon.jpg">
+<?php site_status_render_favicon_tags(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -230,12 +228,17 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 </head>
 <body>
 
+<?php if (!empty($S['promo_banner_enabled'])): ?>
+  <?= site_status_render_promo_banner($S) ?>
+<?php endif ?>
+
 <!-- HERO FULLSCREEN -->
 <div class="hero-full">
   <img src="/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp" alt="Estádio Copa 2026" class="hero-bg">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="badge-hero"><i class="ti ti-users"></i> Comunidade Exclusiva FIFA World Cup 2026</div>
+    <?php if (empty($S['promo_banner_enabled'])): ?>
     <h1 class="hero-title">
       <span class="hero-line">COMUNIDADE</span>
       <span class="hero-line gold">FIGURINHAS</span>
@@ -243,6 +246,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <span class="hero-line hero-line-vip"><span class="green">VIP</span> <span class="blue">2026</span></span>
     </h1>
     <?= site_status_render_hero_media($S) ?>
+    <?php endif ?>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
     <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
     <div class="hero-stats">
@@ -302,8 +306,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <a href="/checkout.php" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
     </div>
   </div>
-
-  <?= site_status_render_promo_banner($S) ?>
 
   <!-- FEATURES -->
   <div class="section">

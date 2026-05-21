@@ -61,12 +61,27 @@ unset($_SESSION['flash']);
         <input type="radio" name="home_layout" value="full" <?= ($siteStatusRaw['home_layout'] ?? '') === 'full' ? 'checked' : '' ?> style="width:auto;margin:4px 0 0">
         <span><strong style="color:#fff">Landing completa</strong><br><span style="color:#888;font-size:12px">Página longa com vídeo, oferta, benefícios e botões de compra</span></span>
       </label>
+      <h3 style="margin:0 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Favicon do site</h3>
+      <p class="hint" style="margin-top:0">Ícone nas abas do navegador (home, checkout, área de membros). PNG, JPEG, WebP ou ICO.</p>
+      <?php
+      $faviconPath = site_status_public_image_path((string) ($siteStatusRaw['site_favicon'] ?? site_status_default_favicon()));
+      if ($faviconPath === '') {
+          $faviconPath = site_status_default_favicon();
+      }
+      $faviconPreview = preg_match('#^https?://#i', $faviconPath) ? $faviconPath : site_url($faviconPath);
+      ?>
+      <p style="margin:0 0 .75rem"><img src="<?= htmlspecialchars($faviconPreview, ENT_QUOTES, 'UTF-8') ?>" alt="" width="32" height="32" style="vertical-align:middle;border-radius:4px;background:#222"></p>
+      <label for="site_favicon">URL do favicon</label>
+      <input type="text" id="site_favicon" name="site_favicon" value="<?= htmlspecialchars($faviconPath, ENT_QUOTES, 'UTF-8') ?>" placeholder="/favicon.jpg ou /uploads/favicon/meu-icone.png">
+      <label for="site_favicon_file">Ou enviar arquivo</label>
+      <input type="file" id="site_favicon_file" name="site_favicon_file" accept="image/png,image/jpeg,image/webp,image/x-icon,.png,.jpg,.jpeg,.webp,.ico" style="margin-bottom:1.25rem">
+
       <label for="home_title">Título (home simples)</label>
       <input type="text" id="home_title" name="home_title" value="<?= htmlspecialchars($siteStatusRaw['home_title'], ENT_QUOTES, 'UTF-8') ?>" required>
       <label for="home_message">Mensagem</label>
       <textarea id="home_message" name="home_message" rows="8" placeholder="Ex.: Encerramos as inscrições.&#10;&#10;Parabéns a quem garantiu o acesso!"><?= htmlspecialchars($siteStatusRaw['home_message'], ENT_QUOTES, 'UTF-8') ?></textarea>
       <h3 style="margin:1.25rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Vídeo e imagem no topo (hero)</h3>
-      <p class="hint" style="margin-top:0">Só na <strong>Landing completa</strong>. Você pode exibir vídeo, imagem ou os dois (imagem abaixo do vídeo).</p>
+      <p class="hint" style="margin-top:0">Só na <strong>Landing completa</strong>. Vídeo, imagem ou os dois (imagem abaixo do vídeo).</p>
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="checkbox" name="home_hero_show_video" value="1" <?= !isset($siteStatusRaw['home_hero_show_video']) || !empty($siteStatusRaw['home_hero_show_video']) ? 'checked' : '' ?> style="width:auto;margin:0">
         Exibir vídeo (YouTube ou Vimeo)
@@ -107,18 +122,15 @@ unset($_SESSION['flash']);
       <label for="checkout_compare_price">Preço “de” riscado (opcional)</label>
       <input type="text" id="checkout_compare_price" name="checkout_compare_price" value="<?= htmlspecialchars(site_format_price_brl((float)($siteStatusRaw['checkout_compare_price'] ?? 0)), ENT_QUOTES, 'UTF-8') ?>" placeholder="Vazio = o dobro do preço atual">
 
-      <h3 style="margin:1.5rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Banner promocional (landing)</h3>
-      <p class="hint" style="margin-top:0">Faixa largura total, acima da seção de benefícios / identificação (fora da borda do conteúdo).</p>
+      <h3 style="margin:1.5rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Banner (só imagem — landing e checkout)</h3>
+      <p class="hint" style="margin-top:0">Mesma imagem na home e no checkout, <strong>sem texto</strong> por cima. Use arte já pronta (PNG/JPEG/WebP).</p>
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="checkbox" name="promo_banner_enabled" value="1" <?= !empty($siteStatusRaw['promo_banner_enabled']) ? 'checked' : '' ?> style="width:auto;margin:0">
-        Exibir banner na landing completa
+        Exibir banner na landing e no checkout
       </label>
-      <label for="promo_banner_title">Título do banner</label>
-      <input type="text" id="promo_banner_title" name="promo_banner_title" value="<?= htmlspecialchars((string)($siteStatusRaw['promo_banner_title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-      <label for="promo_banner_text">Texto do banner</label>
-      <textarea id="promo_banner_text" name="promo_banner_text" rows="3"><?= htmlspecialchars((string)($siteStatusRaw['promo_banner_text'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
       <label for="promo_banner_image">Imagem do banner (URL no site)</label>
-      <input type="text" id="promo_banner_image" name="promo_banner_image" value="<?= htmlspecialchars((string)($siteStatusRaw['promo_banner_image'] ?? '/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp'), ENT_QUOTES, 'UTF-8') ?>" placeholder="/caminho-da-imagem.webp">
+      <input type="text" id="promo_banner_image" name="promo_banner_image" value="<?= htmlspecialchars((string)($siteStatusRaw['promo_banner_image'] ?? '/uploads/banner/figurinhas-copa.png'), ENT_QUOTES, 'UTF-8') ?>" placeholder="/uploads/banner/minha-arte.png">
+      <p class="hint">Ex.: <code>/uploads/banner/figurinhas-copa.png</code></p>
 
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
         <input type="checkbox" name="members_enabled" value="1" <?= $siteStatusRaw['members_enabled'] ? 'checked' : '' ?> style="width:auto;margin:0">

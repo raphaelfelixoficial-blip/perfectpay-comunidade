@@ -17,8 +17,7 @@ $title = landing_h($S['home_title']);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= $title ?> — Figurinhas da Copa</title>
-<link rel="icon" href="/favicon.jpg" type="image/jpeg">
-<link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
+<?php site_status_render_favicon_tags(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style><?= site_status_home_styles() ?></style>
 </head>

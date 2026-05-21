@@ -68,9 +68,9 @@ function page_nav_styles(): string
 
 function render_favicon(): void
 {
-    $icon = site_url('/favicon.jpg');
-    echo '<link rel="icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '" type="image/jpeg">' . "\n";
-    echo '<link rel="shortcut icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '" type="image/jpeg">' . "\n";
-    echo '<link rel="apple-touch-icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '">' . "\n";
+    if (!function_exists('site_status_render_favicon_tags')) {
+        require_once __DIR__ . '/site-status.php';
+    }
+    site_status_render_favicon_tags();
 }
 
