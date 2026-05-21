@@ -50,7 +50,7 @@ unset($_SESSION['flash']);
   <div class="card">
     <h2>Página inicial (<?= htmlspecialchars(parse_url(site_base_url(), PHP_URL_HOST) ?: 'copa.agenciajob.com', ENT_QUOTES, 'UTF-8') ?>)</h2>
     <p class="hint" style="margin-top:0">Escolha o tipo de página em <strong><?= htmlspecialchars(site_base_url(), ENT_QUOTES, 'UTF-8') ?></strong>.</p>
-    <form method="post" action="api.php">
+    <form method="post" action="api.php" enctype="multipart/form-data">
       <input type="hidden" name="action" value="save_site_status">
       <label style="display:block;margin-bottom:.75rem;text-transform:none;font-size:14px;color:#ccc;font-weight:400">Tipo de página</label>
       <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:.75rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
@@ -65,9 +65,23 @@ unset($_SESSION['flash']);
       <input type="text" id="home_title" name="home_title" value="<?= htmlspecialchars($siteStatusRaw['home_title'], ENT_QUOTES, 'UTF-8') ?>" required>
       <label for="home_message">Mensagem</label>
       <textarea id="home_message" name="home_message" rows="8" placeholder="Ex.: Encerramos as inscrições.&#10;&#10;Parabéns a quem garantiu o acesso!"><?= htmlspecialchars($siteStatusRaw['home_message'], ENT_QUOTES, 'UTF-8') ?></textarea>
-      <label for="home_video_url">Vídeo da home (landing completa)</label>
-      <input type="url" id="home_video_url" name="home_video_url" value="<?= htmlspecialchars((string)($siteStatusRaw['home_video_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="https://www.youtube.com/watch?v=... ou link do Vimeo">
-      <p class="hint">Cole o link do YouTube ou Vimeo. Só aparece quando o tipo de página for <strong>Landing completa</strong>.</p>
+      <h3 style="margin:1.25rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Vídeo e imagem no topo (hero)</h3>
+      <p class="hint" style="margin-top:0">Só na <strong>Landing completa</strong>. Você pode exibir vídeo, imagem ou os dois (imagem abaixo do vídeo).</p>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
+        <input type="checkbox" name="home_hero_show_video" value="1" <?= !isset($siteStatusRaw['home_hero_show_video']) || !empty($siteStatusRaw['home_hero_show_video']) ? 'checked' : '' ?> style="width:auto;margin:0">
+        Exibir vídeo (YouTube ou Vimeo)
+      </label>
+      <label for="home_video_url">Link do vídeo</label>
+      <input type="url" id="home_video_url" name="home_video_url" value="<?= htmlspecialchars((string)($siteStatusRaw['home_video_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="https://www.youtube.com/watch?v=...">
+      <label style="display:flex;align-items:center;gap:10px;margin:1rem 0 .75rem;cursor:pointer;text-transform:none;font-size:14px;color:#ccc;font-weight:400">
+        <input type="checkbox" name="home_hero_show_image" value="1" <?= !empty($siteStatusRaw['home_hero_show_image']) ? 'checked' : '' ?> style="width:auto;margin:0">
+        Exibir imagem abaixo do vídeo (ou só imagem, se o vídeo estiver desmarcado)
+      </label>
+      <label for="home_hero_image">URL da imagem no site</label>
+      <input type="text" id="home_hero_image" name="home_hero_image" value="<?= htmlspecialchars((string)($siteStatusRaw['home_hero_image'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="/uploads/hero/minha-imagem.webp">
+      <p class="hint">Formatos: PNG, JPEG ou WebP. Caminho começando com <code>/</code> (ex.: <code>/uploads/hero/foto.png</code>).</p>
+      <label for="home_hero_image_file">Ou enviar arquivo</label>
+      <input type="file" id="home_hero_image_file" name="home_hero_image_file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" style="margin-bottom:1rem">
 
       <h3 style="margin:1.5rem 0 .75rem;font-size:15px;color:#FFDF00;text-transform:uppercase;letter-spacing:.08em">Preço do checkout (Asaas)</h3>
       <p class="hint" style="margin-top:0">Escolha o valor cobrado nos botões da landing e em <code>/checkout.php</code>.</p>

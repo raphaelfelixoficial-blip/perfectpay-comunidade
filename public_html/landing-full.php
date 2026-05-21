@@ -161,6 +161,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 
   .divider{height:1px;background:linear-gradient(90deg,transparent,#1a1a1a,transparent);margin:0}
   <?= site_status_promo_banner_css() ?>
+  <?= site_status_hero_media_css() ?>
 
   .agency-footer{text-align:center;padding:1.5rem 1rem 2rem;font-size:13px;color:#555;background:#12100a;border-top:1px solid #1a1a1a}
   .agency-footer a{color:#888;text-decoration:none;font-weight:600}
@@ -241,9 +242,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <span class="hero-line gold">DA COPA</span>
       <span class="hero-line hero-line-vip"><span class="green">VIP</span> <span class="blue">2026</span></span>
     </h1>
-    <div class="hero-video">
-      <iframe src="<?= $heroVideoEmbedSafe ?>" title="Vídeo Comunidade Figurinhas da Copa" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
-    </div>
+    <?= site_status_render_hero_media($S) ?>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
     <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
     <div class="hero-stats">

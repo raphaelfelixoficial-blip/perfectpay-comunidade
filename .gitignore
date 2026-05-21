@@ -16,6 +16,8 @@ public_html/data/site-status.json
 
 # Backup local ao sincronizar do servidor
 backup-servidor/
+uploads/
+public_html/uploads/
 
 # Arquivos HTML antigos na raiz (cópias de desenvolvimento)
 /perfectpay_vip*.html

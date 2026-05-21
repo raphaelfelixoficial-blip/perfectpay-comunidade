@@ -34,6 +34,9 @@ function site_status_defaults(): array
         'home_title' => 'Figurinhas da Copa',
         'home_message' => "Bem-vindo à Comunidade Figurinhas da Copa.\n\nAcompanhe novidades sobre figurinhas e a Copa do Mundo 2026.",
         'home_video_url' => 'https://www.youtube.com/watch?v=yskrod-EXeQ',
+        'home_hero_show_video' => true,
+        'home_hero_show_image' => false,
+        'home_hero_image' => '',
         'members_enabled' => true,
         'checkout_price' => 97.0,
         'checkout_compare_price' => 197.0,
@@ -83,6 +86,103 @@ function site_checkout_compare_price(): float
 function site_checkout_price_presets(): array
 {
     return [19.9, 47.0, 67.0, 97.0, 127.0, 197.0];
+}
+
+function site_status_public_root(): string
+{
+    return dirname(dirname(__DIR__));
+}
+
+/** Normaliza caminho público da imagem (começa com /). */
+function site_status_public_image_path(string $path): string
+{
+    $path = trim($path);
+    if ($path === '') {
+        return '';
+    }
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    return '/' . ltrim($path, '/');
+}
+
+/** @return list<string> */
+function site_status_allowed_image_extensions(): array
+{
+    return ['png', 'jpg', 'jpeg', 'webp'];
+}
+
+function site_status_is_allowed_image_path(string $path): bool
+{
+    $path = strtolower($path);
+    foreach (site_status_allowed_image_extensions() as $ext) {
+        if (str_ends_with($path, '.' . $ext)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Salva upload de imagem (PNG, JPEG, WebP) em /uploads/.
+ *
+ * @param array<string, mixed> $file
+ * @return array{ok:bool,path?:string,error?:string}
+ */
+function site_status_store_uploaded_image(array $file, string $subdir = 'uploads'): array
+{
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+    if ($error === UPLOAD_ERR_NO_FILE || $tmp === '') {
+        return ['ok' => false, 'error' => 'Nenhum arquivo enviado.'];
+    }
+    if ($error !== UPLOAD_ERR_OK) {
+        return ['ok' => false, 'error' => 'Falha no upload (código ' . $error . ').'];
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $finfo->file($tmp) ?: '';
+    $map = [
+        'image/png' => 'png',
+        'image/jpeg' => 'jpg',
+        'image/webp' => 'webp',
+    ];
+    if (!isset($map[$mime])) {
+        return ['ok' => false, 'error' => 'Use PNG, JPEG ou WebP.'];
+    }
+
+    $ext = $map[$mime];
+    $dir = site_status_public_root() . '/' . trim($subdir, '/') . '/';
+    if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
+        return ['ok' => false, 'error' => 'Não foi possível criar pasta de uploads.'];
+    }
+
+    $name = 'img_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $dest = $dir . $name;
+    if (!move_uploaded_file($tmp, $dest)) {
+        return ['ok' => false, 'error' => 'Não foi possível salvar a imagem.'];
+    }
+
+    @chmod($dest, 0644);
+
+    return ['ok' => true, 'path' => '/' . trim($subdir, '/') . '/' . $name];
+}
+
+/** @param array<string, mixed> $post */
+function site_status_hero_from_post(array $post): array
+{
+    $image = site_status_public_image_path((string) ($post['home_hero_image'] ?? ''));
+    if ($image !== '' && !preg_match('#^https?://#i', $image) && !site_status_is_allowed_image_path($image)) {
+        $image = '';
+    }
+
+    return [
+        'home_hero_show_video' => isset($post['home_hero_show_video']),
+        'home_hero_show_image' => isset($post['home_hero_show_image']),
+        'home_hero_image' => $image,
+    ];
 }
 
 /** @param array<string, mixed> $post */
@@ -169,11 +269,16 @@ function site_status_normalize(array $raw): array
     if (isset($raw['home_message']) || isset($raw['home_title']) || isset($raw['home_layout'])) {
         $videoUrl = trim((string) ($raw['home_video_url'] ?? $defaults['home_video_url']));
 
+        $heroImage = site_status_public_image_path((string) ($raw['home_hero_image'] ?? ''));
+
         return [
             'home_layout' => site_status_valid_layout((string) ($raw['home_layout'] ?? $defaults['home_layout'])),
             'home_title' => trim((string) ($raw['home_title'] ?? $defaults['home_title'])) ?: $defaults['home_title'],
             'home_message' => trim((string) ($raw['home_message'] ?? $defaults['home_message'])),
             'home_video_url' => $videoUrl !== '' ? $videoUrl : $defaults['home_video_url'],
+            'home_hero_show_video' => !isset($raw['home_hero_show_video']) || (bool) $raw['home_hero_show_video'],
+            'home_hero_show_image' => !empty($raw['home_hero_show_image']),
+            'home_hero_image' => $heroImage,
             'members_enabled' => !isset($raw['members_enabled']) || (bool) $raw['members_enabled'],
             'checkout_price' => max(1, (float) ($raw['checkout_price'] ?? site_status_defaults()['checkout_price'])),
             'checkout_compare_price' => (float) ($raw['checkout_compare_price'] ?? 0),
@@ -201,6 +306,9 @@ function site_status_normalize(array $raw): array
         'home_title' => 'Figurinhas da Copa',
         'home_message' => $message,
         'home_video_url' => $defaults['home_video_url'],
+        'home_hero_show_video' => $defaults['home_hero_show_video'],
+        'home_hero_show_image' => $defaults['home_hero_show_image'],
+        'home_hero_image' => $defaults['home_hero_image'],
         'members_enabled' => $mode === 'open',
         'checkout_price' => $defaults['checkout_price'],
         'checkout_compare_price' => $defaults['checkout_compare_price'],
@@ -210,6 +318,42 @@ function site_status_normalize(array $raw): array
         'promo_banner_image' => $defaults['promo_banner_image'],
         'updated_at' => (int) ($raw['updated_at'] ?? 0),
     ];
+}
+
+/** @param array<string, mixed> $view */
+function site_status_render_hero_media(array $view): string
+{
+    $showVideo = !empty($view['home_hero_show_video']);
+    $showImage = !empty($view['home_hero_show_image']);
+    $embed = trim((string) ($view['home_video_embed'] ?? ''));
+    $image = trim((string) ($view['home_hero_image'] ?? ''));
+
+    $html = '';
+
+    if ($showVideo && $embed !== '') {
+        $embedSafe = htmlspecialchars($embed, ENT_QUOTES, 'UTF-8');
+        $html .= '<div class="hero-video"><iframe src="' . $embedSafe . '" title="Vídeo Comunidade Figurinhas da Copa" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div>';
+    } elseif ($showImage && $image !== '' && !$showVideo) {
+        $imgSafe = htmlspecialchars($image, ENT_QUOTES, 'UTF-8');
+        $html .= '<div class="hero-media-image hero-media-image--solo"><img src="' . $imgSafe . '" alt="Destaque Comunidade Figurinhas da Copa" loading="lazy" decoding="async"></div>';
+    }
+
+    if ($showImage && $image !== '' && ($showVideo && $embed !== '')) {
+        $imgSafe = htmlspecialchars($image, ENT_QUOTES, 'UTF-8');
+        $html .= '<div class="hero-media-image hero-media-image--below"><img src="' . $imgSafe . '" alt="Destaque abaixo do vídeo" loading="lazy" decoding="async"></div>';
+    }
+
+    return $html;
+}
+
+function site_status_hero_media_css(): string
+{
+    return <<<'CSS'
+.hero-media-image{width:100%;max-width:560px;margin:0 auto 1.5rem;border-radius:8px;overflow:hidden;border:2px solid rgba(0,151,57,0.45);box-shadow:0 8px 32px rgba(0,0,0,0.55)}
+.hero-media-image img{width:100%;height:auto;display:block;vertical-align:middle}
+.hero-media-image--solo img{max-height:min(70vh,420px);object-fit:cover}
+.hero-media-image--below{margin-top:0;margin-bottom:1.25rem}
+CSS;
 }
 
 function site_status_promo_banner_css(): string
@@ -310,6 +454,9 @@ function site_status_view(): array
         'home_paragraphs' => $paragraphs !== [] ? $paragraphs : [site_status_defaults()['home_message']],
         'home_video_url' => $videoUrl,
         'home_video_embed' => $videoEmbed,
+        'home_hero_show_video' => (bool) ($raw['home_hero_show_video'] ?? true),
+        'home_hero_show_image' => (bool) ($raw['home_hero_show_image'] ?? false),
+        'home_hero_image' => site_status_public_image_path((string) ($raw['home_hero_image'] ?? '')),
         'members_enabled' => (bool) $raw['members_enabled'],
         'checkout_price' => site_checkout_price(),
         'checkout_price_label' => site_format_price_brl(site_checkout_price()),
@@ -352,14 +499,27 @@ function site_status_save(
     if ($homeLayout === 'simple' && $homeMessage === '') {
         return ['ok' => false, 'error' => 'Informe a mensagem da home simples.'];
     }
-    if ($homeLayout === 'full' && $homeVideoUrl !== '' && site_status_video_to_embed($homeVideoUrl) === '') {
+    $defaults = site_status_defaults();
+    $hero = is_array($offer['_hero'] ?? null) ? $offer['_hero'] : [];
+    unset($offer['_hero']);
+
+    $showVideo = !empty($hero['home_hero_show_video']);
+    $showImage = !empty($hero['home_hero_show_image']);
+    $heroImage = site_status_public_image_path((string) ($hero['home_hero_image'] ?? ''));
+
+    if ($homeLayout === 'full' && $showVideo && $homeVideoUrl !== '' && site_status_video_to_embed($homeVideoUrl) === '') {
         return ['ok' => false, 'error' => 'Link de vídeo inválido. Use YouTube ou Vimeo (ex.: https://www.youtube.com/watch?v=...)'];
     }
+    if ($homeLayout === 'full' && !$showVideo && !$showImage) {
+        return ['ok' => false, 'error' => 'Ative o vídeo ou a imagem no topo da landing.'];
+    }
+    if ($homeLayout === 'full' && $showImage && $heroImage === '') {
+        return ['ok' => false, 'error' => 'Informe ou envie uma imagem (PNG, JPEG ou WebP) para o topo da landing.'];
+    }
     if ($homeVideoUrl === '') {
-        $homeVideoUrl = site_status_defaults()['home_video_url'];
+        $homeVideoUrl = $defaults['home_video_url'];
     }
 
-    $defaults = site_status_defaults();
     $offer = $offer ?? [];
     $checkoutPrice = max(1, round((float) ($offer['checkout_price'] ?? $defaults['checkout_price']), 2));
     $comparePrice = (float) ($offer['checkout_compare_price'] ?? 0);
@@ -374,6 +534,9 @@ function site_status_save(
         'home_title' => $homeTitle,
         'home_message' => $homeMessage,
         'home_video_url' => $homeVideoUrl,
+        'home_hero_show_video' => $homeLayout === 'full' && $showVideo,
+        'home_hero_show_image' => $homeLayout === 'full' && $showImage,
+        'home_hero_image' => $heroImage,
         'members_enabled' => $membersEnabled,
         'checkout_price' => $checkoutPrice,
         'checkout_compare_price' => $comparePrice,

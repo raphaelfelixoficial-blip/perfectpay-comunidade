@@ -32,6 +32,17 @@ if ($action === 'save_site_status') {
     $membersEnabled = isset($_POST['members_enabled']);
     $homeVideoUrl = (string) ($_POST['home_video_url'] ?? '');
     $offer = site_status_offer_from_post($_POST);
+    $hero = site_status_hero_from_post($_POST);
+    if (!empty($_FILES['home_hero_image_file']['tmp_name'])) {
+        $upload = site_status_store_uploaded_image($_FILES['home_hero_image_file'], 'uploads/hero');
+        if ($upload['ok']) {
+            $hero['home_hero_image'] = $upload['path'];
+            $hero['home_hero_show_image'] = true;
+        } else {
+            redirect_flash('Página não salva: ' . ($upload['error'] ?? 'erro no upload da imagem.'));
+        }
+    }
+    $offer['_hero'] = $hero;
     $result = site_status_save($homeLayout, $homeTitle, $homeMessage, $membersEnabled, $homeVideoUrl, $offer);
     if ($result['ok']) {
         $layoutLabel = $homeLayout === 'full' ? 'Landing completa' : 'Home simples';
