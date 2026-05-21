@@ -158,7 +158,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   @keyframes shimmer{0%{left:-100%}100%{left:200%}}
 
   .divider{height:1px;background:linear-gradient(90deg,transparent,#1a1a1a,transparent);margin:0}
-  <?= site_status_promo_banner_css() ?>
   <?= site_status_hero_media_css() ?>
 
   .agency-footer{text-align:center;padding:1.5rem 1rem 2rem;font-size:13px;color:#555;background:#12100a;border-top:1px solid #1a1a1a}
@@ -228,17 +227,12 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 </head>
 <body>
 
-<?php if (!empty($S['promo_banner_enabled'])): ?>
-  <?= site_status_render_promo_banner($S) ?>
-<?php endif ?>
-
 <!-- HERO FULLSCREEN -->
 <div class="hero-full">
   <img src="/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp" alt="Estádio Copa 2026" class="hero-bg">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="badge-hero"><i class="ti ti-users"></i> Comunidade Exclusiva FIFA World Cup 2026</div>
-    <?php if (empty($S['promo_banner_enabled'])): ?>
     <h1 class="hero-title">
       <span class="hero-line">COMUNIDADE</span>
       <span class="hero-line gold">FIGURINHAS</span>
@@ -246,7 +240,6 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
       <span class="hero-line hero-line-vip"><span class="green">VIP</span> <span class="blue">2026</span></span>
     </h1>
     <?= site_status_render_hero_media($S) ?>
-    <?php endif ?>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
     <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
     <div class="hero-stats">

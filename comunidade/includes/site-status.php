@@ -517,30 +517,46 @@ function site_status_hero_media_css(): string
 CSS;
 }
 
+function site_status_promo_banner_checkout_css(): string
+{
+    return <<<'CSS'
+.promo-banner-checkout{width:100%;margin:0 0 1.25rem;line-height:0;border-radius:12px;overflow:hidden;border:1px solid #4a4028;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.promo-banner-checkout img{width:100%;height:auto;display:block;vertical-align:middle}
+CSS;
+}
+
 function site_status_promo_banner_css(): string
 {
     return <<<'CSS'
-.promo-banner-img-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);line-height:0;overflow:hidden;background:#0a0906}
-.promo-banner-img-wrap img{width:100%;height:auto;display:block;vertical-align:middle}
+.promo-banner-home-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);line-height:0;overflow:hidden;background:#0a0906}
+.promo-banner-home-wrap img{width:100%;height:auto;display:block;vertical-align:middle}
 CSS;
 }
 
 /** @param array<string, mixed> $view */
-function site_status_render_promo_banner(array $view): string
+function site_status_render_promo_banner(array $view, bool $forCheckout = false): string
 {
     if (empty($view['promo_banner_enabled'])) {
         return '';
     }
 
-    $image = site_status_public_image_path(trim((string) ($view['promo_banner_image'] ?? '')));
+    $image = trim((string) ($view['promo_banner_image'] ?? ''));
     if ($image === '') {
-        $image = site_status_defaults()['promo_banner_image'];
+        return '';
     }
 
-    $imageSafe = htmlspecialchars($image, ENT_QUOTES, 'UTF-8');
+    $imageSafe = htmlspecialchars(site_status_public_image_path($image), ENT_QUOTES, 'UTF-8');
+
+    if ($forCheckout) {
+        return <<<HTML
+<div class="promo-banner-checkout">
+  <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
+</div>
+HTML;
+    }
 
     return <<<HTML
-<div class="promo-banner-img-wrap" id="identificacao">
+<div class="promo-banner-home-wrap" id="identificacao">
   <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
 </div>
 HTML;

@@ -149,7 +149,7 @@ function format_member_added_at(?string $value): string
 
     try {
         return (new DateTimeImmutable($value))->setTimezone($tzBr)->format('d/m/Y H:i');
-    } catch (Throwable) {
+    } catch (Throwable $e) {
     }
 
     // Formato antigo sem fuso (servidor costumava gravar em UTC)

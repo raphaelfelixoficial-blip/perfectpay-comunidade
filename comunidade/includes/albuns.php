@@ -104,7 +104,7 @@ function albuns_find_pdf_files(): array
                 $found[$file->getPathname()] = true;
             }
         }
-    } catch (Throwable) {
+    } catch (Throwable $e) {
         foreach ([
             $root . '/*.pdf',
             $root . '/*/*.pdf',
