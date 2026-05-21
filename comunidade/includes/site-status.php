@@ -125,6 +125,56 @@ function site_status_is_allowed_image_path(string $path): bool
     return false;
 }
 
+/** @return array<string, string> mime => ext */
+function site_status_image_mime_map(): array
+{
+    return [
+        'image/png' => 'png',
+        'image/jpeg' => 'jpg',
+        'image/jpg' => 'jpg',
+        'image/pjpeg' => 'jpg',
+        'image/webp' => 'webp',
+    ];
+}
+
+/** Detecta MIME de imagem sem depender da extensão fileinfo do PHP. */
+function site_status_detect_upload_image_mime(string $tmpPath, string $originalName = ''): string
+{
+    if ($tmpPath === '' || !is_file($tmpPath)) {
+        return '';
+    }
+
+    if (class_exists('finfo')) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($tmpPath) ?: '';
+        if ($mime !== '') {
+            return strtolower($mime);
+        }
+    }
+
+    if (function_exists('mime_content_type')) {
+        $mime = mime_content_type($tmpPath);
+        if (is_string($mime) && $mime !== '') {
+            return strtolower($mime);
+        }
+    }
+
+    $imageInfo = @getimagesize($tmpPath);
+    if (is_array($imageInfo) && !empty($imageInfo['mime'])) {
+        return strtolower((string) $imageInfo['mime']);
+    }
+
+    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $byExt = [
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'webp' => 'image/webp',
+    ];
+
+    return $byExt[$ext] ?? '';
+}
+
 /**
  * Salva upload de imagem (PNG, JPEG, WebP) em /uploads/.
  *
@@ -135,21 +185,21 @@ function site_status_store_uploaded_image(array $file, string $subdir = 'uploads
 {
     $tmp = (string) ($file['tmp_name'] ?? '');
     $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
-    if ($error === UPLOAD_ERR_NO_FILE || $tmp === '') {
+    if ($error === UPLOAD_ERR_NO_FILE || $tmp === '' || !is_uploaded_file($tmp)) {
         return ['ok' => false, 'error' => 'Nenhum arquivo enviado.'];
     }
     if ($error !== UPLOAD_ERR_OK) {
-        return ['ok' => false, 'error' => 'Falha no upload (código ' . $error . ').'];
+        $messages = [
+            UPLOAD_ERR_INI_SIZE => 'Arquivo maior que o limite do servidor.',
+            UPLOAD_ERR_FORM_SIZE => 'Arquivo maior que o limite do formulário.',
+            UPLOAD_ERR_PARTIAL => 'Upload incompleto. Tente novamente.',
+        ];
+        return ['ok' => false, 'error' => $messages[$error] ?? ('Falha no upload (código ' . $error . ').')];
     }
 
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = $finfo->file($tmp) ?: '';
-    $map = [
-        'image/png' => 'png',
-        'image/jpeg' => 'jpg',
-        'image/webp' => 'webp',
-    ];
-    if (!isset($map[$mime])) {
+    $mime = site_status_detect_upload_image_mime($tmp, (string) ($file['name'] ?? ''));
+    $map = site_status_image_mime_map();
+    if ($mime === '' || !isset($map[$mime])) {
         return ['ok' => false, 'error' => 'Use PNG, JPEG ou WebP.'];
     }
 

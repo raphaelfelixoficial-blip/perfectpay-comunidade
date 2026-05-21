@@ -33,8 +33,13 @@ if ($action === 'save_site_status') {
     $homeVideoUrl = (string) ($_POST['home_video_url'] ?? '');
     $offer = site_status_offer_from_post($_POST);
     $hero = site_status_hero_from_post($_POST);
-    if (!empty($_FILES['home_hero_image_file']['tmp_name'])) {
-        $upload = site_status_store_uploaded_image($_FILES['home_hero_image_file'], 'uploads/hero');
+    $heroFile = $_FILES['home_hero_image_file'] ?? null;
+    if (
+        is_array($heroFile)
+        && (int) ($heroFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE
+        && is_uploaded_file((string) ($heroFile['tmp_name'] ?? ''))
+    ) {
+        $upload = site_status_store_uploaded_image($heroFile, 'uploads/hero');
         if ($upload['ok']) {
             $hero['home_hero_image'] = $upload['path'];
             $hero['home_hero_show_image'] = true;
