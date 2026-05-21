@@ -99,14 +99,14 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,
 .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(0,0,0,.2);border-top-color:#1a1400;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:400px){.field-row{grid-template-columns:1fr}}
-<?= site_status_promo_banner_css() ?>
+<?= site_status_promo_banner_checkout_css() ?>
 </style>
 </head>
 <body class="checkout-page">
 <div class="wrap">
   <a href="/" class="back"><i class="ti ti-arrow-left"></i> Voltar ao site</a>
+  <?= site_status_render_promo_banner($siteView, true) ?>
 </div>
-<?= site_status_render_promo_banner($siteView) ?>
 <div class="wrap">
   <div class="card">
     <div class="product">
