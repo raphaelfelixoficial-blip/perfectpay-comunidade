@@ -71,8 +71,8 @@ body{min-height:100vh;background:var(--bg);background-image:radial-gradient(elli
 .product-icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--green),#3d3208);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--gold);flex-shrink:0}
 .product h1{font-family:'Syne',sans-serif;font-size:1.15rem;line-height:1.3;margin-bottom:4px}
 .product p{font-size:13px;color:var(--muted);line-height:1.4}
-.price{margin-top:8px;font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:var(--gold)}
-.price s{font-size:1rem;color:var(--muted);font-weight:500;margin-right:8px}
+.price{margin-top:6px;font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;color:var(--gold);line-height:1.2}
+.price s{font-size:.85rem;color:var(--muted);font-weight:500;margin-right:6px}
 label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
 input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0f0d08;color:var(--text);font-size:15px;margin-bottom:12px}
 input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,223,0,.2)}
@@ -82,7 +82,7 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,
 .tab.active{border-color:var(--gold);color:var(--gold);background:rgba(255,223,0,.08)}
 .panel{display:none}
 .panel.active{display:block}
-.btn{width:100%;padding:16px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),#fde047);color:#1a1400;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.btn{width:100%;padding:12px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--gold),#fde047);color:#1a1400;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);margin-top:8px}
 .qr-box{text-align:center;padding:1rem 0}
@@ -253,10 +253,15 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,
     const body = Object.assign({ action }, customerPayload(), extra || {});
     const res = await fetch(API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(body),
     });
-    return res.json();
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok && !data.error) {
+      data.ok = false;
+      data.error = res.status === 400 ? 'Requisição inválida. Recarregue a página.' : ('Erro ' + res.status);
+    }
+    return data;
   }
 
   function stopPoll() {

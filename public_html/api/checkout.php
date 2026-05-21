@@ -18,7 +18,14 @@ if (!asaas_is_configured()) {
 }
 
 $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-$action = trim((string) ($_GET['action'] ?? $_POST['action'] ?? ''));
+
+$input = [];
+if ($method === 'POST') {
+    $decoded = json_decode(file_get_contents('php://input') ?: '', true);
+    $input = is_array($decoded) ? $decoded : $_POST;
+}
+
+$action = trim((string) ($input['action'] ?? $_GET['action'] ?? $_POST['action'] ?? ''));
 
 if ($method === 'GET' && ($action === '' || $action === 'config')) {
     $product = asaas_checkout_product();
@@ -37,11 +44,6 @@ if ($method !== 'POST') {
     http_response_code(405);
     echo json_encode(['ok' => false, 'error' => 'Method not allowed']);
     exit;
-}
-
-$input = json_decode(file_get_contents('php://input') ?: '', true);
-if (!is_array($input)) {
-    $input = $_POST;
 }
 
 $name = trim((string) ($input['name'] ?? ''));
