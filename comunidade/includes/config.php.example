@@ -17,7 +17,7 @@ return [
     'mail_from_email' => 'suporte@agenciajob.com',
     'mail_from_name' => 'Comunidade Figurinhas da Copa',
     'mail_reply_to' => 'suporte@agenciajob.com',
-    'mail_login_url' => 'https://perfectpay.agenciajob.com/comunidade/login.php',
+    'mail_login_url' => 'https://copa.agenciajob.com/comunidade/login.php',
 
     // SMTP cPanel — use mail.agenciajob.com (porta 465/ssl) para o servidor assinar DKIM
     'smtp_host' => 'mail.agenciajob.com',
@@ -29,7 +29,7 @@ return [
 
     // Pagamento — Asaas (único meio de pagamento)
     'payment_provider' => 'asaas',
-    'site_base_url' => 'https://perfectpay.agenciajob.com',
+    'site_base_url' => 'https://copa.agenciajob.com',
 
     // Asaas — https://docs.asaas.com/docs/checkout-asaas
     'asaas_api_key' => '',
@@ -41,6 +41,6 @@ return [
     'asaas_checkout_item_description' => 'Acesso figurinhas Copa 2026',
     'asaas_checkout_billing_types' => 'PIX,CREDIT_CARD',
     'asaas_checkout_minutes_expire' => 60,
-    'asaas_thankyou_url' => 'https://perfectpay.agenciajob.com/obrigado.php',
-    'asaas_cancel_url' => 'https://perfectpay.agenciajob.com/',
+    'asaas_thankyou_url' => 'https://copa.agenciajob.com/obrigado.php',
+    'asaas_cancel_url' => 'https://copa.agenciajob.com/',
 ];

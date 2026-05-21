@@ -9,7 +9,7 @@ require_once __DIR__ . '/theme.php';
  */
 function render_page_nav(string $current): void
 {
-    $siteHome = 'https://perfectpay.agenciajob.com/';
+    $siteHome = site_url('/');
     $isAdmin = function_exists('is_admin') && is_admin();
 
     $steps = [
@@ -68,7 +68,7 @@ function page_nav_styles(): string
 
 function render_favicon(): void
 {
-    $icon = 'https://perfectpay.agenciajob.com/favicon.jpg';
+    $icon = site_url('/favicon.jpg');
     echo '<link rel="icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '" type="image/jpeg">' . "\n";
     echo '<link rel="shortcut icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '" type="image/jpeg">' . "\n";
     echo '<link rel="apple-touch-icon" href="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '">' . "\n";

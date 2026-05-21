@@ -4,7 +4,7 @@
 
 set -euo pipefail
 REMOTE="${1:-root@5.78.75.201}"
-BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com"
+BASE="/home/agenciajob/public_html/copa.agenciajob.com"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 mkdir -p "$ROOT/backup-servidor/data"

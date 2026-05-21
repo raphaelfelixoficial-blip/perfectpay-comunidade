@@ -34,6 +34,27 @@ function app_config(): array
     return $config;
 }
 
+/** URL pública do site (sem barra final). */
+function site_base_url(): string
+{
+    $base = rtrim((string) (app_config()['site_base_url'] ?? 'https://copa.agenciajob.com'), '/');
+
+    return $base !== '' ? $base : 'https://copa.agenciajob.com';
+}
+
+/** URL absoluta no site (ex.: /comunidade/login.php). */
+function site_url(string $path = '/'): string
+{
+    if ($path === '' || $path === '/') {
+        return site_base_url() . '/';
+    }
+    if ($path[0] !== '/') {
+        $path = '/' . $path;
+    }
+
+    return site_base_url() . $path;
+}
+
 /** Caminho web da pasta comunidade (ex.: /comunidade). */
 function comunidade_web_base(): string
 {

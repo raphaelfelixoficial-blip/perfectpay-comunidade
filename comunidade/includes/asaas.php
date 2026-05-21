@@ -115,9 +115,7 @@ function asaas_api_base_url(): string
 
 function asaas_site_base_url(): string
 {
-    $cfg = app_config();
-    $base = rtrim((string) ($cfg['site_base_url'] ?? 'https://perfectpay.agenciajob.com'), '/');
-    return $base !== '' ? $base : 'https://perfectpay.agenciajob.com';
+    return site_base_url();
 }
 
 function asaas_checkout_url(): string
@@ -646,6 +644,23 @@ function asaas_register_webhook_in_panel(): array
         'PAYMENT_CONFIRMED',
         'PAYMENT_RECEIVED',
     ];
+    $notifyEmail = trim((string) ($cfg['admin_email'] ?? $cfg['mail_from_email'] ?? 'suporte@agenciajob.com'));
+    if ($notifyEmail === '' || !filter_var($notifyEmail, FILTER_VALIDATE_EMAIL)) {
+        $notifyEmail = 'suporte@agenciajob.com';
+    }
+
+    $webhookPayload = [
+        'name' => $name,
+        'url' => $url,
+        'email' => $notifyEmail,
+        'enabled' => true,
+        'interrupted' => false,
+        'events' => $events,
+        'sendType' => 'SEQUENTIALLY',
+    ];
+    if ($token !== '') {
+        $webhookPayload['authToken'] = $token;
+    }
 
     $list = asaas_api_request('GET', '/webhooks?limit=20');
     if ($list['ok'] && is_array($list['body']['data'] ?? null)) {
@@ -654,38 +669,24 @@ function asaas_register_webhook_in_panel(): array
                 continue;
             }
             $hookUrl = rtrim((string) ($hook['url'] ?? ''), '/');
-            if ($hookUrl === rtrim($url, '/')) {
+            $hookName = trim((string) ($hook['name'] ?? ''));
+            $matches = $hookUrl === rtrim($url, '/')
+                || $hookName === $name
+                || str_contains($hookUrl, 'perfectpay.agenciajob.com')
+                || str_contains($hookUrl, 'copa.agenciajob.com');
+            if ($matches) {
                 $hookId = trim((string) ($hook['id'] ?? ''));
                 if ($hookId !== '') {
-                    $update = asaas_api_request('PUT', '/webhooks/' . rawurlencode($hookId), [
-                        'name' => $name,
-                        'url' => $url,
-                        'enabled' => true,
-                        'interrupted' => false,
-                        'authToken' => $token !== '' ? $token : null,
-                        'events' => $events,
-                        'sendType' => 'SEQUENTIALLY',
-                    ]);
+                    $update = asaas_api_request('PUT', '/webhooks/' . rawurlencode($hookId), $webhookPayload);
                     if ($update['ok']) {
-                        return ['ok' => true, 'message' => 'Webhook existente reativado e atualizado no Asaas.'];
+                        return ['ok' => true, 'message' => 'Webhook atualizado no Asaas para ' . $url];
                     }
                 }
             }
         }
     }
 
-    $body = [
-        'name' => $name,
-        'url' => $url,
-        'enabled' => true,
-        'interrupted' => false,
-        'events' => $events,
-        'sendType' => 'SEQUENTIALLY',
-    ];
-    if ($token !== '') {
-        $body['authToken'] = $token;
-    }
-
+    $body = $webhookPayload;
     $create = asaas_api_request('POST', '/webhooks', $body);
     if ($create['ok']) {
         return ['ok' => true, 'message' => 'Webhook criado no Asaas com URL e eventos corretos.'];

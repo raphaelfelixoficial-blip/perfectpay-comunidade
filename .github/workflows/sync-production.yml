@@ -27,7 +27,7 @@ jobs:
         run: |
           rsync -avz \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/agenciajob/public_html/perfectpay.agenciajob.com/index.html" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/agenciajob/public_html/copa.agenciajob.com/index.html" \
             public_html/index.html
 
       - name: Commit se houver diferença
@@ -45,7 +45,7 @@ jobs:
       - name: Backup servidor (artefato)
         run: |
           mkdir -p backup-servidor/data backup-servidor/albuns-lista
-          BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com/comunidade"
+          BASE="/home/agenciajob/public_html/copa.agenciajob.com/comunidade"
           rsync -avz \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$BASE/data/allowed_emails.json" \

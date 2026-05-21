@@ -24,7 +24,7 @@ if ($apiKey === '') {
 
 $cfg = require $configPath;
 $cfg['payment_provider'] = 'asaas';
-$cfg['site_base_url'] = $cfg['site_base_url'] ?? 'https://perfectpay.agenciajob.com';
+$cfg['site_base_url'] = $cfg['site_base_url'] ?? 'https://copa.agenciajob.com';
 $cfg['asaas_api_key'] = $apiKey;
 $cfg['asaas_environment'] = 'production';
 $cfg['asaas_webhook_token'] = $webhookToken;
@@ -33,8 +33,8 @@ $cfg['asaas_checkout_item_name'] = $cfg['asaas_checkout_item_name'] ?? 'Comunida
 $cfg['asaas_checkout_item_description'] = $cfg['asaas_checkout_item_description'] ?? 'Acesso figurinhas Copa 2026';
 $cfg['asaas_checkout_billing_types'] = $cfg['asaas_checkout_billing_types'] ?? 'PIX,CREDIT_CARD';
 $cfg['asaas_checkout_minutes_expire'] = (int) ($cfg['asaas_checkout_minutes_expire'] ?? 60);
-$cfg['asaas_thankyou_url'] = $cfg['asaas_thankyou_url'] ?? 'https://perfectpay.agenciajob.com/obrigado.php';
-$cfg['asaas_cancel_url'] = $cfg['asaas_cancel_url'] ?? 'https://perfectpay.agenciajob.com/';
+$cfg['asaas_thankyou_url'] = $cfg['asaas_thankyou_url'] ?? 'https://copa.agenciajob.com/obrigado.php';
+$cfg['asaas_cancel_url'] = $cfg['asaas_cancel_url'] ?? 'https://copa.agenciajob.com/';
 
 $export = "<?php\nreturn " . var_export($cfg, true) . ";\n";
 file_put_contents($configPath, $export, LOCK_EX);

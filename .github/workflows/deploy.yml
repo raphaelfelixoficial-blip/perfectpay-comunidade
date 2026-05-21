@@ -28,7 +28,7 @@ jobs:
           SSH_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new"
           echo "SSH_OPTS=$SSH_OPTS" >> "$GITHUB_ENV"
           echo "REMOTE=${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" >> "$GITHUB_ENV"
-          echo "BASE=/home/agenciajob/public_html/perfectpay.agenciajob.com" >> "$GITHUB_ENV"
+          echo "BASE=/home/agenciajob/public_html/copa.agenciajob.com" >> "$GITHUB_ENV"
 
       - name: Deploy site principal (sem apagar arquivos do servidor)
         run: |
@@ -76,7 +76,7 @@ jobs:
         run: |
           ssh $SSH_OPTS "$REMOTE" bash -s <<'REMOTE'
           set -e
-          BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com"
+          BASE="/home/agenciajob/public_html/copa.agenciajob.com"
           DATA="$BASE/comunidade/data"
           ALBUNS="$BASE/comunidade/albuns"
           echo "=== Pós-deploy Perfect Pay ==="

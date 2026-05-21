@@ -448,7 +448,7 @@ function render_members_area_closed_page(): void
     <p style="margin-top:1.5rem;color:#888">A área de membros está temporariamente indisponível.</p>
   </div>
   <p class="home-footer">
-    <a href="https://perfectpay.agenciajob.com/">← Voltar ao site</a>
+    <a href="<?= htmlspecialchars(site_url('/'), ENT_QUOTES, 'UTF-8') ?>">← Voltar ao site</a>
     · <a href="<?= htmlspecialchars(comunidade_url('/login.php?admin=1'), ENT_QUOTES, 'UTF-8') ?>">Admin</a>
   </p>
 </div>

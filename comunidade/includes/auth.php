@@ -12,7 +12,7 @@ function start_session(): void
     }
 
     $cfg = app_config();
-    session_name('perfectpay_vip_sess');
+    session_name('copa_vip_sess');
     $cookiePath = comunidade_web_base() . '/';
     if ($cookiePath === '//') {
         $cookiePath = '/';

@@ -48,8 +48,8 @@ unset($_SESSION['flash']);
   <?php render_albuns_refresh_button('/admin/'); ?>
 
   <div class="card">
-    <h2>Página inicial (perfectpay.agenciajob.com)</h2>
-    <p class="hint" style="margin-top:0">Escolha o tipo de página em <strong>perfectpay.agenciajob.com</strong>.</p>
+    <h2>Página inicial (<?= htmlspecialchars(parse_url(site_base_url(), PHP_URL_HOST) ?: 'copa.agenciajob.com', ENT_QUOTES, 'UTF-8') ?>)</h2>
+    <p class="hint" style="margin-top:0">Escolha o tipo de página em <strong><?= htmlspecialchars(site_base_url(), ENT_QUOTES, 'UTF-8') ?></strong>.</p>
     <form method="post" action="api.php">
       <input type="hidden" name="action" value="save_site_status">
       <label style="display:block;margin-bottom:.75rem;text-transform:none;font-size:14px;color:#ccc;font-weight:400">Tipo de página</label>

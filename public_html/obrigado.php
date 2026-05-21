@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-$comunidadeUrl = 'https://perfectpay.agenciajob.com/comunidade/';
-$loginUrl = 'https://perfectpay.agenciajob.com/comunidade/login.php';
+require_once __DIR__ . '/includes/site-bootstrap.php';
+
+$comunidadeUrl = site_url('/comunidade/');
+$loginUrl = site_url('/comunidade/login.php');
 $email = isset($_GET['email']) ? trim((string) $_GET['email']) : '';
 $emailSafe = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)
     ? htmlspecialchars($email, ENT_QUOTES, 'UTF-8')

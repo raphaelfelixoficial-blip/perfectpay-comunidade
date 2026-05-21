@@ -33,7 +33,7 @@ $title = landing_h($S['home_title']);
   </article>
   <?php if ($S['members_enabled']): ?>
   <p class="home-members">
-    <a href="https://perfectpay.agenciajob.com/comunidade/login.php">Área de membros →</a>
+    <a href="/comunidade/login.php">Área de membros →</a>
   </p>
   <?php endif; ?>
   <p class="home-footer">© <?= (int) date('Y') ?> Comunidade Figurinhas da Copa · Copa 2026</p>

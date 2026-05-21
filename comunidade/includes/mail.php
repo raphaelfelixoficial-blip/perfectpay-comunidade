@@ -15,7 +15,7 @@ function send_password_reset_email(string $email, string $name, string $password
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'suporte@agenciajob.com');
     $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
     $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Figurinhas da Copa');
-    $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
+    $loginUrl = (string) ($cfg['mail_login_url'] ?? site_url('/comunidade/login.php'));
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Figurinhas da Copa');
     $displayName = $name !== '' ? $name : $email;
 
@@ -126,7 +126,7 @@ function send_member_credentials_email(string $email, string $name, string $pass
     $fromEmail = (string) ($cfg['mail_from_email'] ?? 'suporte@agenciajob.com');
     $replyTo = (string) ($cfg['mail_reply_to'] ?? 'suporte@agenciajob.com');
     $fromName = (string) ($cfg['mail_from_name'] ?? 'Comunidade Figurinhas da Copa');
-    $loginUrl = (string) ($cfg['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php');
+    $loginUrl = (string) ($cfg['mail_login_url'] ?? site_url('/comunidade/login.php'));
     $siteName = (string) ($cfg['site_name'] ?? 'Comunidade Figurinhas da Copa');
     $displayName = $name !== '' ? $name : $email;
 
@@ -226,7 +226,7 @@ function mail_send_via_php_mail(
 
 function mail_build_content(string $displayName, string $email, string $password, string $loginUrl, string $siteName): array
 {
-    $albunsUrl = rtrim((string) (app_config()['mail_login_url'] ?? 'https://perfectpay.agenciajob.com/comunidade/login.php'), '/');
+    $albunsUrl = rtrim((string) (app_config()['mail_login_url'] ?? site_url('/comunidade/login.php')), '/');
     $albunsUrl = preg_replace('#/login\.php$#', '', $albunsUrl) . '/albuns/';
 
     $textBody = implode("\n", [

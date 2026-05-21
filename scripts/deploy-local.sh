@@ -3,7 +3,7 @@
 set -euo pipefail
 
 HOST="${DEPLOY_HOST:-root@5.78.75.201}"
-BASE="/home/agenciajob/public_html/perfectpay.agenciajob.com"
+BASE="/home/agenciajob/public_html/copa.agenciajob.com"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SSH_KEY="${DEPLOY_KEY:-$HOME/.ssh/perfectpay_deploy}"
 SSH_OPTS=(-i "$SSH_KEY" -o StrictHostKeyChecking=accept-new)
@@ -49,4 +49,4 @@ rsync -avz -e "ssh ${SSH_OPTS[*]}" \
 
 ssh "${SSH_OPTS[@]}" "$HOST" "mkdir -p $BASE/comunidade/data/sessions $BASE/comunidade/albuns $BASE/comunidade/arquivos && chown -R agenciajob:agenciajob $BASE/comunidade/data $BASE/comunidade/albuns 2>/dev/null || true"
 
-echo "Deploy concluído: https://perfectpay.agenciajob.com"
+echo "Deploy concluído: https://copa.agenciajob.com"
