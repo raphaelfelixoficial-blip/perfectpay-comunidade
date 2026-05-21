@@ -426,11 +426,22 @@ function site_status_promo_banner_css(): string
 .promo-bleed-price strong{font-family:'Syne',sans-serif;font-size:clamp(1.75rem,5vw,2.5rem);color:var(--br-yellow)}
 .promo-bleed-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;width:fit-content;max-width:100%;padding:14px 24px;border-radius:10px;background:linear-gradient(135deg,#FFDF00,#ca8a04);color:#1a1400;font-family:'Syne',sans-serif;font-weight:800;text-decoration:none;font-size:15px}
 .promo-bleed-cta:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.promo-bleed-wrap--checkout{width:100%;max-width:100%;margin:0 0 1.25rem;border-radius:12px;overflow:hidden;border:1px solid #4a4028;--br-yellow:#FFDF00}
+.promo-bleed-wrap--checkout .promo-bleed{min-height:auto;grid-template-columns:1fr}
+@media(min-width:520px){.promo-bleed-wrap--checkout .promo-bleed{grid-template-columns:1fr 1.1fr;min-height:160px}}
+.promo-bleed-wrap--checkout .promo-bleed-media{min-height:120px;max-height:200px}
+.promo-bleed-wrap--checkout .promo-bleed-media img{min-height:120px}
+.promo-bleed-wrap--checkout .promo-bleed-body{padding:1rem 1.15rem;border-top:3px solid var(--br-yellow);border-left:none}
+@media(min-width:520px){.promo-bleed-wrap--checkout .promo-bleed-body{border-top:none;border-left:3px solid var(--br-yellow)}}
+.promo-bleed-wrap--checkout .promo-bleed-title{font-size:1.05rem}
+.promo-bleed-wrap--checkout .promo-bleed-text{font-size:13px;line-height:1.5}
+.promo-bleed-wrap--checkout .promo-bleed-price strong{font-size:1.35rem}
+.promo-bleed-wrap--checkout .promo-bleed-cta{display:none}
 CSS;
 }
 
 /** @param array<string, mixed> $view */
-function site_status_render_promo_banner(array $view): string
+function site_status_render_promo_banner(array $view, bool $forCheckout = false): string
 {
     if (empty($view['promo_banner_enabled'])) {
         return '';
@@ -448,6 +459,25 @@ function site_status_render_promo_banner(array $view): string
     $imageSafe = htmlspecialchars($image !== '' ? $image : '/ChatGPT-Image-16-de-mai.-de-2026_-13_07_10.webp', ENT_QUOTES, 'UTF-8');
     $priceLabel = htmlspecialchars((string) ($view['checkout_price_label'] ?? '97,00'), ENT_QUOTES, 'UTF-8');
     $compareLabel = htmlspecialchars((string) ($view['checkout_compare_label'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $compareHtml = $compareLabel !== '' ? "<s>R$ {$compareLabel}</s>" : '';
+
+    if ($forCheckout) {
+        return <<<HTML
+<div class="promo-bleed-wrap promo-bleed-wrap--checkout" aria-label="Destaque da oferta">
+  <section class="promo-bleed">
+    <div class="promo-bleed-media">
+      <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
+    </div>
+    <div class="promo-bleed-body">
+      <span class="promo-bleed-kicker">Comunidade VIP · Copa 2026</span>
+      <h2 class="promo-bleed-title">{$titleSafe}</h2>
+      <p class="promo-bleed-text">{$textSafe}</p>
+      <div class="promo-bleed-price">{$compareHtml}<strong>R$ {$priceLabel}</strong></div>
+    </div>
+  </section>
+</div>
+HTML;
+    }
 
     return <<<HTML
 <div class="promo-bleed-wrap" id="identificacao">
@@ -459,7 +489,7 @@ function site_status_render_promo_banner(array $view): string
       <span class="promo-bleed-kicker">Comunidade VIP · Copa 2026</span>
       <h2 class="promo-bleed-title">{$titleSafe}</h2>
       <p class="promo-bleed-text">{$textSafe}</p>
-      <div class="promo-bleed-price"><s>R$ {$compareLabel}</s><strong>R$ {$priceLabel}</strong></div>
+      <div class="promo-bleed-price">{$compareHtml}<strong>R$ {$priceLabel}</strong></div>
       <a href="/checkout.php" class="promo-bleed-cta"><i class="ti ti-lock-access"></i> Garantir meu acesso</a>
     </div>
   </section>
