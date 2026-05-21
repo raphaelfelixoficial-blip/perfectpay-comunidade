@@ -54,11 +54,21 @@ function site_status_default_favicon(): string
     return '/favicon.jpg';
 }
 
+function site_status_path_ends_with(string $path, string $suffix): bool
+{
+    $len = strlen($suffix);
+    if ($len === 0) {
+        return true;
+    }
+
+    return substr($path, -$len) === $suffix;
+}
+
 function site_status_is_allowed_favicon_path(string $path): bool
 {
     $path = strtolower($path);
     foreach (['png', 'jpg', 'jpeg', 'webp', 'ico'] as $ext) {
-        if (str_ends_with($path, '.' . $ext)) {
+        if (site_status_path_ends_with($path, '.' . $ext)) {
             return true;
         }
     }
@@ -96,13 +106,20 @@ function site_status_favicon_mime(string $path): string
 {
     $ext = strtolower(pathinfo(parse_url($path, PHP_URL_PATH) ?: $path, PATHINFO_EXTENSION));
 
-    return match ($ext) {
-        'png' => 'image/png',
-        'webp' => 'image/webp',
-        'ico' => 'image/x-icon',
-        'svg' => 'image/svg+xml',
-        default => 'image/jpeg',
-    };
+    if ($ext === 'png') {
+        return 'image/png';
+    }
+    if ($ext === 'webp') {
+        return 'image/webp';
+    }
+    if ($ext === 'ico') {
+        return 'image/x-icon';
+    }
+    if ($ext === 'svg') {
+        return 'image/svg+xml';
+    }
+
+    return 'image/jpeg';
 }
 
 function site_status_favicon_url(): string
@@ -112,7 +129,11 @@ function site_status_favicon_url(): string
         return $path;
     }
 
-    return site_url($path);
+    if (function_exists('site_url')) {
+        return site_url($path);
+    }
+
+    return $path;
 }
 
 function site_status_render_favicon_tags(): void
@@ -195,7 +216,7 @@ function site_status_is_allowed_image_path(string $path): bool
 {
     $path = strtolower($path);
     foreach (site_status_allowed_image_extensions() as $ext) {
-        if (str_ends_with($path, '.' . $ext)) {
+        if (site_status_path_ends_with($path, '.' . $ext)) {
             return true;
         }
     }
@@ -496,46 +517,30 @@ function site_status_hero_media_css(): string
 CSS;
 }
 
-function site_status_promo_banner_checkout_css(): string
-{
-    return <<<'CSS'
-.promo-banner-checkout{width:100%;margin:0 0 1.25rem;line-height:0;border-radius:12px;overflow:hidden;border:1px solid #4a4028;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.promo-banner-checkout img{width:100%;height:auto;display:block;vertical-align:middle}
-CSS;
-}
-
 function site_status_promo_banner_css(): string
 {
     return <<<'CSS'
-.promo-banner-home-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);line-height:0;overflow:hidden;background:#0a0906}
-.promo-banner-home-wrap img{width:100%;height:auto;display:block;vertical-align:middle}
+.promo-banner-img-wrap{width:100vw;max-width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);line-height:0;overflow:hidden;background:#0a0906}
+.promo-banner-img-wrap img{width:100%;height:auto;display:block;vertical-align:middle}
 CSS;
 }
 
 /** @param array<string, mixed> $view */
-function site_status_render_promo_banner(array $view, bool $forCheckout = false): string
+function site_status_render_promo_banner(array $view): string
 {
     if (empty($view['promo_banner_enabled'])) {
         return '';
     }
 
-    $image = trim((string) ($view['promo_banner_image'] ?? ''));
+    $image = site_status_public_image_path(trim((string) ($view['promo_banner_image'] ?? '')));
     if ($image === '') {
-        return '';
+        $image = site_status_defaults()['promo_banner_image'];
     }
 
-    $imageSafe = htmlspecialchars(site_status_public_image_path($image), ENT_QUOTES, 'UTF-8');
-
-    if ($forCheckout) {
-        return <<<HTML
-<div class="promo-banner-checkout">
-  <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
-</div>
-HTML;
-    }
+    $imageSafe = htmlspecialchars($image, ENT_QUOTES, 'UTF-8');
 
     return <<<HTML
-<div class="promo-banner-home-wrap" id="identificacao">
+<div class="promo-banner-img-wrap" id="identificacao">
   <img src="{$imageSafe}" alt="" loading="lazy" decoding="async">
 </div>
 HTML;
