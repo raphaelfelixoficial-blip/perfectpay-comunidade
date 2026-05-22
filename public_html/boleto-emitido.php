@@ -28,6 +28,7 @@ $billetUrlSafe = $billetUrl !== '' ? htmlspecialchars($billetUrl, ENT_QUOTES, 'U
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Boleto emitido — Figurinhas da Copa</title>
+<?php site_status_render_google_analytics(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>

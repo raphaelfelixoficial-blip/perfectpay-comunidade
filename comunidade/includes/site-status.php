@@ -147,6 +147,21 @@ function site_status_render_favicon_tags(): void
     echo '<link rel="apple-touch-icon" href="' . $urlSafe . '">' . "\n";
 }
 
+function site_status_render_google_analytics(): void
+{
+    ?>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5NY4GS0K13"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5NY4GS0K13');
+</script>
+<?php
+}
+
 function site_format_price_brl(float $value): string
 {
     return number_format(max(0, $value), 2, ',', '.');
@@ -745,6 +760,7 @@ function render_members_area_closed_page(): void
 <meta name="robots" content="noindex, nofollow">
 <title>Área indisponível — <?= $title ?></title>
 <?php site_status_render_favicon_tags(); ?>
+<?php site_status_render_google_analytics(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style><?= site_status_home_styles() ?></style>
 </head>

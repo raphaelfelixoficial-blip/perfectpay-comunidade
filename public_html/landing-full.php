@@ -9,6 +9,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comunidade Figurinhas da Copa — Copa do Mundo 2026</title>
 <?php site_status_render_favicon_tags(); ?>
+<?php site_status_render_google_analytics(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -419,15 +420,6 @@ setInterval(tick,1000);
       if(target) target.scrollIntoView({behavior:'smooth'});
     });
   });
-</script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-G869ZPLWSB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-G869ZPLWSB');
 </script>
 </body>
 </html>

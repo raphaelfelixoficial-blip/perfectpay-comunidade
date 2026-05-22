@@ -74,3 +74,11 @@ function render_favicon(): void
     site_status_render_favicon_tags();
 }
 
+function render_google_analytics(): void
+{
+    if (!function_exists('site_status_render_google_analytics')) {
+        require_once __DIR__ . '/site-status.php';
+    }
+    site_status_render_google_analytics();
+}
+

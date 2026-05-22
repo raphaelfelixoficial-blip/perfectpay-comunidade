@@ -58,6 +58,7 @@ $thankyouBase = rtrim((string) (app_config()['asaas_thankyou_url'] ?? site_url('
 <meta name="robots" content="noindex, nofollow">
 <title>Finalizar compra — Figurinhas da Copa</title>
 <?php site_status_render_favicon_tags(); ?>
+<?php site_status_render_google_analytics(); ?>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>

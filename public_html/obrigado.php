@@ -18,6 +18,7 @@ $emailSafe = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Obrigado — Figurinhas da Copa</title>
+<?php site_status_render_google_analytics(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">

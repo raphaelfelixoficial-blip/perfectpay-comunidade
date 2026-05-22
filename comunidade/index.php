@@ -22,6 +22,7 @@ $featuredDownloads = load_downloads($albunsCatalog);
 <meta name="robots" content="noindex, nofollow">
 <title>Área VIP — Figurinhas da Copa</title>
 <?php render_favicon(); ?>
+<?php render_google_analytics(); ?>
 <?= pp_fonts_link() ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
