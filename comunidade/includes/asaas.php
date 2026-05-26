@@ -13,6 +13,11 @@ function asaas_processed_file(): string
     return dirname(__DIR__) . '/data/asaas-payments.json';
 }
 
+function asaas_pending_payments_file(): string
+{
+    return dirname(__DIR__) . '/data/asaas-pending-payments.json';
+}
+
 /** @return array<string, array{email:string,at:string}> */
 function asaas_load_processed(): array
 {
@@ -49,6 +54,83 @@ function asaas_mark_payment_processed(string $paymentId, string $email): void
         json_encode($all, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
         LOCK_EX
     );
+}
+
+/** @return array<string, array{email:string,name:string,at:string}> */
+function asaas_load_pending_payments(): array
+{
+    $path = asaas_pending_payments_file();
+    if (!is_file($path)) {
+        return [];
+    }
+    $data = json_decode((string) file_get_contents($path), true);
+    return is_array($data) ? $data : [];
+}
+
+function asaas_save_pending_payments(array $all): void
+{
+    file_put_contents(
+        asaas_pending_payments_file(),
+        json_encode($all, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        LOCK_EX
+    );
+}
+
+function asaas_remember_pending_payment(string $paymentId, string $email, string $name): void
+{
+    $paymentId = trim($paymentId);
+    $email = normalize_email($email);
+    if ($paymentId === '' || $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return;
+    }
+
+    $all = asaas_load_pending_payments();
+    $all[$paymentId] = [
+        'email' => $email,
+        'name' => trim($name),
+        'at' => date('c'),
+    ];
+    asaas_save_pending_payments($all);
+}
+
+/** @return array{email:string,name:string}|null */
+function asaas_pending_customer_for_payment(string $paymentId): ?array
+{
+    $paymentId = trim($paymentId);
+    if ($paymentId === '') {
+        return null;
+    }
+
+    $pending = asaas_load_pending_payments()[$paymentId] ?? null;
+    if (!is_array($pending)) {
+        return null;
+    }
+
+    $email = normalize_email((string) ($pending['email'] ?? ''));
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return null;
+    }
+
+    return [
+        'email' => $email,
+        'name' => trim((string) ($pending['name'] ?? '')),
+    ];
+}
+
+function asaas_forget_pending_payment(string $paymentId): void
+{
+    $paymentId = trim($paymentId);
+    if ($paymentId === '') {
+        return;
+    }
+
+    $all = asaas_load_pending_payments();
+    if (!isset($all[$paymentId])) {
+        return;
+    }
+
+    unset($all[$paymentId]);
+    asaas_save_pending_payments($all);
 }
 
 function asaas_log(string $message): void
@@ -424,6 +506,7 @@ function asaas_extract_payment_id(array $payload): string
 function asaas_extract_customer_from_payload(array $payload): array
 {
     $event = strtoupper(trim((string) ($payload['event'] ?? '')));
+    $paymentId = asaas_extract_payment_id($payload);
 
     if ($event === 'CHECKOUT_PAID') {
         $checkout = $payload['checkout'] ?? [];
@@ -452,12 +535,16 @@ function asaas_extract_customer_from_payload(array $payload): array
         return ['email' => '', 'name' => ''];
     }
 
+    $pendingCustomer = asaas_pending_customer_for_payment($paymentId);
+    if ($pendingCustomer !== null) {
+        return $pendingCustomer;
+    }
+
     $customer = asaas_customer_from_entity($payment);
     if ($customer['email'] !== '') {
         return $customer;
     }
 
-    $paymentId = trim((string) ($payment['id'] ?? ''));
     if ($paymentId !== '') {
         $fetchedPayment = asaas_fetch_payment_by_id($paymentId);
         if (is_array($fetchedPayment)) {
@@ -489,6 +576,14 @@ function asaas_provision_from_payment_entity(array $payment, string $source = 'a
     $customer = asaas_customer_from_entity($payment);
     $email = $customer['email'];
     $name = $customer['name'];
+
+    if ($email === '' && $paymentId !== '') {
+        $pendingCustomer = asaas_pending_customer_for_payment($paymentId);
+        if ($pendingCustomer !== null) {
+            $email = $pendingCustomer['email'];
+            $name = $pendingCustomer['name'];
+        }
+    }
 
     if ($email === '' && $paymentId !== '') {
         $fetched = asaas_fetch_payment_by_id($paymentId);
@@ -527,6 +622,7 @@ function asaas_provision_from_payment_entity(array $payment, string $source = 'a
 
     if ($paymentId !== '') {
         asaas_mark_payment_processed($paymentId, $email);
+        asaas_forget_pending_payment($paymentId);
     }
 
     $action = ($result['created'] ?? false) ? 'criado' : 'atualizado';
@@ -760,6 +856,7 @@ function asaas_handle_webhook(array $payload): array
 
     if ($paymentId !== '') {
         asaas_mark_payment_processed($paymentId, $email);
+        asaas_forget_pending_payment($paymentId);
     }
 
     $action = ($result['created'] ?? false) ? 'criado' : 'atualizado';
@@ -917,6 +1014,13 @@ function asaas_finalize_paid_payment(string $paymentId, string $email, string $n
 {
     $paymentId = trim($paymentId);
     $email = normalize_email($email);
+    if ($email === '') {
+        $pendingCustomer = asaas_pending_customer_for_payment($paymentId);
+        if ($pendingCustomer !== null) {
+            $email = $pendingCustomer['email'];
+            $name = $pendingCustomer['name'];
+        }
+    }
     if ($paymentId === '' || $email === '') {
         return ['ok' => false, 'paid' => false, 'status' => '', 'provisioned' => false, 'error' => 'Dados inválidos.'];
     }
@@ -937,6 +1041,7 @@ function asaas_finalize_paid_payment(string $paymentId, string $email, string $n
             return ['ok' => false, 'paid' => true, 'status' => $status, 'provisioned' => false, 'error' => $provision['error'] ?? 'Erro ao liberar acesso.'];
         }
         asaas_mark_payment_processed($paymentId, $email);
+        asaas_forget_pending_payment($paymentId);
         $mailMsg = ($provision['email_sent'] ?? false) ? '' : (' ' . ($provision['error'] ?? ''));
         asaas_log("Transparent OK {$paymentId}: {$email}{$mailMsg}");
     }
@@ -987,6 +1092,7 @@ function asaas_create_transparent_pix(string $name, string $email, string $cpfCn
     if ($paymentId === '') {
         return ['ok' => false, 'error' => 'Asaas não retornou ID da cobrança.'];
     }
+    asaas_remember_pending_payment($paymentId, $email, $name);
 
     $qr = asaas_api_request('GET', '/payments/' . rawurlencode($paymentId) . '/pixQrCode');
     if (!$qr['ok']) {
@@ -1075,6 +1181,7 @@ function asaas_create_transparent_card(string $name, string $email, string $cpfC
     if ($paymentId === '') {
         return ['ok' => false, 'error' => 'Asaas não retornou ID da cobrança.'];
     }
+    asaas_remember_pending_payment($paymentId, $email, $name);
 
     if (asaas_payment_status_is_paid($status)) {
         $done = asaas_finalize_paid_payment($paymentId, $email, $name);

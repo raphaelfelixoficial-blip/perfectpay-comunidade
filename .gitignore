@@ -12,6 +12,8 @@ comunidade/data/albuns-catalog.json
 comunidade/data/site-status.json
 comunidade/data/perfectpay-sales.json
 comunidade/data/perfectpay-webhook.log
+comunidade/data/asaas-payments.json
+comunidade/data/asaas-pending-payments.json
 public_html/data/site-status.json
 
 # Backup local ao sincronizar do servidor
