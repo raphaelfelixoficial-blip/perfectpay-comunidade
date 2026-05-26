@@ -752,7 +752,7 @@ function asaas_register_webhook_in_panel(): array
         'enabled' => true,
         'interrupted' => false,
         'events' => $events,
-        'sendType' => 'SEQUENTIALLY',
+        'sendType' => 'NON_SEQUENTIALLY',
     ];
     if ($token !== '') {
         $webhookPayload['authToken'] = $token;
@@ -821,7 +821,7 @@ function asaas_handle_webhook(array $payload): array
 
     if ($email === '') {
         asaas_log("E-mail ausente no evento {$event} id={$paymentId}");
-        return ['ok' => false, 'http_status' => 422, 'message' => 'E-mail do comprador ausente'];
+        return ['ok' => true, 'http_status' => 200, 'message' => 'E-mail do comprador ausente (aceito para parar retries)'];
     }
 
     if ($event === 'CHECKOUT_PAID') {
