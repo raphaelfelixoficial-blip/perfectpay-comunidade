@@ -242,7 +242,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
     </h1>
     <?= site_status_render_hero_media($S) ?>
     <p class="hero-desc">Complete seu álbum em apenas 24hrs com esse ebook completo de figurinhas da Copa do Mundo 2026! Com as 980 figurinhas, todas organizadas, prontas para imprimir e colar no seu álbum.</p>
-    <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> ENTRAR NA COMUNIDADE</a>
+    <a href="/checkout.php" class="btn-hero pulse shimmer"><i class="ti ti-trophy"></i> COMPRAR AGORA</a>
     <div class="hero-stats">
       <div class="hero-stat"><strong>+500</strong><span>Membros VIP</span></div>
       <div class="hero-stat"><strong>+1000</strong><span>Figurinhas na Plataforma</span></div>
@@ -297,7 +297,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
         <div class="timer-sep">:</div>
         <div class="timer-box"><strong id="t-s">00</strong><span>seg</span></div>
       </div>
-      <a href="/checkout.php" class="btn-main"><i class="ti ti-lock-access"></i> ENTRAR NA COMUNIDADE</a>
+      <a href="/checkout.php" class="btn-main"><i class="ti ti-lock-access"></i> COMPRAR AGORA</a>
     </div>
   </div>
 
@@ -383,7 +383,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
         <strong>R$ <?= landing_h($S['checkout_price_label']) ?></strong>
         <span>pagamento único — acesso vitalício à comunidade</span>
       </div><br/>
-      <a href="/checkout.php" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> ENTRAR AGORA</a>
+      <a href="/checkout.php" class="btn-hero pulse shimmer footer-cta-btn"><i class="ti ti-trophy"></i> COMPRAR AGORA</a>
       <div style="margin-top:1.5rem">
         <a href="mailto:suporte@agenciajob.com" class="btn-sec">Tenho dúvidas</a>
         <a href="/comunidade/login.php" class="btn-sec">Já sou membro — entrar</a>
