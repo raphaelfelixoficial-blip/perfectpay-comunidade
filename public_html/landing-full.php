@@ -50,7 +50,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 
   .hero-desc{font-size:clamp(14px,2.5vw,18px);color:#ccc;max-width:600px;width:100%;margin:0 auto 2rem;line-height:1.7;text-shadow:0 2px 10px rgba(0,0,0,0.5);padding:0 clamp(.25rem,2vw,.5rem)}
 
-  .btn-hero{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:420px;background:linear-gradient(135deg,#FFDF00,#fde047);color:#1a1400;font-family:'Syne',sans-serif;font-size:clamp(18px,4vw,28px);letter-spacing:.02em;padding:clamp(16px,4vw,22px) clamp(24px,8vw,48px);border-radius:14px;border:2px solid #ca8a04;cursor:pointer;text-decoration:none;box-shadow:0 12px 40px rgba(250,204,21,.45);transition:all .3s;position:relative;overflow:hidden;font-weight:700;text-align:center;line-height:1.2}
+  .btn-hero{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:420px;background:linear-gradient(135deg,#FFDF00,#fde047);color:#1a1400;font-family:'DM Sans',system-ui,sans-serif;font-size:clamp(18px,4vw,28px);letter-spacing:-0.03em;padding:clamp(16px,4vw,22px) clamp(24px,8vw,48px);border-radius:14px;border:2px solid #ca8a04;cursor:pointer;text-decoration:none;box-shadow:0 12px 40px rgba(250,204,21,.45);transition:all .3s;position:relative;overflow:hidden;font-weight:800;text-align:center;line-height:1.1;text-transform:uppercase}
   .btn-hero::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);transition:left .6s}
   .btn-hero:hover::before{left:100%}
   .btn-hero:hover{box-shadow:0 12px 50px rgba(255,223,0,0.5),0 0 60px rgba(0,151,57,0.35);transform:translateY(-3px)}
@@ -98,7 +98,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .timer-box span{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:2px;font-weight:600}
   .timer-sep{font-family:'Syne';font-size:28px;color:var(--br-yellow);align-self:center}
 
-  .btn-main{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--br-yellow);color:#1a1400;font-family:'Syne';font-size:clamp(15px,4vw,22px);letter-spacing:1px;padding:16px clamp(20px,5vw,40px);border-radius:8px;border:2px solid var(--br-green);cursor:pointer;text-decoration:none;transition:all .2s;font-weight:700;max-width:100%;text-align:center;flex-wrap:wrap}
+  .btn-main{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--br-yellow);color:#1a1400;font-family:'DM Sans',system-ui,sans-serif;font-size:clamp(15px,4vw,22px);letter-spacing:-0.03em;padding:16px clamp(20px,5vw,40px);border-radius:8px;border:2px solid var(--br-green);cursor:pointer;text-decoration:none;transition:all .2s;font-weight:800;max-width:100%;text-align:center;flex-wrap:wrap;line-height:1.1;text-transform:uppercase}
   .btn-main:hover{background:#ffe566;transform:scale(1.03);box-shadow:0 6px 30px rgba(0,151,57,0.35)}
 
   /* ===== FEATURES ===== */
@@ -148,7 +148,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .btn-sec:hover{background:rgba(0,151,57,0.15);border-color:var(--br-yellow);transform:scale(1.02)}
 
   .seal{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;color:#888;font-size:clamp(11px,3vw,13px);margin-top:2rem;font-weight:500;padding:0 .5rem;line-height:1.5;text-align:center}
-  .footer-cta .btn-hero.footer-cta-btn{font-size:clamp(16px,4.5vw,24px)!important;padding:16px clamp(16px,5vw,32px)!important;width:100%;max-width:100%}
+  .footer-cta .btn-hero.footer-cta-btn{font-family:'DM Sans',system-ui,sans-serif!important;font-weight:800!important;letter-spacing:-0.03em!important;font-size:clamp(16px,4.5vw,24px)!important;padding:16px clamp(16px,5vw,32px)!important;width:100%;max-width:100%}
   .seal i{color:var(--br-yellow);font-size:20px}
 
   .pulse{animation:pulse 2.5s infinite}
