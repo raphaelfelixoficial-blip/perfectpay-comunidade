@@ -11,7 +11,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
 <?php site_status_render_favicon_tags(); ?>
 <?php site_status_render_google_analytics(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   :root{
@@ -36,9 +36,9 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .badge-hero{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;max-width:100%;background:rgba(0,151,57,0.2);border:1px solid rgba(255,223,0,0.6);color:var(--br-yellow);font-size:clamp(10px,2.5vw,12px);font-weight:700;letter-spacing:clamp(1px,1vw,4px);text-transform:uppercase;padding:8px clamp(12px,4vw,24px);border-radius:2px;margin-bottom:1.5rem;backdrop-filter:blur(10px);text-align:center;line-height:1.4}
   .badge-hero i{font-size:16px}
 
-  .hero-content h1.hero-title{font-family:'Syne',sans-serif;font-size:clamp(22px,4.5vw,48px);letter-spacing:.03em;line-height:1.1;color:#fff;margin-bottom:.75rem;text-shadow:0 4px 30px rgba(0,0,0,0.8);hyphens:none;word-break:normal;display:flex;flex-direction:column;align-items:center;gap:.15em;max-width:min(100%,34rem);padding:0 .5rem}
+  .hero-content h1.hero-title{font-family:'DM Sans',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,8.5vw,76px);letter-spacing:-0.055em;line-height:0.86;color:#fff;margin-bottom:.6rem;text-shadow:0 2px 0 rgba(0,0,0,.25),0 8px 40px rgba(0,0,0,.75);hyphens:none;word-break:normal;display:flex;flex-direction:column;align-items:center;gap:0;max-width:min(100%,36rem);padding:0 .5rem;text-transform:uppercase}
   .hero-content h1 .hero-line{display:block;white-space:nowrap;max-width:100%;text-align:center}
-  .hero-content h1 .hero-line.gold{font-size:1.08em;letter-spacing:.02em}
+  .hero-content h1 .hero-line.gold{font-size:1em;letter-spacing:-0.05em}
   .hero-content h1 .gold{color:var(--br-yellow);text-shadow:0 0 40px rgba(255,223,0,0.5),0 4px 20px rgba(0,0,0,0.5)}
   .hero-content h1 .green{color:var(--br-green);text-shadow:0 0 30px rgba(0,151,57,0.6),0 4px 20px rgba(0,0,0,0.5)}
   .hero-content h1 .blue{color:#4da3ff;text-shadow:0 0 30px rgba(0,39,118,0.8),0 4px 20px rgba(0,0,0,0.5)}
@@ -67,7 +67,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   /* ===== SECTIONS ===== */
   .lp{max-width:100%;width:100%;background:#12100a;position:relative}
   .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto}
-  .section-title{font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,42px);letter-spacing:clamp(1px,0.5vw,3px);color:#fff;margin-bottom:2rem;text-align:center;padding:0 .5rem}
+  .section-title{font-family:'DM Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,6vw,50px);letter-spacing:-0.04em;line-height:1;color:#fff;margin-bottom:2rem;text-align:center;padding:0 .5rem;text-transform:uppercase}
   .section-title .gold{color:var(--br-yellow)}
   .section-title .green{color:var(--br-green)}
   .section-subtitle{text-align:center;color:#888;font-size:clamp(13px,3.5vw,15px);margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.6;padding:0 1rem}
@@ -134,7 +134,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   .footer-cta-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.25) saturate(1.3);z-index:0}
   .footer-cta-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#12100a 0%,rgba(202,138,4,.2) 25%,rgba(250,204,21,.1) 50%,rgba(18,16,10,.85) 80%,#12100a 100%);z-index:1}
   .footer-cta-content{position:relative;z-index:2;max-width:700px;width:100%;padding:0 1rem;box-sizing:border-box}
-  .footer-cta h2{font-family:'Syne';font-size:clamp(24px,7vw,52px);color:#fff;letter-spacing:clamp(1px,0.5vw,3px);margin-bottom:.8rem;line-height:1.1}
+  .footer-cta h2{font-family:'DM Sans',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,7.5vw,58px);color:#fff;letter-spacing:-0.05em;margin-bottom:.8rem;line-height:0.9;text-transform:uppercase}
   .footer-cta h2 .gold{color:var(--br-yellow)}
   .footer-cta>p{color:#bbb;font-size:17px;margin-bottom:2.5rem;line-height:1.7}
 
@@ -174,7 +174,7 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
   @media(max-width:768px){
     .hero-full{min-height:100dvh;padding:4rem 0 3rem}
     .hero-content{padding:1rem}
-    .hero-content h1.hero-title{font-size:clamp(20px,5.2vw,34px)}
+    .hero-content h1.hero-title{font-size:clamp(28px,9vw,44px);letter-spacing:-0.045em;line-height:0.88}
     .badge-hero{margin-bottom:1rem}
     .hero-video{margin-bottom:1rem}
     .hero-desc{margin-bottom:1.25rem}
@@ -216,10 +216,11 @@ $heroVideoEmbedSafe = htmlspecialchars($heroVideoEmbed, ENT_QUOTES, 'UTF-8');
     .rarity-card .rarity-name{font-size:18px}
   }
   @media(max-width:400px){
-    .hero-content h1 .hero-line.gold{white-space:normal;text-wrap:balance;letter-spacing:.01em}
+    .hero-content h1 .hero-line{white-space:normal;text-wrap:balance}
+    .hero-content h1 .hero-line.gold{letter-spacing:-0.035em}
   }
   @media(max-width:360px){
-    .hero-content h1.hero-title{font-size:clamp(17px,4.8vw,22px)}
+    .hero-content h1.hero-title{font-size:clamp(24px,8.5vw,32px)}
     .hero-content h1 .hero-line.gold{font-size:1em}
     .timer-sep{display:none}
     .timer{gap:6px}
