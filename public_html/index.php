@@ -38,5 +38,6 @@ $title = landing_h($S['home_title']);
   <?php endif; ?>
   <p class="home-footer">© <?= (int) date('Y') ?> Comunidade Figurinhas da Copa · Copa 2026</p>
 </div>
+<?php site_status_render_whatsapp_button(); ?>
 </body>
 </html>

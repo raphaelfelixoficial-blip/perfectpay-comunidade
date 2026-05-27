@@ -366,5 +366,6 @@ input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,
   });
 })();
 </script>
+<?php site_status_render_whatsapp_button(); ?>
 </body>
 </html>

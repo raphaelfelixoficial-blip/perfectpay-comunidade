@@ -104,5 +104,6 @@ $featuredDownloads = load_downloads($albunsCatalog);
   <p class="note"><i class="ti ti-info-circle"></i> Os PDFs abrem no navegador. Não compartilhe seu login.</p>
   <?php render_pp_footer(); ?>
 </div>
+<?php render_whatsapp_button(); ?>
 </body>
 </html>

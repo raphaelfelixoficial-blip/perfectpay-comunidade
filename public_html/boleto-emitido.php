@@ -65,5 +65,6 @@ $billetUrlSafe = $billetUrl !== '' ? htmlspecialchars($billetUrl, ENT_QUOTES, 'U
     <br><a href="<?= htmlspecialchars($comunidadeUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn-ghost">Sobre a comunidade →</a>
     <p class="footer">Dúvidas? <a href="mailto:suporte@agenciajob.com" style="color:var(--pp-primary)">suporte@agenciajob.com</a></p>
   </div>
+<?php site_status_render_whatsapp_button(); ?>
 </body>
 </html>

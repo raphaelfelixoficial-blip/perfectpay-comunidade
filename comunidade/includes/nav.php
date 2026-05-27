@@ -82,3 +82,11 @@ function render_google_analytics(): void
     site_status_render_google_analytics();
 }
 
+function render_whatsapp_button(): void
+{
+    if (!function_exists('site_status_render_whatsapp_button')) {
+        require_once __DIR__ . '/site-status.php';
+    }
+    site_status_render_whatsapp_button();
+}
+

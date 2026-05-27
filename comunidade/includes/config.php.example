@@ -32,6 +32,8 @@ return [
     // transparent = checkout na sua página (PIX QR + cartão); redirect = página Asaas
     'checkout_mode' => 'transparent',
     'site_base_url' => 'https://copa.agenciajob.com',
+    // WhatsApp flutuante (E.164: 55 + DDD + número)
+    'whatsapp_number' => '5511963702169',
 
     // Asaas — https://docs.asaas.com/docs/checkout-asaas
     'asaas_api_key' => '',

@@ -71,5 +71,6 @@ $total = array_sum(array_map('count', $categories));
   <?php endif; ?>
   <?php render_pp_footer(); ?>
 </div>
+<?php render_whatsapp_button(); ?>
 </body>
 </html>

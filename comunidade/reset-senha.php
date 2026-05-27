@@ -61,5 +61,6 @@ body{display:flex;flex-direction:column;padding:1rem 0}
     </form>
   </div>
   <?php render_pp_footer(); ?>
+<?php render_whatsapp_button(); ?>
 </body>
 </html>

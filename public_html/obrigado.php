@@ -60,5 +60,6 @@ $emailSafe = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)
     <br><a href="<?= htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn-ghost">Ir para o login →</a>
     <p class="footer">Dúvidas? <a href="mailto:suporte@agenciajob.com" style="color:var(--pp-primary)">suporte@agenciajob.com</a></p>
   </div>
+<?php site_status_render_whatsapp_button(); ?>
 </body>
 </html>

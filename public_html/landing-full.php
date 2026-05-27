@@ -421,5 +421,6 @@ setInterval(tick,1000);
     });
   });
 </script>
+<?php site_status_render_whatsapp_button(); ?>
 </body>
 </html>
